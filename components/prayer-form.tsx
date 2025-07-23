@@ -11,7 +11,7 @@ export function PrayerForm({ onPost }: { onPost: () => void }) {
     setLoading(true)
     await fetch("/api/prayers", {
       method: "POST",
-      body: JSON.stringify({ author, content }),
+      body: JSON.stringify({ author_name: author, content }),
       headers: { "Content-Type": "application/json" }
     })
     setContent("")
