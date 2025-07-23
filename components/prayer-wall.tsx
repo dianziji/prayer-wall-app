@@ -1,7 +1,13 @@
 "use client"
 import { useEffect, useState } from "react"
 import { PrayerCard } from "./prayer-card"
-import { PrayerForm } from "./prayer-form"
+import Masonry from 'react-masonry-css'
+
+const breakpointColumnsObj = {
+  default: 3,
+  1024: 2,
+  640: 1,
+}
 
 export function PrayerWall() {
   const [prayers, setPrayers] = useState<any[]>([])
@@ -10,29 +16,27 @@ export function PrayerWall() {
   useEffect(() => {
     fetch("/api/prayers")
       .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) {
-          setPrayers(data)
-        } else {
-          console.error("Unexpected API response:", data)
-          setError("Failed to load prayers.")
-        }
-      })
-      .catch(err => {
-        console.error("Fetch error:", err)
-        setError("Failed to load prayers.")
-      })
+      .then(data => setPrayers(Array.isArray(data) ? data : []))
+      .catch(() => setError("Failed to load prayers."))
   }, [])
 
   return (
-    <div>
-      <PrayerForm onPost={() => window.location.reload()} />
-      <div className="grid gap-4 mt-6">
-        {error && <p className="text-red-500">{error}</p>}
-        {Array.isArray(prayers) && prayers.map(p => (
-          <PrayerCard key={p.id} prayer={p} />
+    <div className="px-4 py-8 max-w-6xl mx-auto">
+      {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+      <Masonry
+        breakpointCols={breakpointColumnsObj}
+        className="flex gap-4"
+        columnClassName="space-y-4"
+      >
+        {prayers.map(p => (
+          <PrayerCard
+            key={p.id}
+            content={p.content}
+            authorName={p.author_name}
+            createdAt={p.created_at}
+          />
         ))}
-      </div>
+      </Masonry>
     </div>
   )
 }
