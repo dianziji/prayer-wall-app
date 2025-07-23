@@ -25,20 +25,21 @@ export default function HomePage() {
             </Button>
           </div>
         </section>
-
         {/* Prayer Wall Section */}
         <section className="bg-white rounded-xl shadow-sm p-6">
           <PrayerWall />
         </section>
-
-        {/* Prayer Form Section */}
-        {showForm && (
-          <section className="bg-white rounded-xl shadow-lg p-8 border-l-4 border-blue-500">
-            <h2 className="text-2xl font-semibold text-gray-700 mb-6">Share a Prayer</h2>
-            <PrayerForm onPost={() => window.location.reload()} />
-          </section>
-        )}
       </div>
+      {showForm && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex justify-center items-center">
+          <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-xl mx-4">
+            <h2 className="text-2xl font-semibold text-gray-700 mb-6">Share a Prayer</h2>
+            <PrayerForm onPost={() => window.location.reload()}
+            onCancel={() => setShowForm(false)}  />
+
+          </div>
+        </div>
+      )}
     </main>
   )
 }
