@@ -1,4 +1,3 @@
-// app/week/[date]/page.tsx
 import Link from 'next/link'
 import { WeeklyWallClient } from '@/components/weekly-wall-client'
 import { isCurrentWeek, normalizeToEtSunday } from '@/lib/utils'
