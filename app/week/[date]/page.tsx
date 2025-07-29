@@ -6,13 +6,13 @@ import { redirect } from 'next/navigation'
 
 export const dynamic = 'force-dynamic'
 
-type PageProps = { params: { date: string } }
+export default async function WeekPage({ params }: { params: Promise<{ date: string }> }) {
+  // Next 15: params is async and must be awaited
+  const { date } = await params
+  const canonical = normalizeToEtSunday(String(date ?? ''))
 
-export default function WeekPage({ params: routeParams }: PageProps) {
-  const canonical = normalizeToEtSunday(routeParams.date)
-
-  // 如果传入的不是周日，比如 /week/2025-07-22，就规范化到 /week/2025-07-20
-  if (canonical !== routeParams.date) {
+  // 若不是周日，重定向到规范的周日链接
+  if (canonical !== date) {
     redirect(`/week/${canonical}`)
   }
 
