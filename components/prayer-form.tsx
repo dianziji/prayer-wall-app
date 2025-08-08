@@ -1,6 +1,7 @@
 "use client"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
+import { useSession } from '@/lib/useSession'
 
 export type PrayerFormProps = {
   weekStart?: string
@@ -9,10 +10,15 @@ export type PrayerFormProps = {
 }
 
 export function PrayerForm({ weekStart, onPost, onCancel }: PrayerFormProps) {
-  const [author, setAuthor] = useState("")
+  const { profile } = useSession()
+  const [author, setAuthor] = useState(profile?.username ?? "")
   const [content, setContent] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (profile?.username) setAuthor(profile.username)
+  }, [profile?.username])
 
   const MAX_CONTENT = 500
   const MAX_NAME = 24
@@ -77,6 +83,7 @@ export function PrayerForm({ weekStart, onPost, onCancel }: PrayerFormProps) {
           className="border p-2 w-full mb-2 rounded-md"
           placeholder="Your name (optional)"
           value={author}
+          readOnly={!!profile?.username}
           onChange={(e) => setAuthor(e.target.value)}
           maxLength={MAX_NAME}
         />

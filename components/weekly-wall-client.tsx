@@ -21,7 +21,6 @@ export function WeeklyWallClient({ weekStart, readOnly }: Props) {
         <section className="bg-white rounded-xl shadow-sm p-6">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <div>
-              <h1 className="text-4xl font-bold text-gray-800 mb-2">Prayer Wall</h1>
               <p className="text-gray-600">
                 {readOnly
                   ? "Viewing a past week (read-only)"

@@ -9,13 +9,18 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emoji-mart/data": "^1.2.1",
+    "@emoji-mart/react": "^1.1.1",
+    "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/ssr": "^0.6.1",
-    "@supabase/supabase-js": "^2.52.0",
+    "@supabase/supabase-js": "^2.53.0",
     "@vercel/analytics": "^1.5.0",
     "autoprefixer": "^10.4.15",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
     "dayjs": "^1.11.13",
+    "email-validator": "^2.0.4",
     "fns": "^1.0.0",
     "framer-motion": "^12.23.6",
     "next": "^15.4.3",
@@ -24,6 +29,8 @@
     "react-dom": "18.2.0",
     "react-masonry-css": "^1.0.16",
     "react-qr-code": "^2.0.18",
+    "sonner": "^2.0.6",
+    "swr": "^2.3.4",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^3.4.1"
   },
@@ -31,6 +38,7 @@
     "@types/react": "19.1.8",
     "eslint": "8.57.0",
     "eslint-config-next": "14.1.4",
+    "nodemailer": "^7.0.5",
     "typescript": "^5.3.3"
   }
 }
