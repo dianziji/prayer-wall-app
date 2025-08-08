@@ -45,7 +45,7 @@ async function isDomainDeliverable(addr: string) {
    return
 }
 
-    const { origin } = window.location        // ← 关键
+
     const { error } = await supabase.auth.signInWithOtp({
       email: trimmedEmail,
       options: { emailRedirectTo: getRedirectTo() }
@@ -55,14 +55,7 @@ async function isDomainDeliverable(addr: string) {
     if (!error) setEmail('')
   }
 
-const getRedirectTo = () => {
-  if (process.env.NODE_ENV === 'development') {
-    return 'http://localhost:3000/auth/callback';
-  }
-  // 线上：优先 .env 指定，否则用当前 origin
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : '');
-  return `${siteUrl.replace(/\/$/, '')}/auth/callback`;
-};
+const getRedirectTo = () => `${window.location.origin.replace(/\/$/, '')}/auth/callback`;
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
