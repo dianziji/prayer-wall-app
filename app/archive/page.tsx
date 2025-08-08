@@ -1,5 +1,5 @@
 // app/archive/page.tsx
-import { createClient } from '@/lib/supabase'
+import { createServerSupabase } from '@/lib/supabase-server'
 import { getCurrentWeekStartET } from '@/lib/utils'
 
 export const dynamic = 'force-dynamic'
@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic'
 type WeekRow = { week_start_et: string; prayer_count: number }
 
 export default async function ArchivePage() {
-  const supabase = createClient()
+  const supabase = await createServerSupabase()
   const { data, error } = await supabase
     .from('archive_weeks')
     .select('week_start_et, prayer_count')
@@ -25,9 +25,8 @@ export default async function ArchivePage() {
   }
 
   const current = getCurrentWeekStartET()              // 本周周日（ET）
-  const weeks: WeekRow[] = (data ?? []).filter(
-    (w) => w.week_start_et !== current                 // 排除当周
-  )
+  const rows: WeekRow[] = (data ?? []) as WeekRow[]    // 明确类型
+  const weeks = rows.filter((w) => w.week_start_et !== current)
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">

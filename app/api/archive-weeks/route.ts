@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase'
+import { createServerSupabase } from '@/lib/supabase-server'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
-  const supabase = createClient()
+  const supabase = await createServerSupabase()
   const { data, error } = await supabase
     .from('archive_weeks')
     .select('week_start_et, prayer_count')

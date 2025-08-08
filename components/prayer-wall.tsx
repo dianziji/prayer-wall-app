@@ -1,25 +1,24 @@
 "use client"
 import { useEffect, useState } from "react"
+import { createBrowserSupabase } from '@/lib/supabase-browser'
 import { PrayerCard } from "./prayer-card"
 import Masonry from 'react-masonry-css'
-
+import type { Prayer } from '@/types/models'
 const breakpointColumnsObj = {
   default: 3,
   1024: 2,
   640: 1,
 }
 
-type Prayer = {
-  id: string
-  content: string
-  author_name: string | null
-  created_at: string
-}
+
 
 export function PrayerWall({ weekStart }: { weekStart: string }) {
   const [prayers, setPrayers] = useState<Prayer[]>([])
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
+
+  const [avatarByUserId, setAvatarByUserId] = useState<Record<string, string | null>>({})
+  const supa = createBrowserSupabase()
 
   useEffect(() => {
     let isMounted = true
@@ -49,6 +48,34 @@ export function PrayerWall({ weekStart }: { weekStart: string }) {
     return () => { isMounted = false }
   }, [weekStart])
 
+  useEffect(() => {
+    // Build unique list of user_ids from current prayers
+    const ids = Array.from(new Set(
+      (prayers || []).map(p => (p as any).user_id).filter((x: any): x is string => Boolean(x))
+    ))
+
+    if (ids.length === 0) {
+      setAvatarByUserId({})
+      return
+    }
+
+    let aborted = false
+    supa
+      .from('user_profiles')
+      .select('user_id, avatar_url')
+      .in('user_id', ids)
+      .then(({ data, error }) => {
+        if (aborted || error) return
+        const map: Record<string, string | null> = {}
+        for (const row of data || []) {
+          map[(row as any).user_id as string] = (row as any).avatar_url ?? null
+        }
+        setAvatarByUserId(map)
+      })
+
+    return () => { aborted = true }
+  }, [prayers])
+
   const skeletons = Array.from({ length: 6 }).map((_, i) => (
     <div
       key={`skeleton-${i}`}
@@ -71,9 +98,8 @@ export function PrayerWall({ weekStart }: { weekStart: string }) {
             ? prayers.map((p) => (
                 <PrayerCard
                   key={p.id}
-                  content={p.content}
-                  authorName={p.author_name ?? "Anonymous"}
-                  createdAt={p.created_at}
+                  prayer={p}
+                  authorAvatarUrl={avatarByUserId[(p as any).user_id ?? ''] ?? null}
                 />
               ))
             : [

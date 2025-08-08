@@ -9,6 +9,7 @@ import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 
+
 dayjs.extend(utc)
 dayjs.extend(timezone)
 
@@ -63,3 +64,4 @@ export function normalizeToEtSunday(dateStr: string): string {
   const sunday = d.startOf('day').subtract(d.day(), 'day') // Sunday=0
   return sunday.format('YYYY-MM-DD')
 }
+

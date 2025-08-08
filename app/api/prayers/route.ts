@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase'
+import { createServerSupabase } from '@/lib/supabase-server'
 import { NextResponse } from 'next/server'
 import { getWeekRangeUtc, getCurrentWeekStartET } from '@/lib/utils'
 
@@ -8,7 +8,7 @@ import { getWeekRangeUtc, getCurrentWeekStartET } from '@/lib/utils'
  * - 如果未提供 week_start，则默认使用当前周（ET）的周日
  */
 export async function GET(req: Request) {
-  const supabase = createClient()
+  const supabase = await createServerSupabase()
   try {
     const { searchParams } = new URL(req.url)
     const qsWeekStart = searchParams.get('week_start') || getCurrentWeekStartET()
@@ -17,8 +17,16 @@ export async function GET(req: Request) {
     const { startUtcISO, endUtcISO } = getWeekRangeUtc(qsWeekStart)
 
     const { data, error } = await supabase
-      .from('prayers')
-      .select('*')
+      .from('v_prayers_likes')
+      .select(`
+        id,
+        content,
+        author_name,
+        user_id,
+        created_at,
+        like_count,
+        liked_by_me
+      `)
       .gte('created_at', startUtcISO)
       .lt('created_at', endUtcISO)
       .order('created_at', { ascending: false })
@@ -42,7 +50,13 @@ export async function GET(req: Request) {
  * - 只依赖默认 created_at=now()，周归属由查询时段决定
  */
 export async function POST(req: Request) {
-  const supabase = createClient()
+  const supabase = await createServerSupabase()
+
+  // Require login and capture user id
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return NextResponse.json({ error: '请先登录' }, { status: 401 })
+  }
 
   try {
     const body = await req.json()
@@ -61,7 +75,7 @@ export async function POST(req: Request) {
 
     const { error } = await supabase
       .from('prayers')
-      .insert([{ content, author_name }])
+      .insert([{ content, author_name, user_id: user.id }])
 
     if (error) {
       console.error('Supabase insert error:', error)
