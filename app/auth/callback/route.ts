@@ -16,7 +16,7 @@ export async function GET(request: Request) {
   }
 
   // Exchange code → session (writes HttpOnly cookies via createServerSupabase cookies.setAll)
-  const { error } = await supabase.auth.exchangeCodeForSession(code)
+ const { error } = await supabase.auth.exchangeCodeForSession(request.url)
   if (error) {
     const url = new URL('/login', request.url)
     url.searchParams.set('error', error.message)
