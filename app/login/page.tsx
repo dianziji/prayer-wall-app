@@ -61,7 +61,7 @@ async function isDomainDeliverable(addr: string) {
   return (
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
       <form onSubmit={handleSubmit} className="w-full max-w-sm bg-white p-8 rounded-xl shadow space-y-4">
-        <h1 className="text-center text-2xl font-semibold text-gray-800">Welcome to Pryer Wall</h1>
+        <h1 className="text-center text-2xl font-semibold text-gray-800">Welcome to Prayer Wall</h1>
 
         {/* <input
           type="email"
@@ -84,8 +84,7 @@ async function isDomainDeliverable(addr: string) {
 <button
   type="button"
   onClick={() => supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: { redirectTo: `${window.location.origin}/auth/callback` }
+    provider: 'google'
   })}
   className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 mt-2"
 >
