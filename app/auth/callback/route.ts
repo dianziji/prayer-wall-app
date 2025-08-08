@@ -24,6 +24,6 @@ export async function GET(request: Request) {
   }
 
   // Optional next redirect
-  const next = urlObj.searchParams.get('next') || '/'
-  return NextResponse.redirect(new URL(next, request.url))
+const nextParam = urlObj.searchParams.get('next') || '/'
+return NextResponse.redirect(new URL(nextParam, process.env.NEXT_PUBLIC_SITE_URL || request.url))
 }
