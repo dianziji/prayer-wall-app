@@ -7,15 +7,22 @@ export default function AuthCallback() {
   const router = useRouter()
 
   useEffect(() => {
-    const supabase = createBrowserSupabase()
+    const run = async () => {
+      const supabase = createBrowserSupabase();
+      const url = new URL(window.location.href);
+      const code = url.searchParams.get('code');
 
-    // 解析 URL hash 并把 token 写入 cookie + localStorage
-    supabase.auth
-      .getSession()             // getSession 会自动处理 hash -> cookie
-      .finally(() => {
-        // 无论成功还是失败，都跳到首页（首页会再 redirect /week/…）
-        router.replace('/')
-      })
+      if (code) {
+        try {
+          await supabase.auth.exchangeCodeForSession(code);
+        } catch (error) {
+          console.error('Error exchanging code for session:', error);
+        }
+      }
+      router.replace('/');
+    };
+
+    run();
   }, [router])
 
   return (

@@ -13,7 +13,11 @@ export async function createServerSupabase() {
         getAll() {
           return cookieStore.getAll()
         },
-        setAll() {}
+        setAll(cookiesToSet: { name: string; value: string; options: any }[]) {
+          for (const { name, value, options } of cookiesToSet) {
+            cookieStore.set(name, value, options)
+          }
+        }
       }
     }
   )
