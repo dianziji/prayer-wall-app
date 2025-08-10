@@ -84,10 +84,14 @@ async function isDomainDeliverable(addr: string) {
 <button
   type="button"
   onClick={() => {
+    const callbackUrl = getOAuthCallbackUrl()
+    console.log('🔍 OAuth Debug - Callback URL:', callbackUrl)
+    console.log('🔍 Current origin:', typeof window !== 'undefined' ? window.location.origin : 'server-side')
+    
     supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: getOAuthCallbackUrl(), // ← 使用统一的回调URL获取
+        redirectTo: callbackUrl, // ← 使用统一的回调URL获取
         queryParams: {
           prompt: 'select_account', // 每次都显示账号选择器
           // 如果你还想每次都重新授权，同步弹出权限页，再加上：

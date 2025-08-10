@@ -18,8 +18,10 @@
 # 生产环境
 https://prayer-wall-app.vercel.app/auth/callback
 
-# 本地开发环境  
+# 本地开发环境 (确保使用3000端口)
 http://localhost:3000/auth/callback
+
+**注意**: 如果本地开发服务器使用其他端口(如3001)，需要相应更新这个URL，或者确保开发服务器使用3000端口。
 
 # 预览环境示例(根据实际预览URL添加)
 https://prayer-wall-app-git-feature-prayer-edit-delete-dianzijis-projects.vercel.app/auth/callback
