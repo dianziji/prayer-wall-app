@@ -42,34 +42,37 @@ export function PrayerCard({ prayer, authorAvatarUrl = null, onEdit, onDelete }:
   }
   return (
     <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300 ease-in-out border border-gray-200">
-      <div className="flex items-start gap-4 mb-4">
-        <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center text-sm font-semibold text-gray-600">
-          {(() => {
-            const anyPrayer = prayer as any
-            const isMine = session?.user?.id && anyPrayer?.user_id && session.user.id === anyPrayer.user_id
-            const src = authorAvatarUrl ?? (isMine ? (profile?.avatar_url ?? null) : null)
-            if (src) {
-              return (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={src} alt={(prayer.author_name || 'User') + ' avatar'} className="w-full h-full object-cover" />
-              )
-            }
-            const name = prayer.author_name || 'U'
-            const initials = name.trim().slice(0, 2).toUpperCase()
-            return <span>{initials}</span>
-          })()}
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex items-start gap-4">
+          <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center text-sm font-semibold text-gray-600">
+            {(() => {
+              const anyPrayer = prayer as any
+              const isMine = session?.user?.id && anyPrayer?.user_id && session.user.id === anyPrayer.user_id
+              const src = authorAvatarUrl ?? (isMine ? (profile?.avatar_url ?? null) : null)
+              if (src) {
+                return (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={src} alt={(prayer.author_name || 'User') + ' avatar'} className="w-full h-full object-cover" />
+                )
+              }
+              const name = prayer.author_name || 'U'
+              const initials = name.trim().slice(0, 2).toUpperCase()
+              return <span>{initials}</span>
+            })()}
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-gray-800">
+              {truncateName(prayer.author_name || "Unknown", 15)}
+            </p>
+            <p className="text-xs text-gray-500">
+              {formatDistanceToNow(time, { addSuffix: true })}
+            </p>
+          </div>
         </div>
-        <div>
-          <p className="text-sm font-semibold text-gray-800">
-  {truncateName(prayer.author_name || "Unknown", 15)}
-</p>
-          <p className="text-xs text-gray-500">
-            {formatDistanceToNow(time, { addSuffix: true })}
-          </p>
-        </div>
-        {/* Actions menu for prayer owner */}
+        
+        {/* Actions menu for prayer owner - aligned to right */}
         {isOwner && (onEdit || onDelete) && (
-          <div className="relative">
+          <div className="relative ml-4">
             <button
               onClick={() => setShowActions(!showActions)}
               className="p-1 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"
