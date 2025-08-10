@@ -97,7 +97,7 @@ export function PrayerCard({ prayer, authorAvatarUrl = null, onEdit, onDelete }:
                 {onDelete && (
                   <button
                     onClick={async () => {
-                      if (confirm('确定要删除这个祈告吗？')) {
+                      if (confirm('确定要删除这个祷告吗？')) {
                         setIsDeleting(true)
                         setShowActions(false)
                         try {
