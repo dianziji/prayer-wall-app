@@ -83,17 +83,20 @@ async function isDomainDeliverable(addr: string) {
 {/* Google 登录按钮 */}
 <button
   type="button"
-  onClick={() => supabase.auth.signInWithOAuth({
-    provider: 'google',
-  options: {
-    
-    queryParams: {
-      prompt: 'select_account', // 每次都显示账号选择器
-      // 如果你还想每次都重新授权，同步弹出权限页，再加上：
-      // prompt: 'select_account consent'
-    },
-  },
-  })}
+  onClick={() => {
+    const { origin } = window.location
+    supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${origin}/auth/callback`, // ← 明确指定回调URL
+        queryParams: {
+          prompt: 'select_account', // 每次都显示账号选择器
+          // 如果你还想每次都重新授权，同步弹出权限页，再加上：
+          // prompt: 'select_account consent'
+        },
+      },
+    })
+  }}
   className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 mt-2"
 >
   Continue with Google
