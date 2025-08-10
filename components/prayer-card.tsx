@@ -7,12 +7,22 @@ import { useSession } from '@/lib/useSession'
 import { CommentForm } from '@/components/comment-form'
 import { CommentList } from '@/components/comment-list'
 
-type PrayerCardProps = { prayer: Prayer; authorAvatarUrl?: string | null }
+type PrayerCardProps = { 
+  prayer: Prayer; 
+  authorAvatarUrl?: string | null;
+  onEdit?: (prayer: Prayer) => void;
+  onDelete?: (prayerId: string) => void;
+}
 
-export function PrayerCard({ prayer, authorAvatarUrl = null }: PrayerCardProps) {
+export function PrayerCard({ prayer, authorAvatarUrl = null, onEdit, onDelete }: PrayerCardProps) {
   const time = typeof prayer.created_at === "string" ? new Date(prayer.created_at) : prayer.created_at ?? new Date()
   const { session, profile } = useSession()
   const [showCommentForm, setShowCommentForm] = useState(false)
+  const [showActions, setShowActions] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+  
+  // Check if current user owns this prayer
+  const isOwner = session?.user?.id && (prayer as any)?.user_id && session.user.id === (prayer as any).user_id
 
   function truncateName(name: string, maxLen: number) {
     return name.length > maxLen ? name.slice(0, maxLen) + "…" : name
@@ -44,6 +54,63 @@ export function PrayerCard({ prayer, authorAvatarUrl = null }: PrayerCardProps) 
             {formatDistanceToNow(time, { addSuffix: true })}
           </p>
         </div>
+        {/* Actions menu for prayer owner */}
+        {isOwner && (onEdit || onDelete) && (
+          <div className="relative">
+            <button
+              onClick={() => setShowActions(!showActions)}
+              className="p-1 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"
+            >
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+              </svg>
+            </button>
+            {showActions && (
+              <div className="absolute right-0 mt-1 bg-white rounded-md shadow-lg border border-gray-200 py-1 min-w-[120px] z-10">
+                {onEdit && (
+                  <button
+                    onClick={() => {
+                      onEdit(prayer)
+                      setShowActions(false)
+                    }}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Edit
+                  </button>
+                )}
+                {onDelete && (
+                  <button
+                    onClick={async () => {
+                      if (confirm('确定要删除这个祈告吗？')) {
+                        setIsDeleting(true)
+                        setShowActions(false)
+                        try {
+                          const res = await fetch(`/api/prayers?id=${prayer.id}`, {
+                            method: 'DELETE'
+                          })
+                          if (res.ok) {
+                            onDelete(prayer.id)
+                          } else {
+                            const error = await res.json()
+                            alert(error.error || '删除失败')
+                          }
+                        } catch (err) {
+                          alert('删除失败')
+                        } finally {
+                          setIsDeleting(false)
+                        }
+                      }
+                    }}
+                    disabled={isDeleting}
+                    className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 disabled:opacity-50"
+                  >
+                    {isDeleting ? 'Deleting...' : 'Delete'}
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </div>
       <div>
         <p className="text-lg font-medium text-gray-900 break-words">{prayer.content}</p>

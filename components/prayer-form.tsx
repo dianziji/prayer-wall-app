@@ -7,12 +7,18 @@ export type PrayerFormProps = {
   weekStart?: string
   onPost: () => void
   onCancel: () => void
+  mode?: 'create' | 'edit'
+  prayerId?: string
+  initialValues?: {
+    content: string
+    author_name: string
+  }
 }
 
-export function PrayerForm({ weekStart, onPost, onCancel }: PrayerFormProps) {
+export function PrayerForm({ weekStart, onPost, onCancel, mode = 'create', prayerId, initialValues }: PrayerFormProps) {
   const { profile } = useSession()
-  const [author, setAuthor] = useState(profile?.username ?? "")
-  const [content, setContent] = useState("")
+  const [author, setAuthor] = useState(initialValues?.author_name ?? profile?.username ?? "")
+  const [content, setContent] = useState(initialValues?.content ?? "")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -45,13 +51,17 @@ export function PrayerForm({ weekStart, onPost, onCancel }: PrayerFormProps) {
 
     setLoading(true)
     try {
-      const res = await fetch("/api/prayers", {
-        method: "POST",
+      const url = mode === 'edit' && prayerId 
+        ? `/api/prayers?id=${prayerId}` 
+        : "/api/prayers"
+      const method = mode === 'edit' ? "PATCH" : "POST"
+      
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           author_name: trimmedAuthor || null,
           content: trimmedContent,
-          // 如果将来后端需要按提交时周归属校验，可在此传递：week_start: weekStart
         }),
       })
 
@@ -60,8 +70,10 @@ export function PrayerForm({ weekStart, onPost, onCancel }: PrayerFormProps) {
         throw new Error(j.error || "提交失败")
       }
 
-      setContent("")
-      setAuthor("")
+      if (mode === 'create') {
+        setContent("")
+        setAuthor("")
+      }
       onPost()
     } catch (err: any) {
       setError(err?.message || "提交失败")
@@ -107,7 +119,10 @@ export function PrayerForm({ weekStart, onPost, onCancel }: PrayerFormProps) {
           Cancel
         </Button>
         <Button type="submit" disabled={loading} className="bg-blue-500 text-white py-2 px-4 rounded disabled:opacity-50">
-          {loading ? "Posting..." : "Post Prayer"}
+          {loading 
+            ? (mode === 'edit' ? "Updating..." : "Posting...") 
+            : (mode === 'edit' ? "Update Prayer" : "Post Prayer")
+          }
         </Button>
       </div>
     </form>

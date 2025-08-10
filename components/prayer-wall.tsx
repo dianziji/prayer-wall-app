@@ -12,7 +12,17 @@ const breakpointColumnsObj = {
 
 
 
-export function PrayerWall({ weekStart }: { weekStart: string }) {
+export function PrayerWall({ 
+  weekStart, 
+  onEdit, 
+  onDelete, 
+  refreshKey 
+}: { 
+  weekStart: string;
+  onEdit?: (prayer: Prayer) => void;
+  onDelete?: () => void;
+  refreshKey?: number;
+}) {
   const [prayers, setPrayers] = useState<Prayer[]>([])
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
@@ -46,7 +56,7 @@ export function PrayerWall({ weekStart }: { weekStart: string }) {
       })
 
     return () => { isMounted = false }
-  }, [weekStart])
+  }, [weekStart, refreshKey])
 
   useEffect(() => {
     // Build unique list of user_ids from current prayers
@@ -100,6 +110,8 @@ export function PrayerWall({ weekStart }: { weekStart: string }) {
                   key={p.id}
                   prayer={p}
                   authorAvatarUrl={avatarByUserId[(p as any).user_id ?? ''] ?? null}
+                  onEdit={onEdit}
+                  onDelete={onDelete ? () => onDelete() : undefined}
                 />
               ))
             : [
