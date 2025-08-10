@@ -9,12 +9,14 @@ const PRIMARY_DOMAIN = 'prayer-wall-app.vercel.app'
 export default async function middleware(request: NextRequest) {
   const url = new URL(request.url)
 
-  // 1) 强制所有非主域名的 vercel.app 子域跳到主域名（避免从预览域名发起 OAuth）
-  // TEMPORARILY DISABLED for testing prayer edit/delete feature in preview
-  // if (url.hostname.endsWith('.vercel.app') && url.hostname !== PRIMARY_DOMAIN) {
-  //   url.hostname = PRIMARY_DOMAIN
-  //   return NextResponse.redirect(url, 301)
-  // }
+  // 1) 强制所有非主域名的 vercel.app 子域跳到主域名
+  // 但在OAuth流程中跳过重定向，允许预览环境完成OAuth
+  const isOAuthFlow = url.searchParams.has('code') || url.searchParams.has('state') || url.searchParams.has('access_token')
+  
+  if (!isOAuthFlow && url.hostname.endsWith('.vercel.app') && url.hostname !== PRIMARY_DOMAIN) {
+    url.hostname = PRIMARY_DOMAIN
+    return NextResponse.redirect(url, 301)
+  }
 
   // 2) 兜底：如果带了 ?code= 但路径不是 /auth/callback，则 302 到 /auth/callback
   if (url.searchParams.has('code') && url.pathname !== '/auth/callback') {

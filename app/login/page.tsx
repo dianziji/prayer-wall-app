@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createBrowserSupabase } from '@/lib/supabase-browser'
 import { validate as isEmail } from 'email-validator'
+import { getOAuthCallbackUrl } from '@/lib/app-config'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -45,11 +46,10 @@ async function isDomainDeliverable(addr: string) {
    return
 }
 
-    const { origin } = window.location        // ← 关键
     const { error } = await supabase.auth.signInWithOtp({
       email: trimmedEmail,
       options: {
-        emailRedirectTo: `${origin}/auth/callback`,   // ← 指向新回调页
+        emailRedirectTo: getOAuthCallbackUrl(),   // ← 使用统一的回调URL获取
         // (默认用 hash 模式即可，不要加 shouldConvertHashToQueryParams)
       },
     })
@@ -84,11 +84,10 @@ async function isDomainDeliverable(addr: string) {
 <button
   type="button"
   onClick={() => {
-    const { origin } = window.location
     supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${origin}/auth/callback`, // ← 明确指定回调URL
+        redirectTo: getOAuthCallbackUrl(), // ← 使用统一的回调URL获取
         queryParams: {
           prompt: 'select_account', // 每次都显示账号选择器
           // 如果你还想每次都重新授权，同步弹出权限页，再加上：

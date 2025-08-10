@@ -1,14 +1,13 @@
 "use client"
 import QRCode from "react-qr-code"
 import { useMemo } from "react"
+import { getAppOrigin } from "@/lib/app-config"
 
 export default function HomeQR() {
-  // 优先使用 NEXT_PUBLIC_SITE_URL（生产环境可设你的域名），否则在浏览器用 window.origin
+  // 使用统一的域名获取逻辑
   const url = useMemo(() => {
-    const env = process.env.NEXT_PUBLIC_SITE_URL
-    if (env && env.startsWith("http")) return env.endsWith("/") ? env : env + "/"
-    if (typeof window !== "undefined") return window.location.origin + "/"
-    return "/"
+    const origin = getAppOrigin()
+    return origin.endsWith("/") ? origin : origin + "/"
   }, [])
 
   return (
