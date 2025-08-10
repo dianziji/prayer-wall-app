@@ -22,7 +22,9 @@ export function WeeklyWallClient({ weekStart, readOnly }: Props) {
     setShowForm(true)
   }
   
-  const handleDelete = () => {
+  const handleDelete = (prayerId?: string) => {
+    // PrayerId is passed from PrayerCard but we don't need it for refresh
+    // In the future, we could use it for optimistic updates
     setRefreshKey(prev => prev + 1) // Force refresh prayer wall
   }
   
@@ -30,6 +32,17 @@ export function WeeklyWallClient({ weekStart, readOnly }: Props) {
     setShowForm(false)
     setEditingPrayer(null)
     setRefreshKey(prev => prev + 1) // Refresh data
+  }
+
+  // Debug logging (remove in production)
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔍 WeeklyWallClient Debug:', {
+      weekStart,
+      readOnly,
+      hasHandleEdit: typeof handleEdit === 'function',
+      hasHandleDelete: typeof handleDelete === 'function',
+      refreshKey
+    })
   }
 
   return (

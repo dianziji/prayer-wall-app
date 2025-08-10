@@ -11,6 +11,11 @@ const mockPrayers: Prayer[] = [
     created_at: new Date().toISOString(),
     like_count: 5,
     liked_by_me: false,
+    color: null,
+    font_style: null,
+    guest_id: null,
+    metadata: null,
+    wall_id: null,
   },
   {
     id: 'prayer-2', 
@@ -20,6 +25,11 @@ const mockPrayers: Prayer[] = [
     created_at: new Date().toISOString(),
     like_count: 3,
     liked_by_me: true,
+    color: null,
+    font_style: null,
+    guest_id: null,
+    metadata: null,
+    wall_id: null,
   }
 ]
 

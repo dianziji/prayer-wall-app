@@ -23,6 +23,19 @@ export function PrayerCard({ prayer, authorAvatarUrl = null, onEdit, onDelete }:
   
   // Check if current user owns this prayer
   const isOwner = session?.user?.id && (prayer as any)?.user_id && session.user.id === (prayer as any).user_id
+  
+  // Debug logging (remove in production)
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔍 Prayer Card Debug:', {
+      prayerId: prayer.id,
+      sessionUserId: session?.user?.id,
+      prayerUserId: (prayer as any)?.user_id,
+      isOwner,
+      hasOnEdit: !!onEdit,
+      hasOnDelete: !!onDelete,
+      hasSession: !!session,
+    })
+  }
 
   function truncateName(name: string, maxLen: number) {
     return name.length > maxLen ? name.slice(0, maxLen) + "…" : name

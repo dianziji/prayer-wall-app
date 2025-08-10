@@ -20,7 +20,7 @@ export function PrayerWall({
 }: { 
   weekStart: string;
   onEdit?: (prayer: Prayer) => void;
-  onDelete?: () => void;
+  onDelete?: (prayerId?: string) => void;
   refreshKey?: number;
 }) {
   const [prayers, setPrayers] = useState<Prayer[]>([])
