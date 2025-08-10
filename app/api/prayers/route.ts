@@ -53,11 +53,9 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   const supabase = await createServerSupabase()
 
-  // Require login and capture user id
+  // Get user if logged in, but allow guest posting
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return NextResponse.json({ error: '请先登录' }, { status: 401 })
-  }
+  // Note: user can be null for guest users
 
   try {
     const body = await req.json()
@@ -76,7 +74,7 @@ export async function POST(req: Request) {
 
     const { error } = await supabase
       .from('prayers')
-      .insert([{ content, author_name, user_id: user.id }])
+      .insert([{ content, author_name, user_id: user?.id || null }])
 
     if (error) {
       console.error('Supabase insert error:', error)
