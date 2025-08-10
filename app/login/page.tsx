@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createBrowserSupabase } from '@/lib/supabase-browser'
 import { validate as isEmail } from 'email-validator'
+import { getOAuthCallbackUrl } from '@/lib/app-config'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -45,11 +46,10 @@ async function isDomainDeliverable(addr: string) {
    return
 }
 
-    const { origin } = window.location        // ← 关键
     const { error } = await supabase.auth.signInWithOtp({
       email: trimmedEmail,
       options: {
-        emailRedirectTo: `${origin}/auth/callback`,   // ← 指向新回调页
+        emailRedirectTo: getOAuthCallbackUrl(),   // ← 使用统一的回调URL获取
         // (默认用 hash 模式即可，不要加 shouldConvertHashToQueryParams)
       },
     })
@@ -83,17 +83,23 @@ async function isDomainDeliverable(addr: string) {
 {/* Google 登录按钮 */}
 <button
   type="button"
-  onClick={() => supabase.auth.signInWithOAuth({
-    provider: 'google',
-  options: {
+  onClick={() => {
+    const callbackUrl = getOAuthCallbackUrl()
+    console.log('🔍 OAuth Debug - Callback URL:', callbackUrl)
+    console.log('🔍 Current origin:', typeof window !== 'undefined' ? window.location.origin : 'server-side')
     
-    queryParams: {
-      prompt: 'select_account', // 每次都显示账号选择器
-      // 如果你还想每次都重新授权，同步弹出权限页，再加上：
-      // prompt: 'select_account consent'
-    },
-  },
-  })}
+    supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: callbackUrl, // ← 使用统一的回调URL获取
+        queryParams: {
+          prompt: 'select_account', // 每次都显示账号选择器
+          // 如果你还想每次都重新授权，同步弹出权限页，再加上：
+          // prompt: 'select_account consent'
+        },
+      },
+    })
+  }}
   className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 mt-2"
 >
   Continue with Google

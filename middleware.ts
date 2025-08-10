@@ -9,8 +9,16 @@ const PRIMARY_DOMAIN = 'prayer-wall-app.vercel.app'
 export default async function middleware(request: NextRequest) {
   const url = new URL(request.url)
 
-  // 1) 强制所有非主域名的 vercel.app 子域跳到主域名（避免从预览域名发起 OAuth）
-  if (url.hostname.endsWith('.vercel.app') && url.hostname !== PRIMARY_DOMAIN) {
+  // 1) 域名重定向策略：
+  // - 生产环境：将其他 vercel.app 域名重定向到主域名 (SEO和用户体验)
+  // - 预览/开发环境：完全禁用重定向，允许在任意域名测试
+  // - OAuth流程：无论什么环境都跳过重定向
+  
+  const isOAuthFlow = url.searchParams.has('code') || url.searchParams.has('state') || url.searchParams.has('access_token')
+  const isProduction = process.env.VERCEL_ENV === 'production'
+  
+  // 只在生产环境且非OAuth流程时进行域名重定向
+  if (isProduction && !isOAuthFlow && url.hostname.endsWith('.vercel.app') && url.hostname !== PRIMARY_DOMAIN) {
     url.hostname = PRIMARY_DOMAIN
     return NextResponse.redirect(url, 301)
   }

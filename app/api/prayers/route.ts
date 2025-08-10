@@ -1,6 +1,7 @@
 import { createServerSupabase } from '@/lib/supabase-server'
 import { NextResponse } from 'next/server'
-import { getWeekRangeUtc, getCurrentWeekStartET } from '@/lib/utils'
+import { getWeekRangeUtc, getCurrentWeekStartET, isCurrentWeek } from '@/lib/utils'
+import dayjs from 'dayjs'
 
 /**
  * GET /api/prayers?week_start=YYYY-MM-DD
@@ -52,11 +53,9 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   const supabase = await createServerSupabase()
 
-  // Require login and capture user id
+  // Get user if logged in, but allow guest posting
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return NextResponse.json({ error: '请先登录' }, { status: 401 })
-  }
+  // Note: user can be null for guest users
 
   try {
     const body = await req.json()
@@ -75,7 +74,7 @@ export async function POST(req: Request) {
 
     const { error } = await supabase
       .from('prayers')
-      .insert([{ content, author_name, user_id: user.id }])
+      .insert([{ content, author_name, user_id: user?.id || null }])
 
     if (error) {
       console.error('Supabase insert error:', error)
@@ -85,6 +84,148 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true })
   } catch (err) {
     console.error('Unhandled POST error:', err)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
+
+/**
+ * PATCH /api/prayers?id=123
+ * body: { content: string; author_name?: string }
+ * - Updates user's own prayer
+ * - Only allows editing current week prayers
+ */
+export async function PATCH(req: Request) {
+  const supabase = await createServerSupabase()
+
+  // Require login
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return NextResponse.json({ error: '请先登录' }, { status: 401 })
+  }
+
+  try {
+    const { searchParams } = new URL(req.url)
+    const prayerId = searchParams.get('id')
+    
+    if (!prayerId) {
+      return NextResponse.json({ error: 'Prayer ID required' }, { status: 400 })
+    }
+
+    // Get the prayer to verify ownership and check week
+    const { data: existingPrayer, error: fetchError } = await supabase
+      .from('prayers')
+      .select('user_id, created_at')
+      .eq('id', prayerId)
+      .single()
+
+    if (fetchError || !existingPrayer) {
+      return NextResponse.json({ error: 'Prayer not found' }, { status: 404 })
+    }
+
+    // Check ownership
+    if (existingPrayer.user_id !== user.id) {
+      return NextResponse.json({ error: 'Not authorized' }, { status: 403 })
+    }
+
+    // Check if prayer is from current week (ET)
+    const prayerDate = dayjs(existingPrayer.created_at)
+    const prayerWeekStart = prayerDate.subtract(prayerDate.day(), 'day').format('YYYY-MM-DD')
+    
+    if (!isCurrentWeek(prayerWeekStart)) {
+      return NextResponse.json({ error: 'Can only edit current week prayers' }, { status: 400 })
+    }
+
+    const body = await req.json()
+    let content: string = (body?.content ?? '').toString().trim()
+    let author_name: string | null = (body?.author_name ?? '').toString().trim() || null
+
+    // Validation (reuse from POST)
+    if (!content || content.length > 500) {
+      return NextResponse.json({ error: 'Invalid content' }, { status: 400 })
+    }
+
+    if (author_name && author_name.length > 24) {
+      author_name = author_name.slice(0, 24)
+    }
+
+    const { error: updateError } = await supabase
+      .from('prayers')
+      .update({ content, author_name })
+      .eq('id', prayerId)
+      .eq('user_id', user.id) // Double-check ownership
+
+    if (updateError) {
+      console.error('Supabase update error:', updateError)
+      return NextResponse.json({ error: 'Database error' }, { status: 500 })
+    }
+
+    return NextResponse.json({ success: true })
+  } catch (err) {
+    console.error('Unhandled PATCH error:', err)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
+
+/**
+ * DELETE /api/prayers?id=123
+ * - Deletes user's own prayer
+ * - Only allows deleting current week prayers
+ */
+export async function DELETE(req: Request) {
+  const supabase = await createServerSupabase()
+
+  // Require login
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return NextResponse.json({ error: '请先登录' }, { status: 401 })
+  }
+
+  try {
+    const { searchParams } = new URL(req.url)
+    const prayerId = searchParams.get('id')
+    
+    if (!prayerId) {
+      return NextResponse.json({ error: 'Prayer ID required' }, { status: 400 })
+    }
+
+    // Get the prayer to verify ownership and check week
+    const { data: existingPrayer, error: fetchError } = await supabase
+      .from('prayers')
+      .select('user_id, created_at')
+      .eq('id', prayerId)
+      .single()
+
+    if (fetchError || !existingPrayer) {
+      return NextResponse.json({ error: 'Prayer not found' }, { status: 404 })
+    }
+
+    // Check ownership
+    if (existingPrayer.user_id !== user.id) {
+      return NextResponse.json({ error: 'Not authorized' }, { status: 403 })
+    }
+
+    // Check if prayer is from current week (ET)
+    const prayerDate = dayjs(existingPrayer.created_at)
+    const prayerWeekStart = prayerDate.subtract(prayerDate.day(), 'day').format('YYYY-MM-DD')
+    
+    if (!isCurrentWeek(prayerWeekStart)) {
+      return NextResponse.json({ error: 'Can only delete current week prayers' }, { status: 400 })
+    }
+
+    const { error: deleteError } = await supabase
+      .from('prayers')
+      .delete()
+      .eq('id', prayerId)
+      .eq('user_id', user.id) // Double-check ownership
+
+    if (deleteError) {
+      console.error('Supabase delete error:', deleteError)
+      return NextResponse.json({ error: 'Database error' }, { status: 500 })
+    }
+
+    return NextResponse.json({ success: true })
+  } catch (err) {
+    console.error('Unhandled DELETE error:', err)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
