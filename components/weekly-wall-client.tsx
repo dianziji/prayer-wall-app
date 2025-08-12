@@ -47,9 +47,9 @@ export function WeeklyWallClient({ weekStart, readOnly }: Props) {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="max-w-6xl mx-auto px-6 py-8 space-y-10">
+      <div className="max-w-6xl mx-auto px-3 sm:px-6 py-4 sm:py-8 space-y-6 sm:space-y-10">
         {/* Header */}
-        <section className="bg-white rounded-xl shadow-sm p-6">
+        <section className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <div>
               <p className="text-gray-600">
@@ -61,7 +61,7 @@ export function WeeklyWallClient({ weekStart, readOnly }: Props) {
             </div>
 
             {!readOnly && (
-              <Button onClick={() => setShowForm(!showForm)} className="px-6 py-3 text-lg">
+              <Button onClick={() => setShowForm(!showForm)} className="px-4 sm:px-6 py-3 text-base sm:text-lg min-h-[44px] touch-manipulation w-full sm:w-auto">
                 {showForm ? "Cancel" : "Submit a Prayer"}
               </Button>
             )}
@@ -69,7 +69,7 @@ export function WeeklyWallClient({ weekStart, readOnly }: Props) {
         </section>
 
         {/* Wall */}
-        <section className="bg-white rounded-xl shadow-sm p-6">
+        <section className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
           <PrayerWall 
             weekStart={weekStart} 
             onEdit={!readOnly ? handleEdit : undefined}
@@ -81,7 +81,7 @@ export function WeeklyWallClient({ weekStart, readOnly }: Props) {
 
       {/* Modal Form */}
       {!readOnly && showForm && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex justify-center items-center">
+        <div className="fixed inset-0 z-modal bg-black/50 backdrop-blur-sm flex justify-center items-center">
           <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-xl mx-4">
             <h2 className="text-2xl font-semibold text-gray-700 mb-6">
               {editingPrayer ? 'Edit Prayer' : 'Share a Prayer'}

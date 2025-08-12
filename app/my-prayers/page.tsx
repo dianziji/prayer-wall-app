@@ -38,20 +38,20 @@ export default function MyPrayersPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-4 sm:py-8">
+      <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8">
         {/* Page Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">My Prayers</h1>
-              <p className="text-lg text-gray-600">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">My Prayers</h1>
+              <p className="text-sm sm:text-base lg:text-lg text-gray-600">
                 Track your prayer journey and spiritual growth
               </p>
             </div>
             <Link
               href="/reminders"
-              className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
+              className="flex items-center gap-2 px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium text-sm sm:text-base min-h-[44px] touch-manipulation w-full sm:w-auto justify-center sm:justify-start"
             >
               🔔 Prayer Reminders
             </Link>
@@ -59,12 +59,12 @@ export default function MyPrayersPage() {
         </div>
 
         {/* Stats Dashboard */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <PrayerStats />
         </div>
 
         {/* Analytics Dashboard */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <PrayerAnalytics />
         </div>
 

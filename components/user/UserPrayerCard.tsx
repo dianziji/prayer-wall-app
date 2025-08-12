@@ -63,12 +63,12 @@ export default function UserPrayerCard({
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+    <div className="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 hover:shadow-md transition-shadow overflow-hidden">
       {/* Header with avatar, name, and actions */}
-      <div className="flex items-start gap-3 mb-3">
+      <div className="flex items-start gap-3 mb-3 min-w-0">
         {/* Avatar */}
         <div className="flex-shrink-0">
-          <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center text-sm font-semibold text-gray-600">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center text-xs sm:text-sm font-semibold text-gray-600">
             {(() => {
               const anyPrayer = prayer as any
               const isMine = session?.user?.id && anyPrayer?.user_id && session.user.id === anyPrayer.user_id
@@ -88,15 +88,15 @@ export default function UserPrayerCard({
         
         {/* Name and timestamp */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="font-medium text-gray-900">
+          <div className="flex items-center gap-1 sm:gap-2 mb-1 min-w-0">
+            <span className="font-medium text-gray-900 text-sm sm:text-base truncate">
               {prayer.author_name || 'Anonymous'}
             </span>
-            <span className="text-sm text-gray-500">•</span>
-            <span className="text-sm text-gray-500">{timeAgo}</span>
+            <span className="text-xs sm:text-sm text-gray-500 flex-shrink-0">•</span>
+            <span className="text-xs sm:text-sm text-gray-500 truncate">{timeAgo}</span>
           </div>
           {prayer.created_at && (
-            <div className="text-xs text-gray-400">
+            <div className="text-xs text-gray-400 truncate">
               {new Date(prayer.created_at).toLocaleDateString('en-US', {
                 month: 'short',
                 day: 'numeric',
@@ -119,7 +119,7 @@ export default function UserPrayerCard({
           </button>
           
           {showActions && (
-            <div className="absolute right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-32">
+            <div className="absolute right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-dropdown min-w-32 transform-gpu will-change-transform">
               {onShare && (
                 <button
                   onClick={handleShare}
@@ -150,15 +150,15 @@ export default function UserPrayerCard({
       </div>
 
       {/* Prayer content */}
-      <div className="mb-4">
-        <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
+      <div className="mb-4 min-w-0">
+        <p className="text-gray-800 leading-relaxed whitespace-pre-wrap break-words text-sm sm:text-base">
           {isExpanded ? prayer.content : contentPreview}
         </p>
         
         {prayer.content.length > 200 && (
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="mt-2 text-sm text-indigo-600 hover:text-indigo-800 font-medium"
+            className="mt-2 text-sm text-indigo-600 hover:text-indigo-800 font-medium touch-manipulation"
           >
             {isExpanded ? 'Show less' : 'Show more'}
           </button>
@@ -168,34 +168,36 @@ export default function UserPrayerCard({
       {/* Engagement stats */}
       {showEngagement && (
         <div className="py-2 border-t border-gray-100">
-          <div className="flex items-center gap-4 mb-3">
-            <div className="flex items-center gap-1 text-sm text-gray-600">
-              <span className={prayer.liked_by_me ? '💙' : '🤍'}>
-                {prayer.liked_by_me ? '💙' : '🤍'}
-              </span>
-              <span>{prayer.like_count || 0}</span>
-              <span className="text-gray-400">
-                {(prayer.like_count || 0) === 1 ? 'like' : 'likes'}
-              </span>
+          <div className="flex items-center justify-between gap-2 sm:gap-4 mb-3 min-w-0">
+            <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
+              <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-600 flex-shrink-0">
+                <span className={prayer.liked_by_me ? '💙' : '🤍'}>
+                  {prayer.liked_by_me ? '💙' : '🤍'}
+                </span>
+                <span>{prayer.like_count || 0}</span>
+                <span className="text-gray-400 hidden sm:inline">
+                  {(prayer.like_count || 0) === 1 ? 'like' : 'likes'}
+                </span>
+              </div>
+              
+              <button
+                onClick={() => setShowComments(!showComments)}
+                className="flex items-center gap-1 text-xs sm:text-sm text-gray-600 hover:text-indigo-600 transition-colors touch-manipulation min-w-0"
+              >
+                <span>💬</span>
+                <span>{prayer.comment_count || 0}</span>
+                <span className="text-gray-400 hidden sm:inline truncate">
+                  {(prayer.comment_count || 0) === 1 ? 'comment' : 'comments'}
+                </span>
+                <span className="ml-1 text-xs flex-shrink-0">
+                  {showComments ? '▼' : '▶'}
+                </span>
+              </button>
             </div>
             
-            <button
-              onClick={() => setShowComments(!showComments)}
-              className="flex items-center gap-1 text-sm text-gray-600 hover:text-indigo-600 transition-colors"
-            >
-              <span>💬</span>
-              <span>{prayer.comment_count || 0}</span>
-              <span className="text-gray-400">
-                {(prayer.comment_count || 0) === 1 ? 'comment' : 'comments'}
-              </span>
-              <span className="ml-1 text-xs">
-                {showComments ? '▼' : '▶'}
-              </span>
-            </button>
-            
-            <div className="flex-1 text-right">
-              <span className="text-xs text-gray-400">
-                ID: {prayer.id.substring(0, 8)}...
+            <div className="flex-shrink-0">
+              <span className="text-xs text-gray-400 truncate max-w-20">
+                ID: {prayer.id.substring(0, 6)}...
               </span>
             </div>
           </div>

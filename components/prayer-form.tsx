@@ -83,7 +83,7 @@ export function PrayerForm({ weekStart, onPost, onCancel, mode = 'create', praye
   }
 
   return (
-    <form className="mb-6 space-y-3" onSubmit={handleSubmit}>
+    <form className="mb-4 sm:mb-6 space-y-3 sm:space-y-4" onSubmit={handleSubmit}>
       {weekStart && (
         <p className="text-xs text-gray-500">Posting to week: {weekStart}</p>
       )}
@@ -92,7 +92,7 @@ export function PrayerForm({ weekStart, onPost, onCancel, mode = 'create', praye
 
       <div>
         <input
-          className="border p-2 w-full mb-2 rounded-md"
+          className="border p-3 sm:p-2 w-full mb-2 rounded-md text-base sm:text-sm touch-manipulation"
           placeholder="Your name (optional)"
           value={author}
           readOnly={!!profile?.username}
@@ -104,7 +104,7 @@ export function PrayerForm({ weekStart, onPost, onCancel, mode = 'create', praye
 
       <div>
         <textarea
-          className="border p-2 w-full rounded-md"
+          className="border p-3 sm:p-2 w-full rounded-md text-base sm:text-sm touch-manipulation"
           placeholder="Write your prayer here..."
           maxLength={MAX_CONTENT}
           rows={4}
@@ -114,11 +114,11 @@ export function PrayerForm({ weekStart, onPost, onCancel, mode = 'create', praye
         <div className="text-xs text-gray-500 text-right mb-2">{content.length}/{MAX_CONTENT}</div>
       </div>
 
-      <div className="flex justify-end gap-2 mt-4">
-        <Button type="button" onClick={onCancel} className="bg-gray-300 text-gray-800 py-2 px-4 rounded" disabled={loading}>
+      <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-2 mt-4">
+        <Button type="button" onClick={onCancel} className="bg-gray-300 text-gray-800 py-3 sm:py-2 px-4 rounded text-base sm:text-sm min-h-[44px] touch-manipulation" disabled={loading}>
           Cancel
         </Button>
-        <Button type="submit" disabled={loading} className="bg-blue-500 text-white py-2 px-4 rounded disabled:opacity-50">
+        <Button type="submit" disabled={loading} className="bg-blue-500 text-white py-3 sm:py-2 px-4 rounded disabled:opacity-50 text-base sm:text-sm min-h-[44px] touch-manipulation">
           {loading 
             ? (mode === 'edit' ? "Updating..." : "Posting...") 
             : (mode === 'edit' ? "Update Prayer" : "Post Prayer")

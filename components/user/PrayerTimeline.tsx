@@ -267,70 +267,83 @@ export default function PrayerTimeline({ initialLimit = 10 }: PrayerTimelineProp
   return (
     <div className="bg-white rounded-xl shadow-md p-6">
       {/* Header with controls */}
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold text-gray-800">My Prayer Timeline</h2>
-        <div className="flex items-center gap-4">
+      <div className="mb-6">
+        {/* Title and action buttons on same line */}
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-800">My Prayer Timeline</h2>
+          
+          {/* Action buttons */}
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => setIsExportModalOpen(true)}
+              className="px-2 sm:px-3 py-2 text-xs sm:text-sm bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors min-h-[44px] touch-manipulation flex items-center justify-center"
+              title="Export prayers"
+              disabled={allPrayers.length === 0}
+            >
+              📥 <span className="ml-1 hidden md:inline">Export</span>
+            </button>
+            
+            <button 
+              onClick={handleRefresh}
+              className="px-2 sm:px-3 py-2 text-xs sm:text-sm bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors min-h-[44px] touch-manipulation flex items-center justify-center"
+              disabled={isLoading}
+              title="Refresh timeline"
+            >
+              {isLoading ? '🔄' : '↻'} <span className="ml-1 hidden md:inline">Refresh</span>
+            </button>
+          </div>
+        </div>
+        
+        {/* Search and filters row */}
+        <div className="flex flex-col sm:flex-row gap-3">
           {/* Search bar */}
-          <div className="relative">
+          <div className="relative flex-1 sm:max-w-xs">
             <input
               type="text"
               placeholder="Search prayers..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 w-64"
+              className="pl-8 pr-8 py-3 sm:py-2 text-base sm:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 w-full touch-manipulation"
             />
-            <div className="absolute left-2 top-2.5 text-gray-400">
+            <div className="absolute left-3 top-3.5 sm:top-2.5 text-gray-400">
               🔍
             </div>
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-2 top-2.5 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-3.5 sm:top-2.5 text-gray-400 hover:text-gray-600 touch-manipulation"
               >
                 ✕
               </button>
             )}
           </div>
-          {/* Filters */}
-          <div className="flex items-center gap-2">
-            <select
-              value={sort}
-              onChange={(e) => handleFilterChange(e.target.value, timeRange)}
-              className="text-sm border border-gray-300 rounded px-2 py-1"
-            >
-              <option value="recent">Most Recent</option>
-              <option value="most_liked">Most Liked</option>
-              <option value="most_commented">Most Commented</option>
-            </select>
+          
+          {/* Filters - inline on mobile, side by side on desktop */}
+          <div className="flex gap-2 sm:gap-3 min-w-0">
+            <div className="flex-1 sm:flex-none min-w-0">
+              <select
+                value={sort}
+                onChange={(e) => handleFilterChange(e.target.value, timeRange)}
+                className="text-sm border border-gray-300 rounded-lg px-2 sm:px-3 py-3 sm:py-2 touch-manipulation bg-white min-h-[44px] sm:min-h-0 w-full sm:w-auto truncate"
+              >
+                <option value="recent">Most Recent</option>
+                <option value="most_liked">Most Liked</option>
+                <option value="most_commented">Most Commented</option>
+              </select>
+            </div>
             
-            <select
-              value={timeRange}
-              onChange={(e) => handleFilterChange(sort, e.target.value)}
-              className="text-sm border border-gray-300 rounded px-2 py-1"
-            >
-              <option value="all">All Time</option>
-              <option value="this_month">This Month</option>
-              <option value="last_3_months">Last 3 Months</option>
-            </select>
+            <div className="flex-1 sm:flex-none min-w-0">
+              <select
+                value={timeRange}
+                onChange={(e) => handleFilterChange(sort, e.target.value)}
+                className="text-sm border border-gray-300 rounded-lg px-2 sm:px-3 py-3 sm:py-2 touch-manipulation bg-white min-h-[44px] sm:min-h-0 w-full sm:w-auto truncate"
+              >
+                <option value="all">All Time</option>
+                <option value="this_month">This Month</option>
+                <option value="last_3_months">Last 3 Months</option>
+              </select>
+            </div>
           </div>
-          
-          <button 
-            onClick={() => setIsExportModalOpen(true)}
-            className="px-3 py-1 text-sm bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors"
-            title="Export prayers"
-            disabled={allPrayers.length === 0}
-          >
-            📥 Export
-          </button>
-          
-          <button 
-            onClick={handleRefresh}
-            className="px-3 py-1 text-sm bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
-            disabled={isLoading}
-            title="Refresh timeline"
-          >
-            {isLoading ? '🔄' : '↻'}
-          </button>
         </div>
       </div>
 

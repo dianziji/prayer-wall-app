@@ -1,3 +1,43 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Mobile floating layer positioning fixes */
+@layer utilities {
+  /* Prevent viewport zoom interference with fixed/absolute positioning */
+  @media (max-width: 768px) {
+    /* Ensure transform-gpu utilizes hardware acceleration for better performance */
+    .transform-gpu {
+      transform: translateZ(0);
+    }
+    
+    /* Stable positioning for floating elements */
+    .will-change-transform {
+      will-change: transform;
+    }
+    
+    /* Fix for floating dropdowns on mobile */
+    .mobile-dropdown {
+      /* Ensure dropdown doesn't get clipped by parent containers */
+      position: fixed !important;
+      top: auto !important;
+      right: auto !important;
+      left: auto !important;
+      transform: translateZ(0);
+      backface-visibility: hidden;
+    }
+    
+    /* Prevent scrolling issues with fixed modals */
+    body.modal-open {
+      overflow: hidden;
+      position: fixed;
+      width: 100%;
+      height: 100%;
+    }
+  }
+  
+  /* Enhanced z-index management for complex layering */
+  .z-dropdown { z-index: 1000; }
+  .z-modal { z-index: 2000; }
+  .z-toast { z-index: 3000; }
+}
