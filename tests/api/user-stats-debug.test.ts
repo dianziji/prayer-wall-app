@@ -1,6 +1,24 @@
 import { GET } from '@/app/api/user/stats/route'
 import { NextRequest } from 'next/server'
 
+// Helper to create NextRequest properly
+const createNextRequest = (url: string) => {
+  const request = new Request(url)
+  return request as NextRequest
+}
+
+// Mock NextResponse
+jest.mock('next/server', () => ({
+  NextRequest: jest.fn(),
+  NextResponse: {
+    json: jest.fn((body, init) => ({
+      json: () => Promise.resolve(body),
+      status: init?.status || 200,
+      ok: (init?.status || 200) < 400
+    }))
+  }
+}))
+
 // Mock the Supabase server client
 jest.mock('@/lib/supabase-server', () => ({
   createServerSupabase: jest.fn()
@@ -96,7 +114,7 @@ describe('/api/user/stats - Debug Likes/Comments Counting', () => {
     
     createServerSupabase.mockResolvedValue(mockSupabase)
 
-    const nextRequest = new NextRequest(new URL('/api/user/stats', 'http://localhost:3000'))
+    const nextRequest = createNextRequest('http://localhost:3000/api/user/stats')
     
     const response = await GET(nextRequest)
     const data = await response.json()
@@ -163,7 +181,7 @@ describe('/api/user/stats - Debug Likes/Comments Counting', () => {
     
     createServerSupabase.mockResolvedValue(mockSupabase)
 
-    const nextRequest = new NextRequest(new URL('/api/user/stats', 'http://localhost:3000'))
+    const nextRequest = createNextRequest('http://localhost:3000/api/user/stats')
     
     const response = await GET(nextRequest)
     const data = await response.json()
@@ -247,7 +265,7 @@ describe('/api/user/stats - Debug Likes/Comments Counting', () => {
     
     createServerSupabase.mockResolvedValue(mockSupabase)
 
-    const nextRequest = new NextRequest(new URL('/api/user/stats', 'http://localhost:3000'))
+    const nextRequest = createNextRequest('http://localhost:3000/api/user/stats')
     
     const response = await GET(nextRequest)
     const data = await response.json()

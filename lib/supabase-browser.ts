@@ -1,6 +1,6 @@
 import { createBrowserClient } from '@supabase/ssr'
 
-import type { Database } from '@/types/database.types'
+import type { Database } from '../types/database.types'
 
 export function createBrowserSupabase() {
       if (!process.env.NEXT_PUBLIC_SUPABASE_URL ||
