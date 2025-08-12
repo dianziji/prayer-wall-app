@@ -76,7 +76,7 @@ export default function Header() {
               </button>
 
               {menuOpen && (
-                <div className="absolute right-0 mt-2 w-44 sm:w-48 bg-white border rounded shadow-lg z-50">
+                <div className="absolute right-0 mt-2 w-44 sm:w-48 bg-white border rounded shadow-lg z-dropdown transform-gpu will-change-transform">
                   <Link
                     href="/account"
                     className="block px-4 py-3 text-sm hover:bg-gray-100 touch-manipulation"

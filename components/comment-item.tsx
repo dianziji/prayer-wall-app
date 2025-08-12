@@ -73,7 +73,7 @@ export function CommentItem({
             </svg>
           </button>
           {showActions && (
-            <div className="absolute right-0 mt-1 bg-white rounded-md shadow-lg border border-gray-200 py-1 min-w-[120px] z-10">
+            <div className="absolute right-0 mt-1 bg-white rounded-md shadow-lg border border-gray-200 py-1 min-w-[120px] z-dropdown transform-gpu will-change-transform">
               <button
                 onClick={() => {
                   setEditing(true)
