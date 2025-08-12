@@ -32,20 +32,20 @@ export default function Header() {
 
   return (
     <header className="bg-white shadow-sm relative overflow-visible z-30">
-      <div className="h-12 max-w-6xl mx-auto px-6 flex items-center justify-between">
-        <Link href="/" className="font-bold">Prayer Wall</Link>
+      <div className="h-12 sm:h-14 max-w-6xl mx-auto px-3 sm:px-6 flex items-center justify-between">
+        <Link href="/" className="font-bold text-sm sm:text-base">Prayer Wall</Link>
 
         {/* right‑side buttons + account menu */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           <Link
             href="/qr"
-            className="text-sm hover:text-indigo-600 transition-colors"
+            className="text-xs sm:text-sm hover:text-indigo-600 transition-colors px-2 py-1 rounded touch-manipulation"
           >
             QR Code
           </Link>
           <Link
             href="/archive"
-            className="text-sm hover:text-indigo-600 transition-colors"
+            className="text-xs sm:text-sm hover:text-indigo-600 transition-colors px-2 py-1 rounded touch-manipulation"
           >
             Archive
           </Link>
@@ -53,7 +53,7 @@ export default function Header() {
             <div className="relative">
               <button
                 onClick={toggleMenu}
-                className="flex items-center gap-2 hover:text-indigo-600 focus:outline-none"
+                className="flex items-center gap-1 sm:gap-2 hover:text-indigo-600 focus:outline-none min-h-[44px] px-2 py-1 rounded touch-manipulation"
               >
                 {profile?.avatar_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -63,7 +63,7 @@ export default function Header() {
                     {(profile?.username || userEmail)?.[0]?.toUpperCase() ?? 'U'}
                   </span>
                 )}
-                <span className="text-sm">{profile?.username || userEmail}</span>
+                <span className="text-xs sm:text-sm hidden sm:inline">{profile?.username || userEmail}</span>
                 <svg
                   className={`w-4 h-4 transition-transform ${menuOpen ? 'rotate-180' : ''}`}
                   xmlns="http://www.w3.org/2000/svg"
@@ -76,31 +76,31 @@ export default function Header() {
               </button>
 
               {menuOpen && (
-                <div className="absolute right-0 mt-2 w-44 bg-white border rounded shadow-lg z-50">
+                <div className="absolute right-0 mt-2 w-44 sm:w-48 bg-white border rounded shadow-lg z-50">
                   <Link
                     href="/account"
-                    className="block px-4 py-2 text-sm hover:bg-gray-100"
+                    className="block px-4 py-3 text-sm hover:bg-gray-100 touch-manipulation"
                     onClick={() => setMenuOpen(false)}
                   >
                     Profile
                   </Link>
                   <Link
                     href="/my-prayers"
-                    className="block px-4 py-2 text-sm hover:bg-gray-100"
+                    className="block px-4 py-3 text-sm hover:bg-gray-100 touch-manipulation"
                     onClick={() => setMenuOpen(false)}
                   >
                     My Prayers
                   </Link>
                   <Link
                     href="/reminders"
-                    className="block px-4 py-2 text-sm hover:bg-gray-100"
+                    className="block px-4 py-3 text-sm hover:bg-gray-100 touch-manipulation"
                     onClick={() => setMenuOpen(false)}
                   >
                     🔔 Reminders
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                    className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-gray-100 touch-manipulation"
                   >
                     Logout
                   </button>
@@ -108,7 +108,7 @@ export default function Header() {
               )}
             </div>
           ) : (
-            <Link href="/login" className="text-sm text-indigo-600">Login</Link>
+            <Link href="/login" className="text-xs sm:text-sm text-indigo-600 px-3 py-2 rounded touch-manipulation">Login</Link>
           )}
         </div>
       </div>
