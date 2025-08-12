@@ -59,9 +59,13 @@ export function getRecentWeeksET(n: number): string[] {
 // lib/utils.ts 末尾追加
 export function normalizeToEtSunday(dateStr: string): string {
   // 把任意 YYYY-MM-DD 视为 ET 的某天，然后取该周的周日
-  const d = dayjs.tz(dateStr, 'YYYY-MM-DD', APP_TZ)
-  if (!d.isValid()) return getCurrentWeekStartET()
-  const sunday = d.startOf('day').subtract(d.day(), 'day') // Sunday=0
-  return sunday.format('YYYY-MM-DD')
+  try {
+    const d = dayjs.tz(dateStr, 'YYYY-MM-DD', APP_TZ)
+    if (!d.isValid()) return getCurrentWeekStartET()
+    const sunday = d.startOf('day').subtract(d.day(), 'day') // Sunday=0
+    return sunday.format('YYYY-MM-DD')
+  } catch (error) {
+    return getCurrentWeekStartET()
+  }
 }
 

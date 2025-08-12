@@ -4,15 +4,8 @@
 
 import { getAppOrigin, getOAuthCallbackUrl } from '@/lib/app-config'
 
-// Mock window.location for browser environment tests
-const mockLocation = {
-  origin: 'http://localhost:3000',
-}
-
-Object.defineProperty(window, 'location', {
-  value: mockLocation,
-  writable: true,
-})
+// Mock window.location for browser environment tests (skip due to JSDOM issues)
+// Use Jest setup global mocks instead
 
 describe('App Config Utilities', () => {
   beforeEach(() => {
@@ -22,12 +15,22 @@ describe('App Config Utilities', () => {
 
   describe('getAppOrigin', () => {
     it('should return window.location.origin in browser environment', () => {
-      mockLocation.origin = 'https://preview-abc123.vercel.app'
+      // Mock window.location for this test
+      Object.defineProperty(window, 'location', {
+        value: { origin: 'https://preview-abc123.vercel.app' },
+        writable: true,
+        configurable: true
+      })
       expect(getAppOrigin()).toBe('https://preview-abc123.vercel.app')
     })
 
     it('should return localhost origin', () => {
-      mockLocation.origin = 'http://localhost:3000'
+      // Mock window.location for this test
+      Object.defineProperty(window, 'location', {
+        value: { origin: 'http://localhost:3000' },
+        writable: true,
+        configurable: true
+      })
       expect(getAppOrigin()).toBe('http://localhost:3000')
     })
 
@@ -72,17 +75,29 @@ describe('App Config Utilities', () => {
 
   describe('getOAuthCallbackUrl', () => {
     it('should return correct callback URL for localhost', () => {
-      mockLocation.origin = 'http://localhost:3000'
+      Object.defineProperty(window, 'location', {
+        value: { origin: 'http://localhost:3000' },
+        writable: true,
+        configurable: true
+      })
       expect(getOAuthCallbackUrl()).toBe('http://localhost:3000/auth/callback')
     })
 
     it('should return correct callback URL for preview environment', () => {
-      mockLocation.origin = 'https://preview-abc123.vercel.app'
+      Object.defineProperty(window, 'location', {
+        value: { origin: 'https://preview-abc123.vercel.app' },
+        writable: true,
+        configurable: true
+      })
       expect(getOAuthCallbackUrl()).toBe('https://preview-abc123.vercel.app/auth/callback')
     })
 
     it('should return correct callback URL for production', () => {
-      mockLocation.origin = 'https://prayer-wall-app.vercel.app'
+      Object.defineProperty(window, 'location', {
+        value: { origin: 'https://prayer-wall-app.vercel.app' },
+        writable: true,
+        configurable: true
+      })
       expect(getOAuthCallbackUrl()).toBe('https://prayer-wall-app.vercel.app/auth/callback')
     })
   })

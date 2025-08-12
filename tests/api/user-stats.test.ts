@@ -30,7 +30,7 @@ describe('/api/user/stats', () => {
     }
     createServerSupabase.mockResolvedValue(mockSupabase)
 
-    const nextRequest = new NextRequest('http://localhost:3000/api/user/stats')
+    const nextRequest = new NextRequest(new URL('/api/user/stats', 'http://localhost:3000'))
     
     const response = await GET(nextRequest)
     const data = await response.json()
@@ -81,7 +81,7 @@ describe('/api/user/stats', () => {
     
     createServerSupabase.mockResolvedValue(mockSupabase)
 
-    const nextRequest = new NextRequest('http://localhost:3000/api/user/stats')
+    const nextRequest = new NextRequest(new URL('/api/user/stats', 'http://localhost:3000'))
     
     const response = await GET(nextRequest)
     const data = await response.json()
@@ -116,7 +116,7 @@ describe('/api/user/stats', () => {
     
     createServerSupabase.mockResolvedValue(mockSupabase)
 
-    const nextRequest = new NextRequest('http://localhost:3000/api/user/stats')
+    const nextRequest = new NextRequest(new URL('/api/user/stats', 'http://localhost:3000'))
     
     const response = await GET(nextRequest)
     const data = await response.json()

@@ -4,10 +4,12 @@ import { PrayerForm } from '@/components/prayer-form'
 
 // Mock the session hook
 jest.mock('@/lib/useSession', () => ({
-  useSession: () => ({
+  useSession: jest.fn(() => ({
     profile: { username: 'Test User' }
-  })
+  }))
 }))
+
+const { useSession } = require('@/lib/useSession')
 
 // Mock fetch
 const mockFetch = jest.fn()
@@ -21,6 +23,11 @@ describe('PrayerForm', () => {
     mockFetch.mockClear()
     mockOnPost.mockClear()
     mockOnCancel.mockClear()
+    
+    // Reset to default session mock
+    useSession.mockReturnValue({
+      profile: { username: 'Test User' }
+    })
   })
 
   describe('Create Mode', () => {
@@ -114,6 +121,13 @@ describe('PrayerForm', () => {
       content: 'Existing prayer content',
       author_name: 'Existing Author'
     }
+
+    beforeEach(() => {
+      // For edit mode, don't override with current user profile
+      useSession.mockReturnValue({
+        profile: { username: null }
+      })
+    })
 
     it('should render edit form with initial values', () => {
       render(

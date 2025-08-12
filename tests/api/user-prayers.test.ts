@@ -30,7 +30,7 @@ describe('/api/user/prayers', () => {
     }
     createServerSupabase.mockResolvedValue(mockSupabase)
 
-    const nextRequest = new NextRequest('http://localhost:3000/api/user/prayers')
+    const nextRequest = new NextRequest(new URL('/api/user/prayers', 'http://localhost:3000'))
     
     const response = await GET(nextRequest)
     const data = await response.json()
@@ -97,7 +97,7 @@ describe('/api/user/prayers', () => {
     
     createServerSupabase.mockResolvedValue(mockSupabase)
 
-    const nextRequest = new NextRequest('http://localhost:3000/api/user/prayers')
+    const nextRequest = new NextRequest(new URL('/api/user/prayers', 'http://localhost:3000'))
     
     const response = await GET(nextRequest)
     const data = await response.json()
@@ -156,7 +156,7 @@ describe('/api/user/prayers', () => {
     
     createServerSupabase.mockResolvedValue(mockSupabase)
 
-    const nextRequest = new NextRequest('http://localhost:3000/api/user/prayers?page=2&limit=5')
+    const nextRequest = new NextRequest(new URL('/api/user/prayers?page=2&limit=5', 'http://localhost:3000'))
     
     const response = await GET(nextRequest)
     const data = await response.json()
@@ -215,7 +215,7 @@ describe('/api/user/prayers', () => {
     
     createServerSupabase.mockResolvedValue(mockSupabase)
 
-    const nextRequest = new NextRequest('http://localhost:3000/api/user/prayers?sort=most_liked')
+    const nextRequest = new NextRequest(new URL('/api/user/prayers?sort=most_liked', 'http://localhost:3000'))
     
     const response = await GET(nextRequest)
     expect(response.status).toBe(200)
@@ -271,7 +271,7 @@ describe('/api/user/prayers', () => {
     
     createServerSupabase.mockResolvedValue(mockSupabase)
 
-    const nextRequest = new NextRequest('http://localhost:3000/api/user/prayers?timeRange=this_month')
+    const nextRequest = new NextRequest(new URL('/api/user/prayers?timeRange=this_month', 'http://localhost:3000'))
     
     const response = await GET(nextRequest)
     expect(response.status).toBe(200)
@@ -318,7 +318,7 @@ describe('/api/user/prayers', () => {
     
     createServerSupabase.mockResolvedValue(mockSupabase)
 
-    const nextRequest = new NextRequest('http://localhost:3000/api/user/prayers')
+    const nextRequest = new NextRequest(new URL('/api/user/prayers', 'http://localhost:3000'))
     
     const response = await GET(nextRequest)
     const data = await response.json()

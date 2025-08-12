@@ -10,6 +10,9 @@ const customJestConfig = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testEnvironment: 'jest-environment-jsdom',
   testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
+  transformIgnorePatterns: [
+    'node_modules/(?!(.*\\.mjs$|@supabase|isows))',
+  ],
   moduleNameMapper: {
     // Handle module aliases (same as in your next.config.js)
     '^@/(.*)$': '<rootDir>/$1',
