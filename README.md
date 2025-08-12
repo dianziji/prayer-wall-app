@@ -124,7 +124,14 @@ prayer-wall-app/
 │   └── user/             # User-specific components (timeline, cards, modals)
 ├── lib/                   # Utility functions
 ├── types/                 # TypeScript definitions
-├── tests/                 # Test files
+├── tests/                 # Unified test directory
+│   ├── api/              # API route tests
+│   ├── components/       # Component tests
+│   ├── integration/      # Integration tests
+│   ├── lib/              # Library utility tests
+│   ├── pages/            # Page component tests
+│   ├── utils/            # Utility function tests
+│   └── mocks/            # Test mocks and handlers
 └── docs/                  # Development documentation (gitignored)
 ```
 
