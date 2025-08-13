@@ -106,7 +106,7 @@ export default defineConfig({
   outputDir: 'test-results/',
 
   /* Maximum time one test can run for. */
-  testTimeout: 60000,
+  timeout: 60000,
 
   /* Preserve output directory */
   preserveOutput: 'failures-only'
