@@ -1,0 +1,1542 @@
+<testsuites id="" name="" tests="364" failures="0" skipped="364" errors="0" time="0.138926">
+<testsuite name="accessibility.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="chromium" tests="10" failures="0" skipped="10" time="0" errors="0">
+<testcase name="Accessibility Tests › should have proper semantic HTML structure" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should have accessible form controls" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should have accessible buttons" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should support keyboard navigation" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should have sufficient color contrast" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should work with screen reader simulation" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should handle focus management" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should have accessible links" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should handle reduced motion preferences" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should handle high contrast mode" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="basic-navigation.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="chromium" tests="7" failures="0" skipped="7" time="0" errors="0">
+<testcase name="Basic Navigation and Page Loading › should load the homepage and display prayer wall" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should navigate to QR code page" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should navigate to Archive page" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should handle responsive design" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should load page within reasonable time" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should handle different week URLs" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should show login option when not authenticated" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="performance.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="chromium" tests="11" failures="0" skipped="11" time="0" errors="0">
+<testcase name="Performance Tests › should load homepage within acceptable time" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should have reasonable Time to First Contentful Paint" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle large viewport sizes efficiently" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle small mobile viewport efficiently" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should not have memory leaks with navigation" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle concurrent interactions efficiently" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should render images efficiently" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle slow network conditions" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should minimize layout shifts" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should not block UI with long-running operations" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle resource loading failures gracefully" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="prayer-wall.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="chromium" tests="8" failures="0" skipped="8" time="0" errors="0">
+<testcase name="Prayer Wall Core Functionality › should display existing prayers on the wall" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should show prayer interaction elements" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should handle empty prayer wall gracefully" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should support mobile interactions" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should load prayer content without errors" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should render prayer timestamps correctly" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should show appropriate content for current week" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should handle network interruptions gracefully" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="user-auth.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="chromium" tests="10" failures="0" skipped="10" time="0" errors="0">
+<testcase name="User Authentication Flow › should show login option for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should navigate to login page when clicking login" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle login page load" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should restrict prayer submission for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle comment interactions for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle like button interactions for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle protected routes appropriately" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should maintain state across navigation for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle auth callback route" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle session persistence across page reloads" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="user-flows/prayer-interaction.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="chromium" tests="6" failures="0" skipped="6" time="0" errors="0">
+<testcase name="Prayer Interaction User Flow › complete unauthenticated user journey" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › prayer browsing and navigation flow" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › responsive prayer interaction flow" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › accessibility-focused prayer browsing" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › error handling in prayer interactions" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › performance during prayer browsing" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="accessibility.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="firefox" tests="10" failures="0" skipped="10" time="0" errors="0">
+<testcase name="Accessibility Tests › should have proper semantic HTML structure" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should have accessible form controls" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should have accessible buttons" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should support keyboard navigation" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should have sufficient color contrast" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should work with screen reader simulation" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should handle focus management" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should have accessible links" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should handle reduced motion preferences" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should handle high contrast mode" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="basic-navigation.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="firefox" tests="7" failures="0" skipped="7" time="0" errors="0">
+<testcase name="Basic Navigation and Page Loading › should load the homepage and display prayer wall" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should navigate to QR code page" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should navigate to Archive page" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should handle responsive design" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should load page within reasonable time" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should handle different week URLs" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should show login option when not authenticated" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="performance.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="firefox" tests="11" failures="0" skipped="11" time="0" errors="0">
+<testcase name="Performance Tests › should load homepage within acceptable time" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should have reasonable Time to First Contentful Paint" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle large viewport sizes efficiently" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle small mobile viewport efficiently" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should not have memory leaks with navigation" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle concurrent interactions efficiently" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should render images efficiently" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle slow network conditions" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should minimize layout shifts" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should not block UI with long-running operations" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle resource loading failures gracefully" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="prayer-wall.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="firefox" tests="8" failures="0" skipped="8" time="0" errors="0">
+<testcase name="Prayer Wall Core Functionality › should display existing prayers on the wall" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should show prayer interaction elements" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should handle empty prayer wall gracefully" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should support mobile interactions" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should load prayer content without errors" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should render prayer timestamps correctly" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should show appropriate content for current week" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should handle network interruptions gracefully" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="user-auth.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="firefox" tests="10" failures="0" skipped="10" time="0" errors="0">
+<testcase name="User Authentication Flow › should show login option for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should navigate to login page when clicking login" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle login page load" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should restrict prayer submission for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle comment interactions for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle like button interactions for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle protected routes appropriately" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should maintain state across navigation for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle auth callback route" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle session persistence across page reloads" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="user-flows/prayer-interaction.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="firefox" tests="6" failures="0" skipped="6" time="0" errors="0">
+<testcase name="Prayer Interaction User Flow › complete unauthenticated user journey" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › prayer browsing and navigation flow" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › responsive prayer interaction flow" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › accessibility-focused prayer browsing" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › error handling in prayer interactions" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › performance during prayer browsing" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="accessibility.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="webkit" tests="10" failures="0" skipped="10" time="0" errors="0">
+<testcase name="Accessibility Tests › should have proper semantic HTML structure" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should have accessible form controls" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should have accessible buttons" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should support keyboard navigation" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should have sufficient color contrast" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should work with screen reader simulation" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should handle focus management" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should have accessible links" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should handle reduced motion preferences" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should handle high contrast mode" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="basic-navigation.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="webkit" tests="7" failures="0" skipped="7" time="0" errors="0">
+<testcase name="Basic Navigation and Page Loading › should load the homepage and display prayer wall" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should navigate to QR code page" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should navigate to Archive page" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should handle responsive design" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should load page within reasonable time" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should handle different week URLs" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should show login option when not authenticated" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="performance.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="webkit" tests="11" failures="0" skipped="11" time="0" errors="0">
+<testcase name="Performance Tests › should load homepage within acceptable time" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should have reasonable Time to First Contentful Paint" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle large viewport sizes efficiently" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle small mobile viewport efficiently" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should not have memory leaks with navigation" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle concurrent interactions efficiently" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should render images efficiently" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle slow network conditions" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should minimize layout shifts" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should not block UI with long-running operations" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle resource loading failures gracefully" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="prayer-wall.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="webkit" tests="8" failures="0" skipped="8" time="0" errors="0">
+<testcase name="Prayer Wall Core Functionality › should display existing prayers on the wall" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should show prayer interaction elements" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should handle empty prayer wall gracefully" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should support mobile interactions" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should load prayer content without errors" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should render prayer timestamps correctly" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should show appropriate content for current week" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should handle network interruptions gracefully" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="user-auth.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="webkit" tests="10" failures="0" skipped="10" time="0" errors="0">
+<testcase name="User Authentication Flow › should show login option for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should navigate to login page when clicking login" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle login page load" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should restrict prayer submission for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle comment interactions for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle like button interactions for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle protected routes appropriately" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should maintain state across navigation for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle auth callback route" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle session persistence across page reloads" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="user-flows/prayer-interaction.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="webkit" tests="6" failures="0" skipped="6" time="0" errors="0">
+<testcase name="Prayer Interaction User Flow › complete unauthenticated user journey" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › prayer browsing and navigation flow" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › responsive prayer interaction flow" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › accessibility-focused prayer browsing" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › error handling in prayer interactions" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › performance during prayer browsing" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="accessibility.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="Mobile Chrome" tests="10" failures="0" skipped="10" time="0" errors="0">
+<testcase name="Accessibility Tests › should have proper semantic HTML structure" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should have accessible form controls" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should have accessible buttons" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should support keyboard navigation" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should have sufficient color contrast" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should work with screen reader simulation" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should handle focus management" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should have accessible links" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should handle reduced motion preferences" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should handle high contrast mode" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="basic-navigation.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="Mobile Chrome" tests="7" failures="0" skipped="7" time="0" errors="0">
+<testcase name="Basic Navigation and Page Loading › should load the homepage and display prayer wall" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should navigate to QR code page" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should navigate to Archive page" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should handle responsive design" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should load page within reasonable time" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should handle different week URLs" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should show login option when not authenticated" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="performance.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="Mobile Chrome" tests="11" failures="0" skipped="11" time="0" errors="0">
+<testcase name="Performance Tests › should load homepage within acceptable time" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should have reasonable Time to First Contentful Paint" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle large viewport sizes efficiently" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle small mobile viewport efficiently" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should not have memory leaks with navigation" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle concurrent interactions efficiently" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should render images efficiently" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle slow network conditions" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should minimize layout shifts" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should not block UI with long-running operations" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle resource loading failures gracefully" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="prayer-wall.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="Mobile Chrome" tests="8" failures="0" skipped="8" time="0" errors="0">
+<testcase name="Prayer Wall Core Functionality › should display existing prayers on the wall" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should show prayer interaction elements" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should handle empty prayer wall gracefully" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should support mobile interactions" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should load prayer content without errors" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should render prayer timestamps correctly" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should show appropriate content for current week" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should handle network interruptions gracefully" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="user-auth.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="Mobile Chrome" tests="10" failures="0" skipped="10" time="0" errors="0">
+<testcase name="User Authentication Flow › should show login option for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should navigate to login page when clicking login" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle login page load" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should restrict prayer submission for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle comment interactions for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle like button interactions for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle protected routes appropriately" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should maintain state across navigation for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle auth callback route" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle session persistence across page reloads" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="user-flows/prayer-interaction.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="Mobile Chrome" tests="6" failures="0" skipped="6" time="0" errors="0">
+<testcase name="Prayer Interaction User Flow › complete unauthenticated user journey" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › prayer browsing and navigation flow" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › responsive prayer interaction flow" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › accessibility-focused prayer browsing" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › error handling in prayer interactions" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › performance during prayer browsing" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="accessibility.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="Mobile Safari" tests="10" failures="0" skipped="10" time="0" errors="0">
+<testcase name="Accessibility Tests › should have proper semantic HTML structure" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should have accessible form controls" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should have accessible buttons" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should support keyboard navigation" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should have sufficient color contrast" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should work with screen reader simulation" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should handle focus management" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should have accessible links" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should handle reduced motion preferences" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should handle high contrast mode" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="basic-navigation.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="Mobile Safari" tests="7" failures="0" skipped="7" time="0" errors="0">
+<testcase name="Basic Navigation and Page Loading › should load the homepage and display prayer wall" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should navigate to QR code page" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should navigate to Archive page" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should handle responsive design" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should load page within reasonable time" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should handle different week URLs" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should show login option when not authenticated" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="performance.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="Mobile Safari" tests="11" failures="0" skipped="11" time="0" errors="0">
+<testcase name="Performance Tests › should load homepage within acceptable time" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should have reasonable Time to First Contentful Paint" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle large viewport sizes efficiently" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle small mobile viewport efficiently" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should not have memory leaks with navigation" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle concurrent interactions efficiently" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should render images efficiently" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle slow network conditions" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should minimize layout shifts" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should not block UI with long-running operations" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle resource loading failures gracefully" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="prayer-wall.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="Mobile Safari" tests="8" failures="0" skipped="8" time="0" errors="0">
+<testcase name="Prayer Wall Core Functionality › should display existing prayers on the wall" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should show prayer interaction elements" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should handle empty prayer wall gracefully" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should support mobile interactions" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should load prayer content without errors" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should render prayer timestamps correctly" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should show appropriate content for current week" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should handle network interruptions gracefully" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="user-auth.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="Mobile Safari" tests="10" failures="0" skipped="10" time="0" errors="0">
+<testcase name="User Authentication Flow › should show login option for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should navigate to login page when clicking login" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle login page load" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should restrict prayer submission for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle comment interactions for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle like button interactions for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle protected routes appropriately" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should maintain state across navigation for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle auth callback route" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle session persistence across page reloads" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="user-flows/prayer-interaction.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="Mobile Safari" tests="6" failures="0" skipped="6" time="0" errors="0">
+<testcase name="Prayer Interaction User Flow › complete unauthenticated user journey" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › prayer browsing and navigation flow" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › responsive prayer interaction flow" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › accessibility-focused prayer browsing" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › error handling in prayer interactions" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › performance during prayer browsing" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="accessibility.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="Microsoft Edge" tests="10" failures="0" skipped="10" time="0" errors="0">
+<testcase name="Accessibility Tests › should have proper semantic HTML structure" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should have accessible form controls" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should have accessible buttons" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should support keyboard navigation" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should have sufficient color contrast" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should work with screen reader simulation" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should handle focus management" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should have accessible links" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should handle reduced motion preferences" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should handle high contrast mode" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="basic-navigation.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="Microsoft Edge" tests="7" failures="0" skipped="7" time="0" errors="0">
+<testcase name="Basic Navigation and Page Loading › should load the homepage and display prayer wall" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should navigate to QR code page" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should navigate to Archive page" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should handle responsive design" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should load page within reasonable time" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should handle different week URLs" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should show login option when not authenticated" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="performance.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="Microsoft Edge" tests="11" failures="0" skipped="11" time="0" errors="0">
+<testcase name="Performance Tests › should load homepage within acceptable time" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should have reasonable Time to First Contentful Paint" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle large viewport sizes efficiently" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle small mobile viewport efficiently" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should not have memory leaks with navigation" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle concurrent interactions efficiently" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should render images efficiently" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle slow network conditions" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should minimize layout shifts" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should not block UI with long-running operations" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle resource loading failures gracefully" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="prayer-wall.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="Microsoft Edge" tests="8" failures="0" skipped="8" time="0" errors="0">
+<testcase name="Prayer Wall Core Functionality › should display existing prayers on the wall" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should show prayer interaction elements" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should handle empty prayer wall gracefully" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should support mobile interactions" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should load prayer content without errors" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should render prayer timestamps correctly" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should show appropriate content for current week" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should handle network interruptions gracefully" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="user-auth.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="Microsoft Edge" tests="10" failures="0" skipped="10" time="0" errors="0">
+<testcase name="User Authentication Flow › should show login option for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should navigate to login page when clicking login" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle login page load" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should restrict prayer submission for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle comment interactions for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle like button interactions for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle protected routes appropriately" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should maintain state across navigation for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle auth callback route" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle session persistence across page reloads" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="user-flows/prayer-interaction.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="Microsoft Edge" tests="6" failures="0" skipped="6" time="0" errors="0">
+<testcase name="Prayer Interaction User Flow › complete unauthenticated user journey" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › prayer browsing and navigation flow" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › responsive prayer interaction flow" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › accessibility-focused prayer browsing" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › error handling in prayer interactions" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › performance during prayer browsing" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="accessibility.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="Google Chrome" tests="10" failures="0" skipped="10" time="0" errors="0">
+<testcase name="Accessibility Tests › should have proper semantic HTML structure" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should have accessible form controls" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should have accessible buttons" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should support keyboard navigation" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should have sufficient color contrast" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should work with screen reader simulation" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should handle focus management" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should have accessible links" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should handle reduced motion preferences" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Accessibility Tests › should handle high contrast mode" classname="accessibility.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="basic-navigation.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="Google Chrome" tests="7" failures="0" skipped="7" time="0" errors="0">
+<testcase name="Basic Navigation and Page Loading › should load the homepage and display prayer wall" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should navigate to QR code page" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should navigate to Archive page" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should handle responsive design" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should load page within reasonable time" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should handle different week URLs" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Basic Navigation and Page Loading › should show login option when not authenticated" classname="basic-navigation.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="performance.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="Google Chrome" tests="11" failures="0" skipped="11" time="0" errors="0">
+<testcase name="Performance Tests › should load homepage within acceptable time" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should have reasonable Time to First Contentful Paint" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle large viewport sizes efficiently" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle small mobile viewport efficiently" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should not have memory leaks with navigation" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle concurrent interactions efficiently" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should render images efficiently" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle slow network conditions" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should minimize layout shifts" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should not block UI with long-running operations" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Performance Tests › should handle resource loading failures gracefully" classname="performance.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="prayer-wall.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="Google Chrome" tests="8" failures="0" skipped="8" time="0" errors="0">
+<testcase name="Prayer Wall Core Functionality › should display existing prayers on the wall" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should show prayer interaction elements" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should handle empty prayer wall gracefully" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should support mobile interactions" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should load prayer content without errors" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should render prayer timestamps correctly" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should show appropriate content for current week" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Wall Core Functionality › should handle network interruptions gracefully" classname="prayer-wall.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="user-auth.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="Google Chrome" tests="10" failures="0" skipped="10" time="0" errors="0">
+<testcase name="User Authentication Flow › should show login option for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should navigate to login page when clicking login" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle login page load" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should restrict prayer submission for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle comment interactions for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle like button interactions for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle protected routes appropriately" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should maintain state across navigation for unauthenticated users" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle auth callback route" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="User Authentication Flow › should handle session persistence across page reloads" classname="user-auth.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="user-flows/prayer-interaction.spec.ts" timestamp="2025-08-13T12:34:56.923Z" hostname="Google Chrome" tests="6" failures="0" skipped="6" time="0" errors="0">
+<testcase name="Prayer Interaction User Flow › complete unauthenticated user journey" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › prayer browsing and navigation flow" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › responsive prayer interaction flow" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › accessibility-focused prayer browsing" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › error handling in prayer interactions" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Prayer Interaction User Flow › performance during prayer browsing" classname="user-flows/prayer-interaction.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+</testsuites>

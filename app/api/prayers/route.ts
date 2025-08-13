@@ -72,16 +72,17 @@ export async function POST(req: Request) {
       author_name = author_name.slice(0, 24)
     }
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('prayers')
       .insert([{ content, author_name, user_id: user?.id || null }])
+      .select()
 
     if (error) {
       console.error('Supabase insert error:', error)
       return NextResponse.json({ error: 'Database error' }, { status: 500 })
     }
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json(data?.[0] || { success: true }, { status: 201 })
   } catch (err) {
     console.error('Unhandled POST error:', err)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

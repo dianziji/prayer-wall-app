@@ -44,6 +44,9 @@
     "**/*.spec.ts",
     "**/*.spec.tsx",
     "jest.config.js",
-    "jest.setup.js"
+    "jest.setup.js",
+    "playwright.config.ts",
+    "playwright-report/**/*",
+    "test-results/**/*"
   ]
 }

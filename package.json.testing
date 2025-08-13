@@ -1,0 +1,123 @@
+{
+  "name": "prayer-wall-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:unit": "jest tests/unit",
+    "test:integration": "jest tests/integration",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:all": "npm run test:unit && npm run test:integration && npm run test:e2e",
+    "test:ci": "jest --ci --coverage --maxWorkers=2",
+    "test:parallel": "jest --maxWorkers=50%",
+    "test:debug": "jest --detectOpenHandles --forceExit",
+    "test:report": "jest --coverage --coverageReporters=html lcov",
+    
+    "gen:types": "supabase gen types typescript --project-id tyyurvugpkmjieoxlvny --schema public,storage, auth > types/database.types.ts"
+  },
+  "dependencies": {
+    "@emoji-mart/data": "^1.2.1",
+    "@emoji-mart/react": "^1.1.1",
+    "@supabase/ssr": "^0.6.1",
+    "@supabase/supabase-js": "^2.52.0",
+    "@vercel/analytics": "^1.5.0",
+    "autoprefixer": "^10.4.15",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "dayjs": "^1.11.13",
+    "email-validator": "^2.0.4",
+    "fns": "^1.0.0",
+    "framer-motion": "^12.23.6",
+    "next": "^15.4.3",
+    "postcss": "^8.4.24",
+    "qrcode.react": "^4.2.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hot-toast": "^2.4.1",
+    "react-markdown": "^9.0.1",
+    "swr": "^2.2.5",
+    "tailwindcss": "^3.3.3",
+    "typescript": "^5.5.4"
+  },
+  "devDependencies": {
+    "@next/eslint-config-next": "^15.4.3",
+    "@playwright/test": "^1.40.0",
+    "@testing-library/jest-dom": "^6.1.0",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.5.0",
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.10.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^15.4.3",
+    "fake-indexeddb": "^5.0.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "jest-junit": "^16.0.0",
+    "msw": "^2.0.0",
+    "test-data-bot": "^0.8.0",
+    "whatwg-fetch": "^3.6.0"
+  },
+  "jest": {
+    "preset": "next/jest",
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest.setup.js",
+      "<rootDir>/tests/utils/setup.ts"
+    ],
+    "testEnvironment": "jest-environment-jsdom",
+    "testTimeout": 10000,
+    "testMatch": [
+      "<rootDir>/tests/**/*.test.{js,jsx,ts,tsx}",
+      "<rootDir>/tests/**/*.spec.{js,jsx,ts,tsx}"
+    ],
+    "testPathIgnorePatterns": [
+      "<rootDir>/.next/",
+      "<rootDir>/node_modules/",
+      "<rootDir>/tests/fixtures/",
+      "<rootDir>/tests/mocks/",
+      "<rootDir>/tests/utils/"
+    ],
+    "transformIgnorePatterns": [
+      "node_modules/(?!(.*\\.mjs$|@supabase|isows|msw))"
+    ],
+    "moduleNameMapping": {
+      "^@/(.*)$": "<rootDir>/$1",
+      "^@/tests/(.*)$": "<rootDir>/tests/$1"
+    },
+    "collectCoverageFrom": [
+      "app/**/*.{js,jsx,ts,tsx}",
+      "components/**/*.{js,jsx,ts,tsx}",
+      "lib/**/*.{js,jsx,ts,tsx}",
+      "!**/*.d.ts",
+      "!**/node_modules/**",
+      "!**/.next/**",
+      "!**/coverage/**"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "statements": 80,
+        "branches": 75,
+        "functions": 80,
+        "lines": 80
+      }
+    },
+    "coverageReporters": [
+      "text",
+      "html",
+      "lcov",
+      "json-summary"
+    ],
+    "maxWorkers": "50%",
+    "clearMocks": true,
+    "restoreMocks": true
+  }
+}

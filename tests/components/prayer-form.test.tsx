@@ -15,7 +15,7 @@ const { useSession } = require('@/lib/useSession')
 const mockFetch = jest.fn()
 global.fetch = mockFetch
 
-describe.skip('PrayerForm', () => {
+describe('PrayerForm', () => {
   const mockOnPost = jest.fn()
   const mockOnCancel = jest.fn()
 
