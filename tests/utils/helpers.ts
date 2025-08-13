@@ -15,7 +15,7 @@ export const renderWithProviders = (
 ) => {
   const Wrapper = ({ children }: { children: React.ReactNode }) => {
     // Add any providers here (Context, Redux, etc.)
-    return <>{children}</>
+    return React.createElement(React.Fragment, null, children)
   }
 
   return {
@@ -48,7 +48,7 @@ export const ThrowError = ({ shouldThrow }: { shouldThrow: boolean }) => {
   if (shouldThrow) {
     throw new Error('Test error')
   }
-  return <div>No error</div>
+  return React.createElement('div', null, 'No error')
 }
 
 // Helper for mocking console methods

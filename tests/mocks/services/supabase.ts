@@ -28,68 +28,107 @@ export const createMockSupabaseClient = (customMocks = {}) => {
 }
 
 // Mock for server-side Supabase with complete query chain
-export const createMockServerSupabase = (queryResults = {}) => {
+export const createMockServerSupabase = (config = {}) => {
+  const {
+    queryResults = {},
+    authUser = null,
+    authError = null,
+    queryError = null
+  } = config
+
   // Create a fully chainable query builder that supports all Supabase methods
-  const createChainableQuery = (tableName: string) => {
-    const baseData = { data: queryResults[tableName] || [], error: null }
-    
-    const queryBuilder = {
-      // Filter methods
-      eq: jest.fn(),
-      gte: jest.fn(),
-      lte: jest.fn(),
-      gt: jest.fn(),
-      lt: jest.fn(),
-      in: jest.fn(),
-      contains: jest.fn(),
-      ilike: jest.fn(),
-      like: jest.fn(),
-      is: jest.fn(),
-      not: jest.fn(),
-      
-      // Modifier methods
-      order: jest.fn(),
-      limit: jest.fn(),
-      offset: jest.fn(),
-      range: jest.fn(),
-      
-      // Terminal methods
-      single: jest.fn().mockResolvedValue(baseData),
-      maybeSingle: jest.fn().mockResolvedValue(baseData),
-      
-      // Promise interface
-      then: jest.fn().mockImplementation((resolve) => resolve(baseData)),
-      catch: jest.fn().mockImplementation((reject) => Promise.resolve(baseData))
+  const createChainableQuery = (tableName: string, options = {}) => {
+    // Default data or specific query results
+    const baseData = { 
+      data: queryResults[tableName] || [], 
+      error: queryError 
     }
     
-    // Make all chainable methods return the same queryBuilder for fluent API
-    Object.keys(queryBuilder).forEach(key => {
-      if (typeof queryBuilder[key] === 'function' && 
-          !['single', 'maybeSingle', 'then', 'catch'].includes(key)) {
-        queryBuilder[key].mockReturnValue(queryBuilder)
-      }
-    })
+    // Handle count queries
+    if (options.count === 'exact' && options.head === true) {
+      return Promise.resolve({
+        count: Array.isArray(baseData.data) ? baseData.data.length : 0,
+        data: null,
+        error: baseData.error
+      })
+    }
     
-    // Ensure each method call returns a fresh mock to support multiple calls
-    queryBuilder.eq.mockImplementation(() => queryBuilder)
-    queryBuilder.gte.mockImplementation(() => queryBuilder)
-    queryBuilder.order.mockImplementation(() => queryBuilder)
+    const queryBuilder = {
+      // Filter methods - all return this for chaining
+      eq: jest.fn(() => queryBuilder),
+      gte: jest.fn(() => queryBuilder),
+      lte: jest.fn(() => queryBuilder),
+      gt: jest.fn(() => queryBuilder),
+      lt: jest.fn(() => queryBuilder),
+      in: jest.fn(() => queryBuilder),
+      contains: jest.fn(() => queryBuilder),
+      ilike: jest.fn(() => queryBuilder),
+      like: jest.fn(() => queryBuilder),
+      is: jest.fn(() => queryBuilder),
+      not: jest.fn(() => queryBuilder),
+      
+      // Modifier methods - return new instance for assignment pattern
+      order: jest.fn(() => createChainableQuery(tableName, options)),
+      limit: jest.fn(() => createChainableQuery(tableName, options)),
+      offset: jest.fn(() => createChainableQuery(tableName, options)),
+      range: jest.fn(() => createChainableQuery(tableName, options)),
+      
+      // Terminal methods that return promises
+      single: jest.fn(() => Promise.resolve({ 
+        data: Array.isArray(baseData.data) ? baseData.data[0] : baseData.data, 
+        error: baseData.error 
+      })),
+      maybeSingle: jest.fn(() => Promise.resolve({
+        data: Array.isArray(baseData.data) ? baseData.data[0] : baseData.data, 
+        error: baseData.error 
+      })),
+      
+      // Make it awaitable - handle count vs data queries
+      then: (resolve, reject) => {
+        if (options.count === 'exact' && options.head === true) {
+          const countResult = {
+            count: Array.isArray(baseData.data) ? baseData.data.length : 0,
+            data: null,
+            error: baseData.error
+          }
+          return Promise.resolve(countResult).then(resolve, reject)
+        }
+        return Promise.resolve(baseData).then(resolve, reject)
+      },
+      catch: (handler) => {
+        return Promise.resolve(baseData).catch(handler)
+      }
+    }
     
     return queryBuilder
   }
   
-  const createQueryBuilder = (tableName: string) => ({
-    select: jest.fn().mockReturnValue(createChainableQuery(tableName)),
-    insert: jest.fn().mockReturnValue(createChainableQuery(tableName)),
-    update: jest.fn().mockReturnValue(createChainableQuery(tableName)),
-    delete: jest.fn().mockReturnValue(createChainableQuery(tableName)),
-    upsert: jest.fn().mockReturnValue(createChainableQuery(tableName))
-  })
+  const createQueryBuilder = (tableName: string) => {
+    return {
+      select: jest.fn((columns, options) => {
+        // Always return a chainable query, but mark it as a count query if needed
+        return createChainableQuery(tableName, options || {})
+      }),
+      insert: jest.fn(() => {
+        const chainableQuery = createChainableQuery(tableName)
+        return {
+          ...chainableQuery,
+          select: jest.fn(() => chainableQuery) // Special case for insert().select()
+        }
+      }),
+      update: jest.fn(() => createChainableQuery(tableName)),
+      delete: jest.fn(() => createChainableQuery(tableName)),
+      upsert: jest.fn(() => createChainableQuery(tableName))
+    }
+  }
 
   return {
-    from: jest.fn().mockImplementation(createQueryBuilder),
+    from: jest.fn((tableName) => createQueryBuilder(tableName)),
     auth: {
-      getUser: jest.fn().mockResolvedValue({ data: { user: null }, error: null }),
+      getUser: jest.fn(() => Promise.resolve({ 
+        data: { user: authUser }, 
+        error: authError 
+      })),
       signInWithPassword: jest.fn(),
       signUp: jest.fn(),
       signOut: jest.fn()

@@ -71,6 +71,16 @@ describe('/api/user/stats - Debug Likes/Comments Counting', () => {
                 // Weekly data query
                 return {
                   eq: jest.fn().mockReturnValue({
+                    gte: jest.fn().mockReturnValue({
+                      order: jest.fn().mockResolvedValue({
+                        data: [
+                          { created_at: '2023-12-01T00:00:00Z' },
+                          { created_at: '2023-12-02T00:00:00Z' },
+                          { created_at: '2023-12-03T00:00:00Z' }
+                        ],
+                        error: null
+                      })
+                    }),
                     order: jest.fn().mockResolvedValue({
                       data: [
                         { created_at: '2023-12-01T00:00:00Z' },
@@ -166,6 +176,12 @@ describe('/api/user/stats - Debug Likes/Comments Counting', () => {
               } else if (fields === 'created_at') {
                 return {
                   eq: jest.fn().mockReturnValue({
+                    gte: jest.fn().mockReturnValue({
+                      order: jest.fn().mockResolvedValue({
+                        data: [],
+                        error: null
+                      })
+                    }),
                     order: jest.fn().mockResolvedValue({
                       data: [],
                       error: null
@@ -234,6 +250,12 @@ describe('/api/user/stats - Debug Likes/Comments Counting', () => {
               } else if (fields === 'created_at') {
                 return {
                   eq: jest.fn().mockReturnValue({
+                    gte: jest.fn().mockReturnValue({
+                      order: jest.fn().mockResolvedValue({
+                        data: [{ created_at: '2023-12-01T00:00:00Z' }],
+                        error: null
+                      })
+                    }),
                     order: jest.fn().mockResolvedValue({
                       data: [{ created_at: '2023-12-01T00:00:00Z' }],
                       error: null

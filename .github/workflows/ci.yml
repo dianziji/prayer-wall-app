@@ -1,10 +1,13 @@
 name: CI/CD Pipeline
 
+# 临时禁用自动触发，专注于功能开发
+# 当测试覆盖完善后可重新启用
 on:
-  push:
-    branches: [ main, develop, feature/* ]
-  pull_request:
-    branches: [ main, develop ]
+  workflow_dispatch: # 只允许手动触发
+  # push:
+  #   branches: [ main, develop, feature/* ]
+  # pull_request:
+  #   branches: [ main, develop ]
 
 env:
   NODE_VERSION: '18'

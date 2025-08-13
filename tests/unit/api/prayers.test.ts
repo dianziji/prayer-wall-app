@@ -36,7 +36,9 @@ describe('/api/prayers API Routes', () => {
       const mockPrayers = createMockPrayers(3)
       
       const mockSupabase = createMockServerSupabase({
-        v_prayers_likes: mockPrayers
+        queryResults: {
+          v_prayers_likes: mockPrayers
+        }
       })
       
       createServerSupabase.mockResolvedValue(mockSupabase)
@@ -58,7 +60,9 @@ describe('/api/prayers API Routes', () => {
       })
       
       const mockSupabase = createMockServerSupabase({
-        v_prayers_likes: mockPrayers
+        queryResults: {
+          v_prayers_likes: mockPrayers
+        }
       })
       
       createServerSupabase.mockResolvedValue(mockSupabase)
@@ -160,32 +164,31 @@ describe('/api/prayers API Routes', () => {
       expect(data.content).toBe('New prayer content')
     })
 
-    it('should return 401 when user is not authenticated', async () => {
+    it('should create prayer for guest user when not authenticated', async () => {
       const { createServerSupabase } = require('@/lib/supabase-server')
       
-      const mockSupabase = {
-        auth: {
-          getUser: jest.fn().mockResolvedValue({
-            data: { user: null },
-            error: null
-          })
+      const mockSupabase = createMockServerSupabase({
+        authUser: null, // No authenticated user (guest)
+        queryResults: {
+          prayers: [{ id: 'guest-prayer-1', content: 'Guest prayer content', user_id: null }]
         }
-      }
+      })
       
       createServerSupabase.mockResolvedValue(mockSupabase)
       
       const request = createMockNextRequest('http://localhost:3000/api/prayers', {
         method: 'POST',
         body: JSON.stringify({
-          content: 'Prayer content'
+          content: 'Guest prayer content'
         })
       })
       
       const response = await POST(request)
       const data = await response.json()
       
-      expect(response.status).toBe(401)
-      expect(data).toHaveProperty('error')
+      expect(response.status).toBe(201)
+      expect(data).toHaveProperty('id')
+      expect(data.content).toBe('Guest prayer content')
     })
 
     it('should return 400 when content is missing', async () => {
@@ -249,40 +252,19 @@ describe('/api/prayers API Routes', () => {
   describe('PATCH /api/prayers', () => {
     it('should update prayer when authenticated and owns prayer', async () => {
       const { createServerSupabase } = require('@/lib/supabase-server')
-      const updatedPrayer = createMockPrayer({
-        id: 'prayer-1',
-        content: 'Updated content',
-        user_id: 'user-id'
-      })
       
-      const mockSupabase = {
-        auth: {
-          getUser: jest.fn().mockResolvedValue({
-            data: { user: { id: 'user-id' } },
-            error: null
-          })
-        },
-        from: jest.fn().mockReturnValue({
-          select: jest.fn().mockReturnValue({
-            eq: jest.fn().mockReturnValue({
-              single: jest.fn().mockResolvedValue({
-                data: { user_id: 'user-id' },
-                error: null
-              })
-            })
-          }),
-          update: jest.fn().mockReturnValue({
-            eq: jest.fn().mockReturnValue({
-              select: jest.fn().mockReturnValue({
-                single: jest.fn().mockResolvedValue({
-                  data: updatedPrayer,
-                  error: null
-                })
-              })
-            })
-          })
-        })
+      // Mock prayer data that will be returned from the initial select query
+      const existingPrayer = { 
+        user_id: 'user-id', 
+        created_at: new Date().toISOString() // Current week prayer
       }
+      
+      const mockSupabase = createMockServerSupabase({
+        authUser: { id: 'user-id' }, // Authenticated user
+        queryResults: {
+          prayers: [existingPrayer] // For both select and update operations
+        }
+      })
       
       createServerSupabase.mockResolvedValue(mockSupabase)
       
@@ -297,7 +279,7 @@ describe('/api/prayers API Routes', () => {
       const data = await response.json()
       
       expect(response.status).toBe(200)
-      expect(data.content).toBe('Updated content')
+      expect(data).toHaveProperty('success', true)
     })
 
     it('should return 400 when prayer ID is missing', async () => {
@@ -371,30 +353,18 @@ describe('/api/prayers API Routes', () => {
     it('should delete prayer when authenticated and owns prayer', async () => {
       const { createServerSupabase } = require('@/lib/supabase-server')
       
-      const mockSupabase = {
-        auth: {
-          getUser: jest.fn().mockResolvedValue({
-            data: { user: { id: 'user-id' } },
-            error: null
-          })
-        },
-        from: jest.fn().mockReturnValue({
-          select: jest.fn().mockReturnValue({
-            eq: jest.fn().mockReturnValue({
-              single: jest.fn().mockResolvedValue({
-                data: { user_id: 'user-id' },
-                error: null
-              })
-            })
-          }),
-          delete: jest.fn().mockReturnValue({
-            eq: jest.fn().mockResolvedValue({
-              data: null,
-              error: null
-            })
-          })
-        })
+      // Mock prayer data that will be returned from the initial select query
+      const existingPrayer = { 
+        user_id: 'user-id', 
+        created_at: new Date().toISOString() // Current week prayer
       }
+      
+      const mockSupabase = createMockServerSupabase({
+        authUser: { id: 'user-id' }, // Authenticated user
+        queryResults: {
+          prayers: [existingPrayer] // For both select and delete operations
+        }
+      })
       
       createServerSupabase.mockResolvedValue(mockSupabase)
       

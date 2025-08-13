@@ -1,4 +1,4 @@
-import { http, HttpResponse } from 'msw'
+import { rest } from 'msw'
 import { 
   createMockPrayer, 
   createMockPrayers, 
@@ -7,11 +7,11 @@ import {
   createMockUser
 } from '../../utils/factories'
 
-// Define API handlers for MSW
+// Define API handlers for MSW v1.3.0
 export const handlers = [
   // Prayers API
-  http.get('/api/prayers', ({ request }) => {
-    const url = new URL(request.url)
+  rest.get('/api/prayers', (req, res, ctx) => {
+    const url = new URL(req.url)
     const week = url.searchParams.get('week')
     
     // Return mock prayers for the requested week
@@ -19,24 +19,24 @@ export const handlers = [
       created_at: week ? `${week}T10:00:00Z` : new Date().toISOString()
     })
     
-    return HttpResponse.json(prayers)
+    return res(ctx.json(prayers))
   }),
 
-  http.post('/api/prayers', async ({ request }) => {
-    const body = await request.json() as any
+  rest.post('/api/prayers', async (req, res, ctx) => {
+    const body = await req.json()
     
     // Validate required fields
     if (!body.content || body.content.trim() === '') {
-      return new HttpResponse(
-        JSON.stringify({ error: 'Content is required' }),
-        { status: 400 }
+      return res(
+        ctx.status(400),
+        ctx.json({ error: 'Content is required' })
       )
     }
     
     if (body.content.length > 500) {
-      return new HttpResponse(
-        JSON.stringify({ error: 'Content too long' }),
-        { status: 400 }
+      return res(
+        ctx.status(400),
+        ctx.json({ error: 'Content too long' })
       )
     }
     
@@ -46,18 +46,18 @@ export const handlers = [
       author_name: body.author_name || 'Anonymous'
     })
     
-    return HttpResponse.json(newPrayer, { status: 201 })
+    return res(ctx.status(201), ctx.json(newPrayer))
   }),
 
-  http.patch('/api/prayers', async ({ request }) => {
-    const url = new URL(request.url)
+  rest.patch('/api/prayers', async (req, res, ctx) => {
+    const url = new URL(req.url)
     const id = url.searchParams.get('id')
-    const body = await request.json() as any
+    const body = await req.json()
     
     if (!id) {
-      return new HttpResponse(
-        JSON.stringify({ error: 'Prayer ID is required' }),
-        { status: 400 }
+      return res(
+        ctx.status(400),
+        ctx.json({ error: 'Prayer ID is required' })
       )
     }
     
@@ -68,70 +68,70 @@ export const handlers = [
       author_name: body.author_name
     })
     
-    return HttpResponse.json(updatedPrayer)
+    return res(ctx.json(updatedPrayer))
   }),
 
-  http.delete('/api/prayers', ({ request }) => {
-    const url = new URL(request.url)
+  rest.delete('/api/prayers', (req, res, ctx) => {
+    const url = new URL(req.url)
     const id = url.searchParams.get('id')
     
     if (!id) {
-      return new HttpResponse(
-        JSON.stringify({ error: 'Prayer ID is required' }),
-        { status: 400 }
+      return res(
+        ctx.status(400),
+        ctx.json({ error: 'Prayer ID is required' })
       )
     }
     
-    return HttpResponse.json({ success: true })
+    return res(ctx.json({ success: true }))
   }),
 
   // User Stats API
-  http.get('/api/user/stats', () => {
+  rest.get('/api/user/stats', (_req, res, ctx) => {
     const stats = createMockUserStats()
-    return HttpResponse.json(stats)
+    return res(ctx.json(stats))
   }),
 
   // User Prayers API
-  http.get('/api/user/prayers', () => {
+  rest.get('/api/user/prayers', (_req, res, ctx) => {
     const prayers = createMockPrayers(10)
-    return HttpResponse.json(prayers)
+    return res(ctx.json(prayers))
   }),
 
   // Likes API
-  http.post('/api/likes', async ({ request }) => {
-    const body = await request.json() as any
+  rest.post('/api/likes', async (req, res, ctx) => {
+    const body = await req.json()
     
     if (!body.prayer_id) {
-      return new HttpResponse(
-        JSON.stringify({ error: 'Prayer ID is required' }),
-        { status: 400 }
+      return res(
+        ctx.status(400),
+        ctx.json({ error: 'Prayer ID is required' })
       )
     }
     
-    return HttpResponse.json({ success: true })
+    return res(ctx.json({ success: true }))
   }),
 
-  http.delete('/api/likes', ({ request }) => {
-    const url = new URL(request.url)
+  rest.delete('/api/likes', (req, res, ctx) => {
+    const url = new URL(req.url)
     const prayerId = url.searchParams.get('prayer_id')
     
     if (!prayerId) {
-      return new HttpResponse(
-        JSON.stringify({ error: 'Prayer ID is required' }),
-        { status: 400 }
+      return res(
+        ctx.status(400),
+        ctx.json({ error: 'Prayer ID is required' })
       )
     }
     
-    return HttpResponse.json({ success: true })
+    return res(ctx.json({ success: true }))
   }),
 
   // Comments API
-  http.get('/api/comments', ({ request }) => {
-    const url = new URL(request.url)
+  rest.get('/api/comments', (req, res, ctx) => {
+    const url = new URL(req.url)
     const prayerId = url.searchParams.get('prayer_id')
     
     if (!prayerId) {
-      return HttpResponse.json([])
+      return res(ctx.json([]))
     }
     
     const comments = Array.from({ length: 3 }, (_, i) => 
@@ -142,16 +142,16 @@ export const handlers = [
       })
     )
     
-    return HttpResponse.json(comments)
+    return res(ctx.json(comments))
   }),
 
-  http.post('/api/comments', async ({ request }) => {
-    const body = await request.json() as any
+  rest.post('/api/comments', async (req, res, ctx) => {
+    const body = await req.json()
     
     if (!body.content || !body.prayer_id) {
-      return new HttpResponse(
-        JSON.stringify({ error: 'Content and prayer ID are required' }),
-        { status: 400 }
+      return res(
+        ctx.status(400),
+        ctx.json({ error: 'Content and prayer ID are required' })
       )
     }
     
@@ -160,27 +160,27 @@ export const handlers = [
       prayer_id: body.prayer_id
     })
     
-    return HttpResponse.json(newComment, { status: 201 })
+    return res(ctx.status(201), ctx.json(newComment))
   }),
 
   // Auth endpoints
-  http.get('/api/auth/user', () => {
+  rest.get('/api/auth/user', (_req, res, ctx) => {
     const user = createMockUser()
-    return HttpResponse.json({ user })
+    return res(ctx.json({ user }))
   }),
 
   // Error handlers for testing error states
-  http.get('/api/prayers/error', () => {
-    return new HttpResponse(
-      JSON.stringify({ error: 'Internal server error' }),
-      { status: 500 }
+  rest.get('/api/prayers/error', (_req, res, ctx) => {
+    return res(
+      ctx.status(500),
+      ctx.json({ error: 'Internal server error' })
     )
   }),
 
-  http.post('/api/prayers/unauthorized', () => {
-    return new HttpResponse(
-      JSON.stringify({ error: 'Unauthorized' }),
-      { status: 401 }
+  rest.post('/api/prayers/unauthorized', (_req, res, ctx) => {
+    return res(
+      ctx.status(401),
+      ctx.json({ error: 'Unauthorized' })
     )
   })
 ]

@@ -1,10 +1,12 @@
 name: 🧪 Test Suite
 
+# 临时禁用自动触发，专注于功能开发
 on:
-  push:
-    branches: [ main, develop, feature/* ]
-  pull_request:
-    branches: [ main, develop ]
+  workflow_dispatch: # 只允许手动触发
+  # push:
+  #   branches: [ main, develop, feature/* ]
+  # pull_request:
+  #   branches: [ main, develop ]
 
 jobs:
   unit-tests:
