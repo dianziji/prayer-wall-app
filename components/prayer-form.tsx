@@ -72,7 +72,10 @@ export function PrayerForm({ weekStart, onPost, onCancel, mode = 'create', praye
 
       if (mode === 'create') {
         setContent("")
-        setAuthor("")
+        // 只有在没有profile username的情况下才清空author
+        if (!profile?.username) {
+          setAuthor("")
+        }
       }
       onPost()
     } catch (err: any) {
