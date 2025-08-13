@@ -16,15 +16,23 @@ export type PrayerFormProps = {
 }
 
 export function PrayerForm({ weekStart, onPost, onCancel, mode = 'create', prayerId, initialValues }: PrayerFormProps) {
-  const { profile } = useSession()
+  const { profile, session } = useSession()
   const [author, setAuthor] = useState(initialValues?.author_name ?? profile?.username ?? "")
   const [content, setContent] = useState(initialValues?.content ?? "")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (profile?.username) setAuthor(profile.username)
-  }, [profile?.username])
+    if (profile?.username) {
+      setAuthor(profile.username)
+    } else if (session?.user && !profile) {
+      // 如果有session但profile还未加载，使用session中的信息作为fallback
+      const fallbackName = session.user.user_metadata?.full_name || 
+                           session.user.user_metadata?.name || 
+                           session.user.email?.split('@')[0] || ''
+      if (fallbackName) setAuthor(fallbackName)
+    }
+  }, [profile?.username, session?.user])
 
   const MAX_CONTENT = 500
   const MAX_NAME = 24

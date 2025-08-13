@@ -25,15 +25,47 @@ export function useSession() {
   useEffect(() => {
     supa.auth.getSession().then(({ data }) => {
       setSession(data.session ?? null)
-      if (data.session) loadProfile(data.session.user)
+      if (data.session) {
+        // 立即设置一个基础profile，避免等待
+        const user = data.session.user
+        const quickName = user.user_metadata?.full_name || 
+                          user.user_metadata?.name || 
+                          user.email?.split('@')[0] || 
+                          `user-${user.id.slice(0, 6)}`
+        
+        setProfile({
+          user_id: user.id,
+          username: quickName,
+          avatar_url: user.user_metadata?.avatar_url || user.user_metadata?.picture || null
+        })
+        
+        // 然后异步加载完整的profile
+        loadProfile(data.session.user)
+      }
     })
 
     // 监听登录 / 登出
     const { data: { subscription } } = supa.auth.onAuthStateChange(
       (_ev, sess) => {
         setSession(sess)
-        if (sess) loadProfile(sess.user)
-        else setProfile(null)
+        if (sess) {
+          // 同样的立即设置逻辑
+          const user = sess.user
+          const quickName = user.user_metadata?.full_name || 
+                            user.user_metadata?.name || 
+                            user.email?.split('@')[0] || 
+                            `user-${user.id.slice(0, 6)}`
+          
+          setProfile({
+            user_id: user.id,
+            username: quickName,
+            avatar_url: user.user_metadata?.avatar_url || user.user_metadata?.picture || null
+          })
+          
+          loadProfile(sess.user)
+        } else {
+          setProfile(null)
+        }
       }
     )
 
@@ -100,51 +132,64 @@ export function useSession() {
       .maybeSingle()
 
     const current = row as UserProfile | null
+    
+    // 快速设置基本profile信息，让username立即可用
+    const quickProfile = {
+      user_id: uid,
+      username: current?.username || fallbackName,
+      avatar_url: current?.avatar_url || fallbackAvatar,
+    }
+    setProfile(quickProfile)
 
     // 2) 计算目标用户名/头像；头像若为 Google 源则尝试镜像到 Storage
     let desiredName = current?.username || fallbackName
     let desiredAvatar = current?.avatar_url || fallbackAvatar
 
-    // 如果当前没有头像，或头像仍然是 Google 源，而我们拿到了 Google 头像 URL，则触发镜像
-    if ((!current?.avatar_url || isGoogleAvatar(current?.avatar_url)) && avatarUrl) {
-      try {
-        const res = await fetch('/api/avatar/ingest', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ sourceUrl: avatarUrl })
-        })
-        if (res.ok) {
-          const j = await res.json().catch(() => ({} as any))
-          if (j?.url) desiredAvatar = j.url as string
+    // 后台异步处理头像镜像和数据库更新，不阻塞UI
+    const needUpsert = !current || !current.username || !current.avatar_url
+    const needAvatarMirror = (!current?.avatar_url || isGoogleAvatar(current?.avatar_url)) && avatarUrl
+
+    if (needAvatarMirror || needUpsert) {
+      // 异步处理，不阻塞当前设置
+      (async () => {
+        // 如果需要头像镜像，先处理
+        if (needAvatarMirror) {
+          try {
+            const res = await fetch('/api/avatar/ingest', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ sourceUrl: avatarUrl })
+            })
+            if (res.ok) {
+              const j = await res.json().catch(() => ({} as any))
+              if (j?.url) desiredAvatar = j.url as string
+            }
+          } catch { /* ignore network errors; fallback to google url or null */ }
         }
-      } catch { /* ignore network errors; fallback to google url or null */ }
-    }
 
-    // 若没有行或用户名/头像缺失，或我们刚镜像出新的头像，则 upsert
-    const needUpsert = !current || !current.username || !current.avatar_url || desiredAvatar !== current?.avatar_url
-    if (needUpsert) {
-      const { data: upserted } = await supa
-        .from('user_profiles')
-        .upsert({
-          user_id: uid,
-          username: desiredName,
-          avatar_url: desiredAvatar ?? null,
-        })
-        .select('user_id, username, avatar_url')
-        .single()
+        // 如果需要upsert，执行数据库更新
+        if (needUpsert || desiredAvatar !== current?.avatar_url) {
+          const { data: upserted } = await supa
+            .from('user_profiles')
+            .upsert({
+              user_id: uid,
+              username: desiredName,
+              avatar_url: desiredAvatar ?? null,
+            })
+            .select('user_id, username, avatar_url')
+            .single()
 
-      setProfile(
-        (upserted as UserProfile) ?? {
-          user_id: uid,
-          username: desiredName,
-          avatar_url: desiredAvatar ?? null,
+          // 更新profile状态
+          setProfile(
+            (upserted as UserProfile) ?? {
+              user_id: uid,
+              username: desiredName,
+              avatar_url: desiredAvatar ?? null,
+            }
+          )
         }
-      )
-      return
+      })()
     }
-
-    // 3) 已有合法用户名和头像，直接设置
-    setProfile(current)
   }
 
   return { session, profile }
