@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback } from 'react'
-import useSWR from 'swr'
+import useSWR, { mutate as globalMutate } from 'swr'
 import { createBrowserSupabase } from '@/lib/supabase-browser'
 import { useSession } from '@/lib/useSession'
 import type { Comment } from '@/types/models'
@@ -65,9 +65,13 @@ export function CommentList({ prayerId }: { prayerId: string }) {
   const handleDelete = useCallback(
     async (id: string) => {
       const { error } = await supa.from('comments').delete().eq('id', id)
-      if (!error) mutate()
+      if (!error) {
+        mutate()
+        // 同时更新评论数量缓存
+        globalMutate(`comments-count-${prayerId}`, (prevCount: number = 1) => Math.max(0, prevCount - 1), { revalidate: false })
+      }
     },
-    [mutate, supa]
+    [mutate, supa, prayerId]
   )
 
   /** 更新评论内容（仅本人） */

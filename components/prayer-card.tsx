@@ -207,11 +207,9 @@ export function PrayerCard({ prayer, authorAvatarUrl = null, onEdit, onDelete }:
         )}
         
         {/* Comment list - shown on both mobile and desktop */}
-        {commentCount > 0 && (
-          <div className={session && showCommentForm ? "mt-3 sm:mt-4" : ""}>
-            <CommentList prayerId={prayer.id} />
-          </div>
-        )}
+        <div className={session && showCommentForm ? "mt-3 sm:mt-4" : ""}>
+          <CommentList prayerId={prayer.id} />
+        </div>
       </CardContent>
       
       {/* Mobile comment input popup - only for input form */}
