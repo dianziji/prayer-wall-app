@@ -46,10 +46,15 @@ export function WeeklyWallClient({ weekStart, readOnly }: Props) {
   }
 
   return (
-    <main className="min-h-screen bg-white/70 sm:bg-slate-100">
-      <div className="max-w-6xl mx-auto px-2 sm:px-6 py-4 sm:py-8 space-y-4 sm:space-y-6">
+    <main className="min-h-screen" style={{ backgroundColor: '#F8F6F0' }}>
+      <div className="max-w-6xl lg:max-w-7xl xl:max-w-8xl mx-auto px-2 sm:px-6 py-4 sm:py-8 space-y-4 sm:space-y-6">
         {/* Header */}
-        <section className="bg-transparent sm:bg-white/70 sm:backdrop-blur-sm rounded-lg sm:rounded-xl border-0 sm:border sm:border-white/20 shadow-none sm:shadow-sm p-3 sm:p-6">
+        <section 
+          className="rounded-lg sm:rounded-xl border-0 sm:border sm:border-white/20 shadow-none sm:shadow-sm p-3 sm:p-6"
+          style={{ 
+            background: 'radial-gradient(circle at top left, rgba(255, 215, 111, 0.5) 0%, rgba(255, 185, 108, 0.5) 20%, rgba(253, 226, 195, 0.5) 40%, rgba(168, 199, 255, 0.35) 65%, rgba(221, 238, 225, 0.8) 100%)'
+          }}
+        >
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <div>
               <p className="text-gray-600">
@@ -61,7 +66,11 @@ export function WeeklyWallClient({ weekStart, readOnly }: Props) {
             </div>
 
             {!readOnly && (
-              <Button onClick={() => setShowForm(!showForm)} className="px-4 sm:px-6 py-3 text-base sm:text-lg min-h-[44px] touch-manipulation w-full sm:w-auto focus:outline-none focus:bg-transparent active:bg-transparent">
+              <Button 
+                onClick={() => setShowForm(!showForm)} 
+                className="px-4 sm:px-6 py-3 text-base sm:text-lg min-h-[44px] touch-manipulation w-full sm:w-auto focus:outline-none focus:bg-transparent active:bg-transparent text-black hover:opacity-90"
+                style={{ backgroundColor: '#ffca39' }}
+              >
                 {showForm ? "Cancel" : "Submit a Prayer"}
               </Button>
             )}
@@ -69,7 +78,11 @@ export function WeeklyWallClient({ weekStart, readOnly }: Props) {
         </section>
 
         {/* Wall */}
-        <section className="bg-transparent sm:bg-white/70 sm:backdrop-blur-sm rounded-lg sm:rounded-xl border-0 sm:border sm:border-white/20 shadow-none sm:shadow-sm p-0 sm:p-6">
+        <section          style={{ 
+            background: 'linear-gradient(to top right, rgba(255, 215, 111, 0.2) 0%, rgba(255, 185, 108, 0.2) 20%, rgba(253, 226, 195, 0.2) 40%, rgba(168, 199, 255, 0.05) 65%, rgba(221, 238, 225, 0.5) 100%)'
+          
+          }} className="bg-transparent sm:bg-white/70 sm:backdrop-blur-sm rounded-lg sm:rounded-xl border-0 sm:border sm:border-white/20 shadow-none sm:shadow-sm p-0 sm:p-6">
+         
           <PrayerWall 
             weekStart={weekStart} 
             onEdit={!readOnly ? handleEdit : undefined}

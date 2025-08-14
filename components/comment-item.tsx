@@ -20,7 +20,10 @@ export function CommentItem({
 
   if (editing) {
     return (
-      <Card className="p-2 sm:p-3 border-0 sm:border shadow-none sm:shadow-sm bg-transparent sm:bg-white">
+      <Card 
+      className="p-2 sm:p-3 border-0 shadow-none"
+      style={{ backgroundColor: 'rgba(255, 255, 255, 0.5)' }}
+    >
         <Textarea
           value={text}
           onChange={e => setText(e.target.value)}
@@ -57,14 +60,17 @@ export function CommentItem({
 
 
   return (
-    <Card className="p-2 sm:p-3 border-0 sm:border shadow-none sm:shadow-sm bg-transparent sm:bg-white">
+    <Card 
+      className="p-2 sm:p-3 border-0 shadow-none"
+      style={{ backgroundColor: 'rgba(255, 255, 255, 0.5)' }}
+    >
       <div className="flex justify-between items-start">
         <div className="flex-1">
           <div className="mb-1">
-            <div className="text-xs sm:text-sm font-semibold text-foreground">{comment.author_name ?? '匿名'}</div>
-            <div className="text-xs text-muted-foreground">{formatDistanceToNow(new Date(comment.created_at), { addSuffix: false })}</div>
+            <div className="text-xs sm:text-sm font-medium sm:font-semibold text-foreground">{comment.author_name ?? '匿名'}</div>
+            <div className="text-xs text-muted-foreground opacity-75" style={{ fontSize: '10px' }}>{formatDistanceToNow(new Date(comment.created_at), { addSuffix: false })}</div>
           </div>
-          <p className="whitespace-pre-wrap break-words mt-1 text-sm">{comment.content}</p>
+          <p className="whitespace-pre-wrap break-words mt-1 text-xs sm:text-sm lg:text-base">{comment.content}</p>
         </div>
         {isMine && (
           <div className="relative ml-2">

@@ -4,6 +4,7 @@ import { useState, useCallback } from "react"
 import useSWR from 'swr'
 import { createBrowserSupabase } from '@/lib/supabase-browser'
 import type { Prayer } from '@/types/models'
+import { getPrayerContentType, getPrayerBorderStyle, getPrayerBorderColor, getPrayerBackgroundColor, parseContentWithMarkers } from '@/types/models'
 import { LikeButton } from '@/components/like-button'
 import { useSession } from '@/lib/useSession'
 import { CommentForm } from '@/components/comment-form'
@@ -26,6 +27,17 @@ export function PrayerCard({ prayer, authorAvatarUrl = null, onEdit, onDelete }:
   const [showCommentForm, setShowCommentForm] = useState(false)
   const [showActions, setShowActions] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  
+  // Determine content type and styling
+  const contentType = getPrayerContentType(prayer)
+  const borderStyle = getPrayerBorderStyle(contentType)
+  const borderColor = getPrayerBorderColor(contentType)
+  const backgroundColor = getPrayerBackgroundColor(contentType)
+  
+  // Parse content for display
+  const parsed = parseContentWithMarkers(prayer.content || '')
+  const hasThanksgiving = (prayer as any).thanksgiving_content || parsed.thanksgiving
+  const hasIntercession = (prayer as any).intercession_content || parsed.intercession
   
   // Fetch comment count
   const supa = createBrowserSupabase()
@@ -56,7 +68,13 @@ export function PrayerCard({ prayer, authorAvatarUrl = null, onEdit, onDelete }:
   }
 
   return (
-    <Card className="hover:shadow-lg transition-shadow duration-300 ease-in-out border border-gray-200 sm:border shadow-none sm:shadow-sm !bg-white">
+    <Card 
+      className={`hover:shadow-lg transition-shadow duration-300 ease-in-out shadow-none sm:shadow-sm ${borderStyle}`}
+      style={{ 
+        borderColor: borderColor,
+        backgroundColor: backgroundColor
+      }}
+    >
       <CardHeader className="pb-1 sm:pb-3 px-2 py-2 sm:p-6">
         <div className="flex items-start justify-between gap-0 sm:gap-3">
         <div className="flex items-start gap-1 sm:gap-3 flex-1 min-w-0">
@@ -77,10 +95,10 @@ export function PrayerCard({ prayer, authorAvatarUrl = null, onEdit, onDelete }:
             })()}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-xs sm:text-sm font-medium text-gray-800 truncate leading-tight">
+            <p className="text-xs sm:text-sm font-normal sm:font-medium text-gray-800 truncate leading-tight">
               {prayer.author_name || "Unknown"}
             </p>
-            <CardDescription className="text-xs leading-tight mt-0 sm:mt-1 text-gray-500">
+            <CardDescription className="text-xs leading-tight mt-0 sm:mt-1 text-gray-500" style={{ fontSize: '10px' }}>
               {formatDistanceToNow(time, { addSuffix: true })}
             </CardDescription>
           </div>
@@ -151,7 +169,55 @@ export function PrayerCard({ prayer, authorAvatarUrl = null, onEdit, onDelete }:
       </CardHeader>
       
       <CardContent className="pt-0 px-2 pb-2 sm:p-6">
-        <p className="text-xs sm:text-base lg:text-lg font-sm text-gray-900 break-words leading-relaxed mb-3 sm:mb-4">{prayer.content}</p>
+        {/* Prayer content - check if we have categorized content, but display in original layout */}
+        {(hasThanksgiving || hasIntercession) ? (
+          <div className="space-y-2 sm:space-y-3 mb-3 sm:mb-4">
+            {/* Thanksgiving content */}
+            {hasThanksgiving && (
+              <div className="space-y-1">
+                <div className="flex items-center gap-1.5">
+                  <div 
+                    className="w-2 h-2 rounded-full"
+                    style={{ backgroundColor: contentType === 'mixed' ? '#66b28f' : '#edcd52' }}
+                  ></div>
+                  <span 
+                    className="text-xs font-medium"
+                    style={{ color: contentType === 'mixed' ? '#66b28f' : '#edcd52' }}
+                  >
+                    感恩
+                  </span>
+                </div>
+                <p className="text-xs sm:text-sm lg:text-base text-gray-900 break-words leading-relaxed pl-3.5">
+                  {(prayer as any).thanksgiving_content || parsed.thanksgiving}
+                </p>
+              </div>
+            )}
+            
+            {/* Intercession content */}
+            {hasIntercession && (
+              <div className="space-y-1">
+                <div className="flex items-center gap-1.5">
+                  <div 
+                    className="w-2 h-2 rounded-full"
+                    style={{ backgroundColor: contentType === 'mixed' ? '#66b28f' : '#607ebf' }}
+                  ></div>
+                  <span 
+                    className="text-xs font-medium"
+                    style={{ color: contentType === 'mixed' ? '#66b28f' : '#607ebf' }}
+                  >
+                    代祷
+                  </span>
+                </div>
+                <p className="text-xs sm:text-sm lg:text-base text-gray-900 break-words leading-relaxed pl-3.5">
+                  {(prayer as any).intercession_content || parsed.intercession}
+                </p>
+              </div>
+            )}
+          </div>
+        ) : (
+          /* Legacy content display - original layout */
+          <p className="text-xs sm:text-base lg:text-lg font-sm text-gray-900 break-words leading-relaxed mb-3 sm:mb-4">{prayer.content}</p>
+        )}
         <div className="flex items-center justify-between sm:justify-end gap-3">
           <LikeButton
             prayerId={prayer.id}
@@ -164,7 +230,7 @@ export function PrayerCard({ prayer, authorAvatarUrl = null, onEdit, onDelete }:
               size="sm"
               onClick={() => setShowCommentForm(prev => !prev)}
               className={`
-                flex items-center gap-1.5 min-h-[44px] sm:min-h-auto transition-all duration-200 text-xs sm:text-sm focus:outline-none focus:bg-transparent active:bg-transparent
+                flex items-center gap-1 min-h-[44px] sm:min-h-auto transition-all duration-200 text-xs sm:text-sm focus:outline-none focus:bg-transparent active:bg-transparent
                 ${showCommentForm 
                   ? 'text-indigo-600 hover:text-gray-900' 
                   : 'text-gray-500 hover:text-gray-900'
@@ -181,7 +247,7 @@ export function PrayerCard({ prayer, authorAvatarUrl = null, onEdit, onDelete }:
                   <MessageCircle className="w-4 h-4" />
                   <span className="font-medium hidden sm:inline">评论</span>
                   {commentCount > 0 && (
-                    <span className="text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                    <span className="text-xs text-gray-600 ml-0.5">
                       {commentCount}
                     </span>
                   )}
@@ -193,7 +259,15 @@ export function PrayerCard({ prayer, authorAvatarUrl = null, onEdit, onDelete }:
         
         {/* 评论区 */}
         {commentCount > 0 && (
-          <Separator className="my-3 sm:my-4" />
+          <Separator 
+            className="mt-2 sm:mt-3 mb-3 sm:mb-4" 
+            style={{ 
+              backgroundColor: contentType === 'thanksgiving' ? '#edcd52' 
+                : contentType === 'intercession' ? '#607ebf' 
+                : contentType === 'mixed' ? '#66b28f' 
+                : '#e5e7eb'
+            }}
+          />
         )}
         
         {/* Desktop comment form - inline */}
