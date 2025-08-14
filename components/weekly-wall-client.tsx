@@ -78,7 +78,11 @@ export function WeeklyWallClient({ weekStart, readOnly }: Props) {
         </section>
 
         {/* Wall */}
-        <section className="bg-transparent sm:bg-white/70 sm:backdrop-blur-sm rounded-lg sm:rounded-xl border-0 sm:border sm:border-white/20 shadow-none sm:shadow-sm p-0 sm:p-6">
+        <section          style={{ 
+            background: 'linear-gradient(to top right, rgba(255, 215, 111, 0.2) 0%, rgba(255, 185, 108, 0.2) 20%, rgba(253, 226, 195, 0.2) 40%, rgba(168, 199, 255, 0.05) 65%, rgba(221, 238, 225, 0.5) 100%)'
+          
+          }} className="bg-transparent sm:bg-white/70 sm:backdrop-blur-sm rounded-lg sm:rounded-xl border-0 sm:border sm:border-white/20 shadow-none sm:shadow-sm p-0 sm:p-6">
+         
           <PrayerWall 
             weekStart={weekStart} 
             onEdit={!readOnly ? handleEdit : undefined}
