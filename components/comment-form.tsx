@@ -7,6 +7,9 @@ import { useSession } from '@/lib/useSession'
 import { toast } from 'sonner'
 import { mutate } from 'swr'
 import type { Comment } from '@/types/models'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { Smile } from 'lucide-react'
 
 export function CommentForm({ prayerId, onPosted }: {
   prayerId: string
@@ -44,33 +47,36 @@ const { session, profile } = useSession()
   }
 
   return (
-    <div className="space-y-2">
-      <textarea
+    <div className="space-y-3">
+      <Textarea
         value={text}
         onChange={e => setText(e.target.value)}
         rows={3}
         maxLength={maxLen}
-        className="w-full border rounded p-2"
         placeholder="写下你的鼓励… (支持 emoji)"
+        className="resize-none"
       />
       <div className="flex items-center justify-between">
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="sm"
           onClick={() => setOpen(!open)}
-          className="text-sm text-gray-500 hover:text-gray-700"
+          className="text-muted-foreground hover:text-foreground"
         >
-          🙂 Emoji
-        </button>
-        <span className="text-xs text-gray-400">
+          <Smile className="w-4 h-4 mr-1" />
+          Emoji
+        </Button>
+        <span className="text-xs text-muted-foreground">
           {text.length}/{maxLen}
         </span>
-        <button
+        <Button
           onClick={submit}
           disabled={disabled}
-          className="bg-indigo-600 text-white px-3 py-1 rounded disabled:opacity-40"
+          size="sm"
         >
           发布
-        </button>
+        </Button>
       </div>
       {open &&
         <Picker

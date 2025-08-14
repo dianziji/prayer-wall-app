@@ -7,6 +7,9 @@ import PrayerStats from '@/components/user/PrayerStats'
 import PrayerAnalytics from '@/components/user/PrayerAnalytics'
 import PrayerTimeline from '@/components/user/PrayerTimeline'
 import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Loader2, BookOpen, Bell } from 'lucide-react'
 
 export default function MyPrayersPage() {
   const { session } = useSession()
@@ -24,11 +27,13 @@ export default function MyPrayersPage() {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Loading...</p>
-        </div>
+      <main className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-200 flex items-center justify-center">
+        <Card className="w-full max-w-md mx-4">
+          <CardContent className="flex flex-col items-center py-8">
+            <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+            <p className="text-sm text-muted-foreground">Loading your prayers...</p>
+          </CardContent>
+        </Card>
       </main>
     )
   }
@@ -38,25 +43,32 @@ export default function MyPrayersPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-4 sm:py-8">
-      <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-200 py-6 sm:py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Page Header */}
-        <div className="mb-6 sm:mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">My Prayers</h1>
-              <p className="text-sm sm:text-base lg:text-lg text-gray-600">
-                Track your prayer journey and spiritual growth
-              </p>
+        <Card className="mb-6 sm:mb-8">
+          <CardContent className="p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-gray-100 rounded-full">
+                  <BookOpen className="w-5 h-5 text-gray-600" />
+                </div>
+                <div>
+                  <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-2">My Prayers</h1>
+                  <p className="text-sm text-muted-foreground">
+                    Track your prayer journey and spiritual growth
+                  </p>
+                </div>
+              </div>
+              <Button asChild className="w-full sm:w-auto">
+                <Link href="/reminders" className="flex items-center gap-2">
+                  <Bell className="w-4 h-4" />
+                  Prayer Reminders
+                </Link>
+              </Button>
             </div>
-            <Link
-              href="/reminders"
-              className="flex items-center gap-2 px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium text-sm sm:text-base min-h-[44px] touch-manipulation w-full sm:w-auto justify-center sm:justify-start"
-            >
-              🔔 Prayer Reminders
-            </Link>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Stats Dashboard */}
         <div className="mb-6 sm:mb-8">

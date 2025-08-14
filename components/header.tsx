@@ -3,6 +3,8 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { createBrowserSupabase } from '@/lib/supabase-browser'
 import { useSession } from '@/lib/useSession'
+import { Button } from '@/components/ui/button'
+import { QrCode } from "lucide-react";
 
 type Profile = { username: string | null; avatar_url: string | null }
 
@@ -31,29 +33,31 @@ export default function Header() {
 
 
   return (
-    <header className="bg-white shadow-sm relative overflow-visible z-30">
-      <div className="h-12 sm:h-14 max-w-6xl mx-auto px-3 sm:px-6 flex items-center justify-between">
-        <Link href="/" className="font-bold text-sm sm:text-base">Prayer Wall</Link>
+    <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-30">
+      <div className="h-14 sm:h-16 max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between">
+        <Link href="/" className="font-bold text-base sm:text-lg text-gray-900 hover:text-indigo-600 transition-colors">
+          Prayer Wall
+        </Link>
 
         {/* right‑side buttons + account menu */}
-        <div className="flex items-center gap-2 sm:gap-4">
-          <Link
-            href="/qr"
-            className="text-xs sm:text-sm hover:text-indigo-600 transition-colors px-2 py-1 rounded touch-manipulation"
-          >
-            QR Code
-          </Link>
-          <Link
-            href="/archive"
-            className="text-xs sm:text-sm hover:text-indigo-600 transition-colors px-2 py-1 rounded touch-manipulation"
-          >
-            Archive
-          </Link>
+        <div className="flex items-center gap-2">
+<Button variant="ghost" size="sm" asChild>
+  <Link href="/qr" className="flex items-center gap-1">
+     <QrCode className="w-4 h-4 sm:mr-1" />
+    <span className="hidden sm:inline">QR Code</span>
+  </Link>
+</Button>
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/archive">
+              Archive
+            </Link>
+          </Button>
           {userEmail ? (
             <div className="relative">
-              <button
+              <Button
+                variant="ghost"
                 onClick={toggleMenu}
-                className="flex items-center gap-1 sm:gap-2 hover:text-indigo-600 focus:outline-none min-h-[44px] px-2 py-1 rounded touch-manipulation"
+                className="flex items-center gap-1 sm:gap-2 h-10 px-2"
               >
                 {profile?.avatar_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -73,42 +77,48 @@ export default function Header() {
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
-              </button>
+              </Button>
 
               {menuOpen && (
-                <div className="absolute right-0 mt-2 w-44 sm:w-48 bg-white border rounded shadow-lg z-dropdown transform-gpu will-change-transform">
-                  <Link
-                    href="/account"
-                    className="block px-4 py-3 text-sm hover:bg-gray-100 touch-manipulation"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    Profile
-                  </Link>
-                  <Link
-                    href="/my-prayers"
-                    className="block px-4 py-3 text-sm hover:bg-gray-100 touch-manipulation"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    My Prayers
-                  </Link>
-                  <Link
-                    href="/reminders"
-                    className="block px-4 py-3 text-sm hover:bg-gray-100 touch-manipulation"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    🔔 Reminders
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-gray-100 touch-manipulation"
-                  >
-                    Logout
-                  </button>
+                <div className="absolute right-0 mt-2 w-44 sm:w-48 bg-white border border-gray-200 rounded-md shadow-lg z-dropdown">
+                  <div className="py-1">
+                    <Link
+                      href="/account"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Profile
+                    </Link>
+                    <Link
+                      href="/my-prayers"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      My Prayers
+                    </Link>
+                    <Link
+                      href="/reminders"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Reminders
+                    </Link>
+                    <hr className="my-1 border-gray-200" />
+                    <Button
+                      variant="ghost"
+                      onClick={handleLogout}
+                      className="w-full justify-start px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 h-auto"
+                    >
+                      Logout
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>
           ) : (
-            <Link href="/login" className="text-xs sm:text-sm text-indigo-600 px-3 py-2 rounded touch-manipulation">Login</Link>
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/login">Login</Link>
+            </Button>
           )}
         </div>
       </div>

@@ -16,12 +16,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <body className="bg-gradient-to-br from-slate-50 to-slate-200 min-h-screen">
         <Header />
         {children}
         <Analytics />
       </body>
-
     </html>
   )
 }
