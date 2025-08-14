@@ -7,7 +7,7 @@ import type { Prayer } from '@/types/models'
 const breakpointColumnsObj = {
   default: 3,
   1024: 2,
-  640: 1,
+  640: 2,  // Changed from 1 to 2 for mobile two-column layout
 }
 
 
@@ -94,13 +94,13 @@ export function PrayerWall({
   ))
 
   return (
-    <div className="px-4 py-8 max-w-6xl mx-auto">
+    <div className="px-0 sm:px-4 py-4 sm:py-8 max-w-6xl mx-auto">
       {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
       <Masonry
         breakpointCols={breakpointColumnsObj}
-        className="flex gap-4"
-        columnClassName="space-y-4"
+        className="flex gap-1 sm:gap-4"
+        columnClassName="space-y-1 sm:space-y-4"
       >
         {loading
           ? skeletons

@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { createBrowserSupabase } from '@/lib/supabase-browser'
 import { useSession } from '@/lib/useSession'
 import { Button } from '@/components/ui/button'
@@ -16,6 +16,7 @@ if (typeof window !== 'undefined' && !(window as any).supabaseTest) {
 export default function Header() {
     
   const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
 
   const { session, profile } = useSession()
   const userEmail = session?.user.email ?? null
@@ -31,33 +32,50 @@ export default function Header() {
     })
   }
 
+  // 点击外部区域关闭菜单
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false)
+      }
+    }
+
+    if (menuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [menuOpen])
+
 
   return (
     <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-30">
       <div className="h-14 sm:h-16 max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between">
-        <Link href="/" className="font-bold text-base sm:text-lg text-gray-900 hover:text-indigo-600 transition-colors">
+        <Link href="/" className="font-bold text-base sm:text-lg text-gray-900 hover:text-indigo-600 transition-colors focus:outline-none focus:text-gray-900 active:text-gray-900">
           Prayer Wall
         </Link>
 
         {/* right‑side buttons + account menu */}
         <div className="flex items-center gap-2">
 <Button variant="ghost" size="sm" asChild>
-  <Link href="/qr" className="flex items-center gap-1">
+  <Link href="/qr" className="flex items-center gap-1 focus:outline-none focus:bg-transparent active:bg-transparent">
      <QrCode className="w-4 h-4 sm:mr-1" />
     <span className="hidden sm:inline">QR Code</span>
   </Link>
 </Button>
           <Button variant="ghost" size="sm" asChild>
-            <Link href="/archive">
+            <Link href="/archive" className="focus:outline-none focus:bg-transparent active:bg-transparent">
               Archive
             </Link>
           </Button>
           {userEmail ? (
-            <div className="relative">
+            <div className="relative" ref={menuRef}>
               <Button
                 variant="ghost"
                 onClick={toggleMenu}
-                className="flex items-center gap-1 sm:gap-2 h-10 px-2"
+                className="flex items-center gap-1 sm:gap-2 h-10 px-2 focus:outline-none focus:bg-transparent active:bg-transparent"
               >
                 {profile?.avatar_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -117,7 +135,7 @@ export default function Header() {
             </div>
           ) : (
             <Button variant="outline" size="sm" asChild>
-              <Link href="/login">Login</Link>
+              <Link href="/login" className="focus:outline-none focus:bg-transparent active:bg-transparent">Login</Link>
             </Button>
           )}
         </div>

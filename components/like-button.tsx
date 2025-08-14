@@ -79,7 +79,7 @@ export function LikeButton({
       disabled={loading}
       className={`
         flex items-center gap-1.5 h-auto p-2 min-h-[44px] sm:min-h-auto sm:p-1.5 
-        disabled:opacity-40 transition-all duration-200 hover:scale-105
+        disabled:opacity-40 transition-all duration-200 hover:scale-105 focus:outline-none focus:bg-transparent active:bg-transparent
         ${liked 
           ? 'text-red-600 hover:text-red-600' 
           : 'text-gray-500 hover:text-red-500'

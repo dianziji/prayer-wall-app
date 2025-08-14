@@ -96,7 +96,7 @@ export function PrayerForm({ weekStart, onPost, onCancel, mode = 'create', praye
   }
 
   return (
-    <form className="mb-4 sm:mb-6 space-y-4" onSubmit={handleSubmit}>
+    <form className="mb-4 sm:mb-6 space-y-3 sm:space-y-4" onSubmit={handleSubmit}>
       {weekStart && (
         <p className="text-xs text-gray-500">Posting to week: {weekStart}</p>
       )}
@@ -114,7 +114,7 @@ export function PrayerForm({ weekStart, onPost, onCancel, mode = 'create', praye
           readOnly={!!profile?.username}
           onChange={(e) => setAuthor(e.target.value)}
           maxLength={MAX_NAME}
-          className="min-h-[44px] text-base sm:text-sm"
+          className="min-h-[36px] sm:min-h-[44px] text-sm sm:text-base"
         />
         <div className="text-xs text-muted-foreground text-right">{author.length}/{MAX_NAME}</div>
       </div>
@@ -126,7 +126,7 @@ export function PrayerForm({ weekStart, onPost, onCancel, mode = 'create', praye
           rows={4}
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className="min-h-[120px] text-base md:text-sm resize-none"
+          className="min-h-[100px] sm:min-h-[120px] text-sm sm:text-base resize-none"
         />
         <div className="text-xs text-muted-foreground text-right">{content.length}/{MAX_CONTENT}</div>
       </div>
@@ -137,14 +137,14 @@ export function PrayerForm({ weekStart, onPost, onCancel, mode = 'create', praye
           variant="outline"
           onClick={onCancel} 
           disabled={loading}
-          className="order-2 sm:order-1 min-h-[44px] text-base sm:text-sm"
+          className="order-2 sm:order-1 min-h-[36px] sm:min-h-[44px] text-sm sm:text-base py-2 sm:py-3 focus:outline-none focus:bg-transparent active:bg-transparent"
         >
           Cancel
         </Button>
         <Button 
           type="submit" 
           disabled={loading}
-          className="order-1 sm:order-2 min-h-[44px] text-base sm:text-sm"
+          className="order-1 sm:order-2 min-h-[36px] sm:min-h-[44px] text-sm sm:text-base py-2 sm:py-3 focus:outline-none focus:bg-transparent active:bg-transparent"
         >
           {loading 
             ? (mode === 'edit' ? "Updating..." : "Posting...") 

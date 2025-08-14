@@ -38,11 +38,15 @@ const { session, profile } = useSession()
     setText('')
     // 触发对应 CommentList 的 SWR 重新获取
     const insertedWithName = { ...inserted, author_name: profile?.username ?? '匿名' } as Comment
-    // mutate(['comments', prayerId])
+    
+    // 更新评论列表
     mutate(['comments', prayerId], (prev?: Comment[]) => {
-  const next = prev ? [insertedWithName, ...prev] : [insertedWithName]
-  return next
-}, { revalidate: false })
+      const next = prev ? [insertedWithName, ...prev] : [insertedWithName]
+      return next
+    }, { revalidate: false })
+    
+    // 同时更新评论数量缓存
+    mutate(`comments-count-${prayerId}`, (prevCount: number = 0) => prevCount + 1, { revalidate: false })
     onPosted()
   }
 

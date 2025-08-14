@@ -1,11 +1,12 @@
 'use client'
 
 import { useCallback } from 'react'
-import useSWR from 'swr'
+import useSWR, { mutate as globalMutate } from 'swr'
 import { createBrowserSupabase } from '@/lib/supabase-browser'
 import { useSession } from '@/lib/useSession'
 import type { Comment } from '@/types/models'
 import { CommentItem } from '@/components/comment-item'
+import { Separator } from '@/components/ui/separator'
 
 /**
  * 列出并管理指定祷告的评论
@@ -64,9 +65,13 @@ export function CommentList({ prayerId }: { prayerId: string }) {
   const handleDelete = useCallback(
     async (id: string) => {
       const { error } = await supa.from('comments').delete().eq('id', id)
-      if (!error) mutate()
+      if (!error) {
+        mutate()
+        // 同时更新评论数量缓存
+        globalMutate(`comments-count-${prayerId}`, (prevCount: number = 1) => Math.max(0, prevCount - 1), { revalidate: false })
+      }
     },
-    [mutate, supa]
+    [mutate, supa, prayerId]
   )
 
   /** 更新评论内容（仅本人） */
@@ -89,15 +94,19 @@ export function CommentList({ prayerId }: { prayerId: string }) {
   }
 
   return (
-    <div className="space-y-3">
-      {comments.map((c) => (
-        <CommentItem
-          key={c.id}
-          comment={c}
-          isMine={session?.user.id === c.user_id}
-          onDelete={handleDelete}
-          onEdit={handleEdit}
-        />
+    <div className="space-y-0">
+      {comments.map((c, index) => (
+        <div key={c.id}>
+          <CommentItem
+            comment={c}
+            isMine={session?.user.id === c.user_id}
+            onDelete={handleDelete}
+            onEdit={handleEdit}
+          />
+          {index < comments.length - 1 && (
+            <Separator className="opacity-20 my-2" />
+          )}
+        </div>
       ))}
     </div>
   )

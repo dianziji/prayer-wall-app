@@ -4,7 +4,7 @@ import { formatDistanceToNow } from "date-fns"
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Card } from '@/components/ui/card'
-import { MoreHorizontal } from 'lucide-react'
+import { MoreHorizontal, MoreVertical } from 'lucide-react'
 
 export function CommentItem({
   comment, isMine, onDelete, onEdit
@@ -20,7 +20,7 @@ export function CommentItem({
 
   if (editing) {
     return (
-      <Card className="p-3">
+      <Card className="p-2 sm:p-3 border-0 sm:border shadow-none sm:shadow-sm bg-transparent sm:bg-white">
         <Textarea
           value={text}
           onChange={e => setText(e.target.value)}
@@ -57,13 +57,12 @@ export function CommentItem({
 
 
   return (
-    <Card className="p-3">
+    <Card className="p-2 sm:p-3 border-0 sm:border shadow-none sm:shadow-sm bg-transparent sm:bg-white">
       <div className="flex justify-between items-start">
         <div className="flex-1">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-            <span className="text-sm font-semibold text-foreground">{comment.author_name ?? '匿名'}</span>
-            <span>·</span>
-            <span>{formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}</span>
+          <div className="mb-1">
+            <div className="text-xs sm:text-sm font-semibold text-foreground">{comment.author_name ?? '匿名'}</div>
+            <div className="text-xs text-muted-foreground">{formatDistanceToNow(new Date(comment.created_at), { addSuffix: false })}</div>
           </div>
           <p className="whitespace-pre-wrap break-words mt-1 text-sm">{comment.content}</p>
         </div>
@@ -75,7 +74,8 @@ export function CommentItem({
               onClick={() => setShowActions(!showActions)}
               className="h-6 w-6 text-muted-foreground hover:text-foreground"
             >
-              <MoreHorizontal className="w-4 h-4" />
+              <MoreVertical className="w-4 h-4 sm:hidden" />
+              <MoreHorizontal className="w-4 h-4 hidden sm:block" />
             </Button>
             {showActions && (
               <div className="absolute right-0 mt-1 bg-white rounded-md shadow-lg border border-gray-200 py-1 min-w-[120px] z-dropdown">
