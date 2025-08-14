@@ -1,6 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { TestTube, Play, Trash2, CheckCircle, XCircle, Clock, Loader2, FlaskConical, Zap } from 'lucide-react'
 
 interface TestResult {
   test: string
@@ -290,114 +295,232 @@ export default function PrayerReminderTester() {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6 mt-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold text-gray-800">🧪 Reminder System Tester</h2>
-        <div className="flex gap-3">
-          <button
-            onClick={clearResults}
-            disabled={isRunning}
-            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 text-sm font-medium"
-          >
-            Clear Results
-          </button>
-          <button
-            onClick={runAllTests}
-            disabled={isRunning}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 text-sm font-medium"
-          >
-            {isRunning ? 'Running Tests...' : 'Run All Tests'}
-          </button>
-        </div>
-      </div>
-
-      {/* Current Test Status */}
-      {currentTest && (
-        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm">
-          <div className="flex items-center gap-2">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-            {currentTest}
-          </div>
-        </div>
-      )}
-
-      {/* Test Results */}
-      <div className="space-y-3">
-        {testResults.map((result, index) => (
-          <div
-            key={index}
-            className={`p-3 rounded-lg border ${
-              result.status === 'success'
-                ? 'bg-green-50 border-green-200'
-                : result.status === 'error'
-                ? 'bg-red-50 border-red-200'
-                : 'bg-yellow-50 border-yellow-200'
-            }`}
-          >
-            <div className="flex justify-between items-start">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">
-                  {result.status === 'success' ? '✅' : result.status === 'error' ? '❌' : '⏳'}
-                  {result.test}
-                </span>
-              </div>
-              <span className="text-xs text-gray-500">{result.timestamp}</span>
+    <Card className="border-dashed border-2">
+      <CardHeader>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-slate-100 rounded-lg">
+              <FlaskConical className="w-5 h-5 text-slate-600" />
             </div>
-            <p className={`text-sm mt-1 ${
-              result.status === 'success'
-                ? 'text-green-700'
-                : result.status === 'error'
-                ? 'text-red-700'
-                : 'text-yellow-700'
-            }`}>
-              {result.message}
-            </p>
-          </div>
-        ))}
-      </div>
-
-      {/* Test Instructions */}
-      {testResults.length === 0 && !isRunning && (
-        <div className="text-center py-8">
-          <div className="text-4xl mb-4">🧪</div>
-          <h3 className="text-lg font-medium text-gray-800 mb-2">Prayer Reminder System Tester</h3>
-          <p className="text-gray-600 mb-4">
-            This will test all components of the prayer reminder system to ensure everything works correctly.
-          </p>
-          <div className="text-sm text-gray-500">
-            <p className="mb-2"><strong>Tests include:</strong></p>
-            <ul className="text-left inline-block space-y-1">
-              <li>• Browser notification support</li>
-              <li>• Permission status and requests</li>
-              <li>• Immediate and scheduled notifications</li>
-              <li>• localStorage functionality</li>
-              <li>• Time and day calculations</li>
-            </ul>
-          </div>
-        </div>
-      )}
-
-      {/* Summary */}
-      {testResults.length > 0 && !isRunning && (
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-          <div className="text-sm text-gray-600">
-            <div className="flex justify-between items-center">
-              <span>
-                <strong>Test Summary:</strong> {testResults.length} tests completed
-              </span>
-              <span>
-                ✅ {testResults.filter(r => r.status === 'success').length} • 
-                ❌ {testResults.filter(r => r.status === 'error').length}
-              </span>
-            </div>
-            {testResults.filter(r => r.status === 'error').length === 0 && (
-              <p className="mt-2 text-green-600 font-medium">
-                🎉 All tests passed! The reminder system should work correctly.
+            <div>
+              <CardTitle className="text-lg flex items-center gap-2">
+                Reminder System Tester
+                <Badge variant="secondary" className="text-xs">
+                  Dev Tools
+                </Badge>
+              </CardTitle>
+              <p className="text-sm text-muted-foreground mt-1">
+                Comprehensive testing suite for the prayer reminder system
               </p>
-            )}
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              onClick={clearResults}
+              disabled={isRunning}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <Trash2 className="w-4 h-4" />
+              Clear
+            </Button>
+            <Button
+              onClick={runAllTests}
+              disabled={isRunning}
+              className="flex items-center gap-2"
+            >
+              {isRunning ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Running...
+                </>
+              ) : (
+                <>
+                  <Play className="w-4 h-4" />
+                  Run Tests
+                </>
+              )}
+            </Button>
           </div>
         </div>
-      )}
-    </div>
+      </CardHeader>
+
+      <CardContent className="space-y-6">
+
+        {/* Current Test Status */}
+        {currentTest && (
+          <Alert className="bg-slate-50 border-slate-200">
+            <div className="flex items-center gap-3">
+              <Loader2 className="h-4 w-4 animate-spin text-slate-600" />
+              <div>
+                <AlertDescription className="text-slate-800 font-medium">
+                  {currentTest}
+                </AlertDescription>
+              </div>
+            </div>
+          </Alert>
+        )}
+
+        {/* Test Results */}
+        {testResults.length > 0 && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-medium flex items-center gap-2">
+                <TestTube className="w-4 h-4" />
+                Test Results
+              </h3>
+              <Badge variant="outline" className="text-xs">
+                {testResults.length} tests
+              </Badge>
+            </div>
+            <div className="grid gap-3">
+              {testResults.map((result, index) => (
+                <Card
+                  key={index}
+                  className={`transition-all duration-200 ${
+                    result.status === 'success'
+                      ? 'bg-green-50/50 border-green-200 hover:bg-green-50'
+                      : result.status === 'error'
+                      ? 'bg-red-50/50 border-red-200 hover:bg-red-50'
+                      : 'bg-slate-50/50 border-slate-200 hover:bg-slate-50'
+                  }`}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start gap-3">
+                      <div className="flex items-start gap-3 flex-1">
+                        <div className="mt-0.5">
+                          {result.status === 'success' ? (
+                            <CheckCircle className="w-4 h-4 text-green-600" />
+                          ) : result.status === 'error' ? (
+                            <XCircle className="w-4 h-4 text-red-600" />
+                          ) : (
+                            <Clock className="w-4 h-4 text-slate-600" />
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <div className="font-medium text-sm mb-1">
+                            {result.test}
+                          </div>
+                          <p className={`text-xs ${
+                            result.status === 'success'
+                              ? 'text-green-700'
+                              : result.status === 'error'
+                              ? 'text-red-700'
+                              : 'text-slate-700'
+                          }`}>
+                            {result.message}
+                          </p>
+                        </div>
+                      </div>
+                      <Badge variant="outline" className="text-xs font-mono">
+                        {result.timestamp}
+                      </Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Test Instructions */}
+        {testResults.length === 0 && !isRunning && (
+          <Card className="bg-gradient-to-br from-slate-50 to-gray-50 border-slate-200">
+            <CardContent className="p-8 text-center">
+              <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Zap className="w-8 h-8 text-slate-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Ready to Test</h3>
+              <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                Run comprehensive tests to verify all prayer reminder system components are working correctly.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div className="bg-white/80 p-4 rounded-lg">
+                  <h4 className="font-medium text-gray-900 mb-2">Core Tests</h4>
+                  <ul className="text-left space-y-1 text-gray-600">
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="w-3 h-3 text-green-600" />
+                      Browser notification support
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="w-3 h-3 text-green-600" />
+                      Permission management
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="w-3 h-3 text-green-600" />
+                      localStorage functionality
+                    </li>
+                  </ul>
+                </div>
+                <div className="bg-white/80 p-4 rounded-lg">
+                  <h4 className="font-medium text-gray-900 mb-2">Advanced Tests</h4>
+                  <ul className="text-left space-y-1 text-gray-600">
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="w-3 h-3 text-green-600" />
+                      Immediate notifications
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="w-3 h-3 text-green-600" />
+                      Scheduled notifications
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="w-3 h-3 text-green-600" />
+                      Time calculations
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Summary */}
+        {testResults.length > 0 && !isRunning && (
+          <Card className="bg-slate-50 border-slate-200">
+            <CardContent className="p-4">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                <div className="flex items-center gap-3">
+                  <TestTube className="w-4 h-4 text-slate-600" />
+                  <span className="text-sm font-medium">
+                    Test Summary: {testResults.length} tests completed
+                  </span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-1">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <span className="text-sm font-medium text-green-700">
+                      {testResults.filter(r => r.status === 'success').length}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <XCircle className="w-4 h-4 text-red-600" />
+                    <span className="text-sm font-medium text-red-700">
+                      {testResults.filter(r => r.status === 'error').length}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              {testResults.filter(r => r.status === 'error').length === 0 && (
+                <Alert className="mt-4 bg-green-50 border-green-200">
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <AlertDescription className="text-green-800">
+                    🎉 All tests passed! The reminder system is working correctly.
+                  </AlertDescription>
+                </Alert>
+              )}
+              {testResults.filter(r => r.status === 'error').length > 0 && (
+                <Alert className="mt-4 bg-red-50 border-red-200">
+                  <XCircle className="h-4 w-4 text-red-600" />
+                  <AlertDescription className="text-red-800">
+                    Some tests failed. Check the results above for troubleshooting.
+                  </AlertDescription>
+                </Alert>
+              )}
+            </CardContent>
+          </Card>
+        )}
+      </CardContent>
+    </Card>
   )
 }
