@@ -46,10 +46,10 @@ export function WeeklyWallClient({ weekStart, readOnly }: Props) {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-200">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+    <main className="min-h-screen bg-white/70 sm:bg-slate-100">
+      <div className="max-w-6xl mx-auto px-2 sm:px-6 py-4 sm:py-8 space-y-4 sm:space-y-6">
         {/* Header */}
-        <section className="bg-white/70 backdrop-blur-sm rounded-xl border border-white/20 shadow-sm p-4 sm:p-6">
+        <section className="bg-transparent sm:bg-white/70 sm:backdrop-blur-sm rounded-lg sm:rounded-xl border-0 sm:border sm:border-white/20 shadow-none sm:shadow-sm p-3 sm:p-6">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <div>
               <p className="text-gray-600">
@@ -61,7 +61,7 @@ export function WeeklyWallClient({ weekStart, readOnly }: Props) {
             </div>
 
             {!readOnly && (
-              <Button onClick={() => setShowForm(!showForm)} className="px-4 sm:px-6 py-3 text-base sm:text-lg min-h-[44px] touch-manipulation w-full sm:w-auto">
+              <Button onClick={() => setShowForm(!showForm)} className="px-4 sm:px-6 py-3 text-base sm:text-lg min-h-[44px] touch-manipulation w-full sm:w-auto focus:outline-none focus:bg-transparent active:bg-transparent">
                 {showForm ? "Cancel" : "Submit a Prayer"}
               </Button>
             )}
@@ -69,7 +69,7 @@ export function WeeklyWallClient({ weekStart, readOnly }: Props) {
         </section>
 
         {/* Wall */}
-        <section className="bg-white/70 backdrop-blur-sm rounded-xl border border-white/20 shadow-sm p-4 sm:p-6">
+        <section className="bg-transparent sm:bg-white/70 sm:backdrop-blur-sm rounded-lg sm:rounded-xl border-0 sm:border sm:border-white/20 shadow-none sm:shadow-sm p-0 sm:p-6">
           <PrayerWall 
             weekStart={weekStart} 
             onEdit={!readOnly ? handleEdit : undefined}
@@ -81,9 +81,9 @@ export function WeeklyWallClient({ weekStart, readOnly }: Props) {
 
       {/* Modal Form */}
       {!readOnly && showForm && (
-        <div className="fixed inset-0 z-modal bg-black/50 backdrop-blur-sm flex justify-center items-center">
-          <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-xl mx-4">
-            <h2 className="text-2xl font-semibold text-gray-700 mb-6">
+        <div className="fixed inset-0 z-modal bg-black/50 backdrop-blur-sm flex justify-center items-end sm:items-center">
+          <div className="bg-white rounded-t-xl sm:rounded-xl shadow-2xl p-4 sm:p-8 w-full max-w-xl mx-0 sm:mx-4 max-h-[90vh] overflow-y-auto">
+            <h2 className="text-lg sm:text-2xl font-semibold text-gray-700 mb-4 sm:mb-6">
               {editingPrayer ? 'Edit Prayer' : 'Share a Prayer'}
             </h2>
             <PrayerForm

@@ -6,6 +6,7 @@ import { createBrowserSupabase } from '@/lib/supabase-browser'
 import { useSession } from '@/lib/useSession'
 import type { Comment } from '@/types/models'
 import { CommentItem } from '@/components/comment-item'
+import { Separator } from '@/components/ui/separator'
 
 /**
  * 列出并管理指定祷告的评论
@@ -89,15 +90,19 @@ export function CommentList({ prayerId }: { prayerId: string }) {
   }
 
   return (
-    <div className="space-y-3">
-      {comments.map((c) => (
-        <CommentItem
-          key={c.id}
-          comment={c}
-          isMine={session?.user.id === c.user_id}
-          onDelete={handleDelete}
-          onEdit={handleEdit}
-        />
+    <div className="space-y-0">
+      {comments.map((c, index) => (
+        <div key={c.id}>
+          <CommentItem
+            comment={c}
+            isMine={session?.user.id === c.user_id}
+            onDelete={handleDelete}
+            onEdit={handleEdit}
+          />
+          {index < comments.length - 1 && (
+            <Separator className="opacity-20 my-2" />
+          )}
+        </div>
       ))}
     </div>
   )
