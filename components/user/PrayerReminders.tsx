@@ -2,6 +2,17 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useSession } from '@/lib/useSession'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { Bell, Clock, Calendar, MessageSquare, Save, TestTube, Zap, Trash2, AlertTriangle, CheckCircle, XCircle, Info, Loader2 } from 'lucide-react'
 
 interface ReminderSettings {
   enabled: boolean
@@ -16,7 +27,7 @@ const defaultSettings: ReminderSettings = {
   dailyTime: '09:00',
   frequency: 'daily',
   customDays: [0, 1, 2, 3, 4, 5, 6], // All days
-  message: 'Time for prayer and reflection 🙏'
+  message: 'Time for prayer and reflection'
 }
 
 const STORAGE_KEY = 'prayer-reminders'
@@ -58,7 +69,7 @@ export default function PrayerReminders() {
   const clearAllTimers = useCallback(() => {
     timersRef.current.forEach(timer => clearTimeout(timer))
     timersRef.current = []
-    setDebugInfo(prev => prev + '\n🧹 Cleared all existing timers')
+    setDebugInfo(prev => prev + '\nCleared all existing timers')
   }, [])
 
   // Show notification
@@ -72,13 +83,13 @@ export default function PrayerReminders() {
           requireInteraction: false,
           silent: false
         })
-        setDebugInfo(prev => prev + '\n🔔 Notification shown successfully')
+        setDebugInfo(prev => prev + '\nNotification shown successfully')
       } catch (error) {
         console.error('Error showing notification:', error)
-        setDebugInfo(prev => prev + '\n❌ Error showing notification')
+        setDebugInfo(prev => prev + '\nError showing notification')
       }
     } else {
-      setDebugInfo(prev => prev + '\n⚠️ Cannot show notification - permission not granted')
+      setDebugInfo(prev => prev + '\nCannot show notification - permission not granted')
     }
   }, [notificationPermission, settings.message])
 
@@ -116,7 +127,7 @@ export default function PrayerReminders() {
     clearAllTimers()
     
     if (!settings.enabled || notificationPermission !== 'granted') {
-      setDebugInfo(prev => prev + '\n⏹️ Not scheduling - reminders disabled or permission not granted')
+      setDebugInfo(prev => prev + '\nNot scheduling - reminders disabled or permission not granted')
       return
     }
 
@@ -131,7 +142,7 @@ export default function PrayerReminders() {
       scheduledDays = settings.customDays
     }
 
-    setDebugInfo(prev => prev + `\n📅 Scheduling for days: ${scheduledDays.join(', ')} at ${settings.dailyTime}`)
+    setDebugInfo(prev => prev + `\nScheduling for days: ${scheduledDays.join(', ')} at ${settings.dailyTime}`)
 
     // Schedule for each selected day
     scheduledDays.forEach(dayOfWeek => {
@@ -150,7 +161,7 @@ export default function PrayerReminders() {
 
         const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][dayOfWeek]
         const timeFormatted = nextTime.toLocaleString()
-        setDebugInfo(prev => prev + `\n⏰ Scheduled for ${dayName} at ${timeFormatted} (in ${Math.round(timeUntilNotification / 1000 / 60)} minutes)`)
+        setDebugInfo(prev => prev + `\nScheduled for ${dayName} at ${timeFormatted} (in ${Math.round(timeUntilNotification / 1000 / 60)} minutes)`)
       }
     })
   }, [settings, notificationPermission, clearAllTimers, getNextReminderTime, showNotification])
@@ -170,25 +181,25 @@ export default function PrayerReminders() {
   // Request notification permission
   const requestNotificationPermission = async () => {
     if (!notificationSupported) {
-      setDebugInfo(prev => prev + '\n❌ Notifications not supported')
+      setDebugInfo(prev => prev + '\nNotifications not supported')
       return 'denied' as NotificationPermission
     }
     
     try {
       const permission = await Notification.requestPermission()
       setNotificationPermission(permission)
-      setDebugInfo(prev => prev + `\n🔐 Permission result: ${permission}`)
+      setDebugInfo(prev => prev + `\nPermission result: ${permission}`)
       return permission
     } catch (error) {
       console.error('Error requesting notification permission:', error)
-      setDebugInfo(prev => prev + '\n❌ Error requesting permission')
+      setDebugInfo(prev => prev + '\nError requesting permission')
       return 'denied' as NotificationPermission
     }
   }
 
   // Test notification immediately
   const testNotification = () => {
-    setDebugInfo(prev => prev + '\n🧪 Testing notification...')
+    setDebugInfo(prev => prev + '\nTesting notification...')
     showNotification()
   }
 
@@ -200,7 +211,7 @@ export default function PrayerReminders() {
     setTimeout(() => {
       setIsLoading(false)
       setSaveSuccess(true)
-      setDebugInfo(prev => prev + '\n💾 Settings saved to localStorage')
+      setDebugInfo(prev => prev + '\nSettings saved to localStorage')
       setTimeout(() => setSaveSuccess(false), 2000)
     }, 500)
   }
@@ -208,10 +219,10 @@ export default function PrayerReminders() {
   // Toggle reminders with permission check
   const toggleReminders = async () => {
     if (!settings.enabled && notificationPermission !== 'granted') {
-      setDebugInfo(prev => prev + '\n🔐 Requesting notification permission...')
+      setDebugInfo(prev => prev + '\nRequesting notification permission...')
       const permission = await requestNotificationPermission()
       if (permission !== 'granted') {
-        setDebugInfo(prev => prev + '\n❌ Permission denied, cannot enable reminders')
+        setDebugInfo(prev => prev + '\nPermission denied, cannot enable reminders')
         return
       }
     }
@@ -221,12 +232,12 @@ export default function PrayerReminders() {
       // Auto-save when toggling
       setTimeout(() => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(newSettings))
-        setDebugInfo(prevDebug => prevDebug + '\n💾 Auto-saved settings')
+        setDebugInfo(prevDebug => prevDebug + '\nAuto-saved settings')
       }, 100)
       return newSettings
     })
     
-    setDebugInfo(prev => prev + `\n🔄 Reminders ${!settings.enabled ? 'enabled' : 'disabled'}`)
+    setDebugInfo(prev => prev + `\nReminders ${!settings.enabled ? 'enabled' : 'disabled'}`)
   }
 
   // Auto-save settings when they change
@@ -248,14 +259,14 @@ export default function PrayerReminders() {
   // Quick test - schedule a notification in 5 seconds
   const quickTest = () => {
     if (notificationPermission !== 'granted') {
-      setDebugInfo(prev => prev + '\n❌ Cannot quick test - permission not granted')
+      setDebugInfo(prev => prev + '\nCannot quick test - permission not granted')
       return
     }
 
-    setDebugInfo(prev => prev + '\n⚡ Quick test: notification in 5 seconds...')
+    setDebugInfo(prev => prev + '\nQuick test: notification in 5 seconds...')
     const timer = setTimeout(() => {
       showNotification()
-      setDebugInfo(prev => prev + '\n✅ Quick test notification sent!')
+      setDebugInfo(prev => prev + '\nQuick test notification sent!')
     }, 5000)
 
     timersRef.current.push(timer)
@@ -268,232 +279,378 @@ export default function PrayerReminders() {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-gray-800">🔔 Prayer Reminders</h2>
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="reminder-toggle"
-            checked={settings.enabled}
-            onChange={toggleReminders}
-            className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-          />
-          <label htmlFor="reminder-toggle" className="ml-2 text-sm text-gray-700">
-            {settings.enabled ? 'Enabled' : 'Disabled'}
-          </label>
-        </div>
-      </div>
-
-      {/* Status Messages */}
-      {!notificationSupported && (
-        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700 text-sm">
-          ⚠️ Notifications are not supported in your browser
-        </div>
-      )}
-
-      {notificationSupported && notificationPermission === 'denied' && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-          🚫 Notifications are blocked. Please enable them in your browser settings to use reminders.
-        </div>
-      )}
-
-      {notificationSupported && notificationPermission === 'default' && !settings.enabled && (
-        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm">
-          💡 Enable reminders to allow notifications for prayer reminders.
-        </div>
-      )}
-
-      {notificationSupported && notificationPermission === 'granted' && settings.enabled && (
-        <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
-          ✅ Reminders are active! You&apos;ll receive notifications at your selected times.
-        </div>
-      )}
-
-      <div className="space-y-6">
-        {/* Time Setting */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Reminder Time
-          </label>
-          <input
-            type="time"
-            value={settings.dailyTime}
-            onChange={(e) => setSettings(prev => ({ ...prev, dailyTime: e.target.value }))}
-            disabled={!settings.enabled}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50"
-          />
-        </div>
-
-        {/* Frequency Setting */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Frequency
-          </label>
-          <div className="space-y-2">
-            <label className="flex items-center">
-              <input
-                type="radio"
-                value="daily"
-                checked={settings.frequency === 'daily'}
-                onChange={(e) => setSettings(prev => ({ ...prev, frequency: e.target.value as any }))}
-                disabled={!settings.enabled}
-                className="mr-2"
-              />
-              <span className="text-sm">Daily</span>
-            </label>
-            <label className="flex items-center">
-              <input
-                type="radio"
-                value="weekly"
-                checked={settings.frequency === 'weekly'}
-                onChange={(e) => setSettings(prev => ({ ...prev, frequency: e.target.value as any }))}
-                disabled={!settings.enabled}
-                className="mr-2"
-              />
-              <span className="text-sm">Weekly (Sundays)</span>
-            </label>
-            <label className="flex items-center">
-              <input
-                type="radio"
-                value="custom"
-                checked={settings.frequency === 'custom'}
-                onChange={(e) => setSettings(prev => ({ ...prev, frequency: e.target.value as any }))}
-                disabled={!settings.enabled}
-                className="mr-2"
-              />
-              <span className="text-sm">Custom days</span>
-            </label>
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-xl flex items-center gap-2">
+            <Bell className="w-5 h-5" />
+            Prayer Reminders
+          </CardTitle>
+          <div className="flex items-center gap-2">
+            <Switch
+              id="reminder-toggle"
+              checked={settings.enabled}
+              onCheckedChange={(checked) => {
+                setSettings(prev => ({ ...prev, enabled: checked }))
+                if (checked && notificationPermission !== 'granted') {
+                  toggleReminders()
+                }
+              }}
+            />
+            <Label htmlFor="reminder-toggle" className="text-sm">
+              {settings.enabled ? 'Enabled' : 'Disabled'}
+            </Label>
           </div>
         </div>
+      </CardHeader>
 
-        {/* Custom Days Selection */}
-        {settings.frequency === 'custom' && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Select Days
-            </label>
-            <div className="grid grid-cols-7 gap-2">
-              {dayNames.map((day, index) => (
-                <label key={index} className="flex flex-col items-center text-xs">
-                  <input
-                    type="checkbox"
-                    checked={settings.customDays.includes(index)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSettings(prev => ({
-                          ...prev,
-                          customDays: [...prev.customDays, index].sort()
-                        }))
-                      } else {
-                        setSettings(prev => ({
-                          ...prev,
-                          customDays: prev.customDays.filter(d => d !== index)
-                        }))
-                      }
-                    }}
-                    disabled={!settings.enabled}
-                    className="mb-1"
-                  />
-                  <span className={index === 0 || index === 6 ? 'font-medium' : ''}>
-                    {day.slice(0, 3)}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </div>
+      <CardContent>
+        {/* Status Messages */}
+        {!notificationSupported && (
+          <Alert className="mb-4" variant="destructive">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>
+              Notifications are not supported in your browser
+            </AlertDescription>
+          </Alert>
         )}
 
-        {/* Custom Message */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Reminder Message
-          </label>
-          <textarea
-            value={settings.message}
-            onChange={(e) => setSettings(prev => ({ ...prev, message: e.target.value }))}
-            disabled={!settings.enabled}
-            rows={2}
-            maxLength={100}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50"
-            placeholder="Custom reminder message..."
-          />
-          <p className="text-xs text-gray-500 mt-1">
-            {settings.message.length}/100 characters
-          </p>
-        </div>
+        {notificationSupported && notificationPermission === 'denied' && (
+          <Alert className="mb-4" variant="destructive">
+            <XCircle className="h-4 w-4" />
+            <AlertDescription>
+              Notifications are blocked. Please enable them in your browser settings to use reminders.
+            </AlertDescription>
+          </Alert>
+        )}
 
-        {/* Action Buttons */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-          <button
-            onClick={saveSettings}
-            disabled={isLoading}
-            className="px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 text-sm font-medium"
-          >
-            {isLoading ? 'Saving...' : 'Save'}
-          </button>
-          
-          {settings.enabled && notificationPermission === 'granted' && (
-            <>
-              <button
-                onClick={testNotification}
-                className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+        {notificationSupported && notificationPermission === 'default' && !settings.enabled && (
+          <Alert className="mb-4">
+            <Info className="h-4 w-4" />
+            <AlertDescription>
+              Enable reminders to allow notifications for prayer reminders.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {notificationSupported && notificationPermission === 'granted' && settings.enabled && (
+          <Alert className="mb-4" variant="default">
+            <CheckCircle className="h-4 w-4" />
+            <AlertDescription>
+              Reminders are active! You&apos;ll receive notifications at your selected times.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        <div className="space-y-6">
+          {/* Time and Frequency Settings */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Time Setting */}
+            <div className="space-y-2">
+              <Label htmlFor="reminder-time" className="flex items-center gap-2">
+                <Clock className="w-4 h-4" />
+                Reminder Time
+              </Label>
+              <Input
+                id="reminder-time"
+                type="time"
+                value={settings.dailyTime}
+                onChange={(e) => setSettings(prev => ({ ...prev, dailyTime: e.target.value }))}
+                disabled={!settings.enabled}
+                className="w-full max-w-40"
+              />
+            </div>
+
+            {/* Frequency Setting */}
+            <div className="space-y-3">
+              <Label className="flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                Frequency
+              </Label>
+              <RadioGroup
+                value={settings.frequency}
+                onValueChange={(value: 'daily' | 'weekly' | 'custom') => 
+                  setSettings(prev => ({ ...prev, frequency: value }))
+                }
+                disabled={!settings.enabled}
+                className="space-y-2"
               >
-                Test Now
-              </button>
-              
-              <button
-                onClick={quickTest}
-                className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
-              >
-                Test in 5s
-              </button>
-            </>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="daily" id="daily" disabled={!settings.enabled} />
+                  <Label htmlFor="daily" className="text-sm">Daily</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="weekly" id="weekly" disabled={!settings.enabled} />
+                  <Label htmlFor="weekly" className="text-sm">Weekly (Sundays)</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="custom" id="custom" disabled={!settings.enabled} />
+                  <Label htmlFor="custom" className="text-sm">Custom days</Label>
+                </div>
+              </RadioGroup>
+            </div>
+          </div>
+
+          {/* Custom Days Selection */}
+          {settings.frequency === 'custom' && (
+            <div className="space-y-3">
+              <Label>Select Days</Label>
+              <div className="grid grid-cols-7 gap-2">
+                {dayNames.map((day, index) => {
+                  const isChecked = settings.customDays.includes(index)
+                  return (
+                    <div key={index} className="flex flex-col items-center gap-2">
+                      <Checkbox
+                        id={`day-${index}`}
+                        checked={isChecked}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setSettings(prev => ({
+                              ...prev,
+                              customDays: [...prev.customDays, index].sort()
+                            }))
+                          } else {
+                            setSettings(prev => ({
+                              ...prev,
+                              customDays: prev.customDays.filter(d => d !== index)
+                            }))
+                          }
+                        }}
+                        disabled={!settings.enabled}
+                      />
+                      <Label 
+                        htmlFor={`day-${index}`} 
+                        className={`text-xs cursor-pointer ${
+                          index === 0 || index === 6 ? 'font-medium' : ''
+                        }`}
+                      >
+                        {day.slice(0, 3)}
+                      </Label>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
           )}
-          
-          <button
-            onClick={clearDebugInfo}
-            className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
-          >
-            Clear Log
-          </button>
-        </div>
 
-        {/* Success Message */}
-        {saveSuccess && (
-          <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm text-center">
-            ✓ Reminder settings saved successfully!
-          </div>
-        )}
-
-        {/* Debug Information */}
-        {debugInfo && (
-          <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
-            <div className="flex justify-between items-center mb-2">
-              <h4 className="text-sm font-medium text-gray-700">Debug Log</h4>
-              <span className="text-xs text-gray-500">
-                Active timers: {timersRef.current.length}
-              </span>
+          {/* Custom Message */}
+          <div className="space-y-2">
+            <Label htmlFor="reminder-message" className="flex items-center gap-2">
+              <MessageSquare className="w-4 h-4" />
+              Reminder Message
+            </Label>
+            <Textarea
+              id="reminder-message"
+              value={settings.message}
+              onChange={(e) => setSettings(prev => ({ ...prev, message: e.target.value }))}
+              disabled={!settings.enabled}
+              rows={2}
+              maxLength={100}
+              placeholder="Custom reminder message..."
+              className="resize-none"
+            />
+            <div className="flex justify-between items-center">
+              <p className="text-xs text-muted-foreground">
+                {settings.message.length}/100 characters
+              </p>
+              {settings.message.length > 80 && (
+                <Badge variant="outline" className="text-xs">
+                  {100 - settings.message.length} left
+                </Badge>
+              )}
             </div>
-            <pre className="text-xs text-gray-600 whitespace-pre-wrap max-h-40 overflow-y-auto">
-              {debugInfo}
-            </pre>
           </div>
-        )}
 
-        {/* Info Note */}
-        <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700">
-          <p className="mb-2">
-            <strong>How to test:</strong>
-          </p>
-          <ul className="list-disc list-inside space-y-1 text-xs">
-            <li><strong>Test Now:</strong> Shows notification immediately</li>
-            <li><strong>Test in 5s:</strong> Shows notification after 5 seconds</li>
-            <li><strong>Debug Log:</strong> Shows scheduling information and errors</li>
-            <li>Make sure your browser allows notifications for this site</li>
-          </ul>
+          {/* Action Buttons */}
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row gap-3">
+              {/* Primary Actions */}
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  onClick={saveSettings}
+                  disabled={isLoading}
+                  className="flex items-center gap-2"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4" />
+                      Save Settings
+                    </>
+                  )}
+                </Button>
+              </div>
+              
+              {/* Testing Actions */}
+              {settings.enabled && notificationPermission === 'granted' && (
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    onClick={testNotification}
+                    variant="outline"
+                    className="flex items-center gap-2"
+                    size="sm"
+                  >
+                    <TestTube className="w-4 h-4" />
+                    Test Now
+                  </Button>
+                  
+                  <Button
+                    onClick={quickTest}
+                    variant="outline"
+                    className="flex items-center gap-2"
+                    size="sm"
+                  >
+                    <Zap className="w-4 h-4" />
+                    Test in 5s
+                  </Button>
+                </div>
+              )}
+              
+              {/* Utility Actions */}
+              <div className="flex flex-wrap gap-2 ml-auto">
+                <Button
+                  onClick={clearDebugInfo}
+                  variant="ghost"
+                  className="flex items-center gap-2"
+                  size="sm"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Clear Log
+                </Button>
+              </div>
+            </div>
+            
+            {/* Testing Status */}
+            {settings.enabled && notificationPermission !== 'granted' && (
+              <Alert variant="destructive">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertDescription>
+                  Testing is disabled. Please grant notification permissions to test reminders.
+                </AlertDescription>
+              </Alert>
+            )}
+          </div>
+
+          {/* Success Message */}
+          {saveSuccess && (
+            <Alert>
+              <CheckCircle className="h-4 w-4" />
+              <AlertDescription>
+                Reminder settings saved successfully!
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {/* Debug Information */}
+          {debugInfo && (
+            <Card className="border-dashed">
+              <CardHeader className="pb-3">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <CardTitle className="text-sm font-medium">Debug Log</CardTitle>
+                    <Badge variant="secondary" className="text-xs px-2 py-1">
+                      Developer Mode
+                    </Badge>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="text-xs">
+                      Timers: {timersRef.current.length}
+                    </Badge>
+                    <Button
+                      onClick={clearDebugInfo}
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0"
+                    >
+                      <XCircle className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="relative">
+                  <pre className="text-xs font-mono text-muted-foreground whitespace-pre-wrap max-h-48 overflow-y-auto bg-muted/50 p-4 rounded-md border">
+                    {debugInfo}
+                  </pre>
+                  <div className="absolute top-2 right-2">
+                    <Badge variant="outline" className="text-xs bg-background/80 backdrop-blur-sm">
+                      Live
+                    </Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Testing Instructions */}
+          <Card className="bg-gray-100 border-gray-200">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Info className="h-4 w-4 text-blue-600" />
+                Testing Guide
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-3">
+                  <h4 className="text-sm font-medium text-black-900">Test Functions</h4>
+                  <div className="space-y-2 text-xs">
+                    <div className="flex items-start gap-2">
+                      <TestTube className="h-3 w-3 mt-0.5 text-blue-600 flex-shrink-0" />
+                      <div>
+                        <span className="font-medium">Test Now:</span> Immediate notification
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <Zap className="h-3 w-3 mt-0.5 text-blue-600 flex-shrink-0" />
+                      <div>
+                        <span className="font-medium">Test in 5s:</span> Delayed notification (5 seconds)
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <MessageSquare className="h-3 w-3 mt-0.5 text-blue-600 flex-shrink-0" />
+                      <div>
+                        <span className="font-medium">Debug Log:</span> Real-time scheduling info
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <h4 className="text-sm font-medium text-black-900">Requirements</h4>
+                  <div className="space-y-2 text-xs">
+                    <div className="flex items-start gap-2">
+                      <CheckCircle className="h-3 w-3 mt-0.5 text-green-600 flex-shrink-0" />
+                      <div>Enable browser notifications for this site</div>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle className="h-3 w-3 mt-0.5 text-green-600 flex-shrink-0" />
+                      <div>Keep the browser tab active during testing</div>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle className="h-3 w-3 mt-0.5 text-green-600 flex-shrink-0" />
+                      <div>Check debug log for detailed information</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {notificationPermission === 'granted' && settings.enabled && (
+                <Alert className="mt-4 bg-green-50 border-green-200">
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <AlertDescription className="text-green-800">
+                    ✅ All systems ready for testing!
+                  </AlertDescription>
+                </Alert>
+              )}
+            </CardContent>
+          </Card>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   )
 }

@@ -2,6 +2,10 @@
 
 import useSWR from 'swr'
 import { createBrowserSupabase } from '@/lib/supabase-browser'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { BarChart3, RefreshCw, Loader2, MessageSquare, Heart, Users, TrendingUp } from 'lucide-react'
 
 interface UserStats {
   totalPrayers: number
@@ -14,27 +18,31 @@ interface UserStats {
 interface StatCardProps {
   title: string
   value: string | number
-  icon: string
+  icon: React.ReactNode
   isLoading?: boolean
 }
 
 function StatCard({ title, value, icon, isLoading }: StatCardProps) {
   if (isLoading) {
     return (
-      <div className="bg-gray-100 rounded-lg p-4 text-center animate-pulse">
-        <div className="w-8 h-8 bg-gray-300 rounded mx-auto mb-2"></div>
-        <div className="h-4 bg-gray-300 rounded mb-2"></div>
-        <div className="h-6 bg-gray-300 rounded"></div>
-      </div>
+      <Card>
+        <CardContent className="p-4 text-center">
+          <div className="w-6 h-6 bg-gray-300 rounded mx-auto mb-2 animate-pulse"></div>
+          <div className="h-3 bg-gray-300 rounded mb-2 animate-pulse"></div>
+          <div className="h-4 bg-gray-300 rounded animate-pulse"></div>
+        </CardContent>
+      </Card>
     )
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4 text-center hover:shadow-md transition-shadow">
-      <div className="text-2xl mb-2">{icon}</div>
-      <div className="text-sm text-gray-600 mb-1">{title}</div>
-      <div className="text-2xl font-bold text-gray-900">{value}</div>
-    </div>
+    <Card className="hover:shadow-md transition-shadow">
+      <CardContent className="p-4 text-center">
+        <div className="flex justify-center mb-2">{icon}</div>
+        <div className="text-xs text-muted-foreground mb-1">{title}</div>
+        <div className="text-lg font-semibold text-foreground">{value}</div>
+      </CardContent>
+    </Card>
   )
 }
 
@@ -76,71 +84,86 @@ export default function PrayerStats() {
 
   if (error) {
     return (
-      <div className="bg-white rounded-xl shadow-md p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-gray-800">Prayer Statistics</h2>
-          <button 
-            onClick={handleRefresh}
-            className="px-3 py-1 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Refreshing...' : 'Refresh'}
-          </button>
-        </div>
-        <div className="text-center py-8">
-          <div className="text-red-500 mb-2">⚠️</div>
-          <p className="text-gray-600">{error.message || 'Failed to load statistics'}</p>
-          <button 
-            onClick={handleRefresh}
-            className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Loading...' : 'Try Again'}
-          </button>
-        </div>
-      </div>
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <BarChart3 className="w-5 h-5" />
+              Prayer Statistics
+            </CardTitle>
+            <Button 
+              onClick={handleRefresh}
+              disabled={isLoading}
+              size="sm"
+              variant="outline"
+            >
+              {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8">
+            <p className="text-muted-foreground">{error.message || 'Failed to load statistics'}</p>
+            <Button 
+              onClick={handleRefresh}
+              disabled={isLoading}
+              className="mt-4"
+            >
+              {isLoading ? 'Loading...' : 'Try Again'}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     )
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-gray-800">Prayer Statistics</h2>
-        <button 
-          onClick={handleRefresh}
-          className="px-3 py-1 text-sm bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
-          disabled={isLoading}
-          title="Refresh statistics"
-        >
-          {isLoading ? '🔄' : '↻'}
-        </button>
-      </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard
-          title="Total Prayers"
-          value={stats?.totalPrayers ?? 0}
-          icon="🙏"
-          isLoading={isLoading}
-        />
-        <StatCard
-          title="Total Likes"
-          value={stats?.totalLikes ?? 0}
-          icon="💙"
-          isLoading={isLoading}
-        />
-        <StatCard
-          title="Total Comments"
-          value={stats?.totalComments ?? 0}
-          icon="💬"
-          isLoading={isLoading}
-        />
-        <StatCard
-          title="Most Active Week"
-          value={stats?.mostActiveWeek ?? 'N/A'}
-          icon="📈"
-          isLoading={isLoading}
-        />
-      </div>
-    </div>
+    <Card>
+      <CardHeader>
+        <div className="flex justify-between items-center">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <BarChart3 className="w-5 h-5" />
+            Prayer Statistics
+          </CardTitle>
+          <Button 
+            onClick={handleRefresh}
+            disabled={isLoading}
+            size="sm"
+            variant="outline"
+            title="Refresh statistics"
+          >
+            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <StatCard
+            title="Total Prayers"
+            value={stats?.totalPrayers ?? 0}
+            icon={<Users className="w-5 h-5 text-blue-600" />}
+            isLoading={isLoading}
+          />
+          <StatCard
+            title="Total Likes"
+            value={stats?.totalLikes ?? 0}
+            icon={<Heart className="w-5 h-5 text-red-600" />}
+            isLoading={isLoading}
+          />
+          <StatCard
+            title="Total Comments"
+            value={stats?.totalComments ?? 0}
+            icon={<MessageSquare className="w-5 h-5 text-green-600" />}
+            isLoading={isLoading}
+          />
+          <StatCard
+            title="Most Active Week"
+            value={stats?.mostActiveWeek ?? 'N/A'}
+            icon={<TrendingUp className="w-5 h-5 text-purple-600" />}
+            isLoading={isLoading}
+          />
+        </div>
+      </CardContent>
+    </Card>
   )
 }

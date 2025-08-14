@@ -2,6 +2,15 @@
 
 import { useState, useEffect } from 'react'
 import { QRCodeSVG } from 'qrcode.react'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Card, CardContent } from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Share2, Link, QrCode, FileText, Copy, Download, Smartphone, CheckCircle } from 'lucide-react'
 
 interface Prayer {
   id: string
@@ -24,7 +33,6 @@ export default function PrayerShareModal({
 }: PrayerShareModalProps) {
   const [shareUrl, setShareUrl] = useState('')
   const [copySuccess, setCopySuccess] = useState(false)
-  const [shareMethod, setShareMethod] = useState<'url' | 'qr' | 'text'>('url')
 
   useEffect(() => {
     if (prayer && isOpen) {
@@ -52,7 +60,7 @@ export default function PrayerShareModal({
 
 - ${prayer.author_name || 'Anonymous'}
 
-🙏 Shared from Prayer Wall
+Shared from Prayer Wall
 ${shareUrl}`
 
     try {
@@ -119,205 +127,158 @@ ${shareUrl}`
     })
   }
 
-  if (!isOpen || !prayer) return null
+  if (!prayer) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-modal">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-lg max-h-screen overflow-y-auto">
-        <div className="p-6">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-800">
-              📤 Share Prayer
-            </h2>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Share2 className="w-5 h-5" />
+            Share Prayer
+          </DialogTitle>
+          <DialogDescription>
+            Share this prayer with others in various formats
+          </DialogDescription>
+        </DialogHeader>
 
-          {/* Prayer Preview */}
-          <div className="mb-6 p-4 bg-gray-50 rounded-lg border-l-4 border-indigo-400">
+        {/* Prayer Preview */}
+        <Card>
+          <CardContent className="p-4">
             <div className="mb-2">
-              <span className="text-sm text-gray-600">Sharing prayer by </span>
-              <span className="font-medium text-gray-800">
+              <span className="text-sm text-muted-foreground">Sharing prayer by </span>
+              <span className="font-medium text-foreground">
                 {prayer.author_name || 'Anonymous'}
               </span>
-              <span className="text-sm text-gray-500 ml-2">
+              <span className="text-sm text-muted-foreground ml-2">
                 • {formatDate(prayer.created_at)}
               </span>
             </div>
-            <p className="text-gray-800 italic">
+            <p className="text-foreground italic">
               &ldquo;{prayer.content.length > 150 
                 ? prayer.content.substring(0, 150) + '...' 
                 : prayer.content}&rdquo;
             </p>
-          </div>
+          </CardContent>
+        </Card>
 
-          {/* Share method selection */}
-          <div className="mb-6">
-            <div className="flex border-b border-gray-200">
-              <button
-                onClick={() => setShareMethod('url')}
-                className={`flex-1 py-2 px-4 text-sm font-medium rounded-t-lg ${
-                  shareMethod === 'url' 
-                    ? 'text-indigo-600 border-b-2 border-indigo-600' 
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                🔗 Link
-              </button>
-              <button
-                onClick={() => setShareMethod('qr')}
-                className={`flex-1 py-2 px-4 text-sm font-medium rounded-t-lg ${
-                  shareMethod === 'qr' 
-                    ? 'text-indigo-600 border-b-2 border-indigo-600' 
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                📱 QR Code
-              </button>
-              <button
-                onClick={() => setShareMethod('text')}
-                className={`flex-1 py-2 px-4 text-sm font-medium rounded-t-lg ${
-                  shareMethod === 'text' 
-                    ? 'text-indigo-600 border-b-2 border-indigo-600' 
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                📝 Text
-              </button>
+        {/* Share method tabs */}
+        <Tabs defaultValue="url" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="url" className="flex items-center gap-2">
+              <Link className="w-4 h-4" />
+              Link
+            </TabsTrigger>
+            <TabsTrigger value="qr" className="flex items-center gap-2">
+              <QrCode className="w-4 h-4" />
+              QR Code
+            </TabsTrigger>
+            <TabsTrigger value="text" className="flex items-center gap-2">
+              <FileText className="w-4 h-4" />
+              Text
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="url" className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="shareUrl">Share URL</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="shareUrl"
+                  value={shareUrl}
+                  readOnly
+                  className="flex-1"
+                />
+                <Button onClick={handleCopyUrl} size="sm">
+                  {copySuccess ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                </Button>
+              </div>
             </div>
-          </div>
 
-          {/* Share content based on method */}
-          <div className="mb-6">
-            {shareMethod === 'url' && (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Share URL
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={shareUrl}
-                      readOnly
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm"
-                    />
-                    <button
-                      onClick={handleCopyUrl}
-                      className="px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm"
-                    >
-                      {copySuccess ? '✓' : 'Copy'}
-                    </button>
-                  </div>
-                </div>
-
-                {typeof window !== 'undefined' && 'share' in navigator && (
-                  <button
-                    onClick={handleNativeShare}
-                    className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-                  >
-                    📱 Share via Device
-                  </button>
-                )}
-              </div>
+            {typeof window !== 'undefined' && 'share' in navigator && (
+              <Button onClick={handleNativeShare} className="w-full" variant="outline">
+                <Smartphone className="w-4 h-4 mr-2" />
+                Share via Device
+              </Button>
             )}
+          </TabsContent>
 
-            {shareMethod === 'qr' && (
-              <div className="space-y-4">
-                <div className="text-center">
-                  <div className="inline-block p-4 bg-white border-2 border-gray-200 rounded-lg">
-                    <div id="prayer-qr">
-                      <QRCodeSVG
-                        value={shareUrl}
-                        size={200}
-                        level="M"
-                        includeMargin={true}
-                      />
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-600 mt-2">
-                    Scan with camera to view prayer
-                  </p>
-                </div>
-                
-                <div className="flex gap-2">
-                  <button
-                    onClick={handleCopyUrl}
-                    className="flex-1 px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm"
-                  >
-                    {copySuccess ? '✓ Copied' : 'Copy Link'}
-                  </button>
-                  <button
-                    onClick={downloadQR}
-                    className="flex-1 px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm"
-                  >
-                    Download QR
-                  </button>
+          <TabsContent value="qr" className="space-y-4">
+            <div className="text-center">
+              <div className="inline-block p-4 bg-white border-2 border-border rounded-lg">
+                <div id="prayer-qr">
+                  <QRCodeSVG
+                    value={shareUrl}
+                    size={200}
+                    level="M"
+                    includeMargin={true}
+                  />
                 </div>
               </div>
-            )}
+              <p className="text-sm text-muted-foreground mt-2">
+                Scan with camera to view prayer
+              </p>
+            </div>
+            
+            <div className="flex gap-2">
+              <Button onClick={handleCopyUrl} variant="outline" className="flex-1">
+                {copySuccess ? <CheckCircle className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />}
+                {copySuccess ? 'Copied' : 'Copy Link'}
+              </Button>
+              <Button onClick={downloadQR} className="flex-1">
+                <Download className="w-4 h-4 mr-2" />
+                Download QR
+              </Button>
+            </div>
+          </TabsContent>
 
-            {shareMethod === 'text' && (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Formatted Text
-                  </label>
-                  <textarea
-                    value={`"${prayer.content}"
+          <TabsContent value="text" className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="shareText">Formatted Text</Label>
+              <Textarea
+                id="shareText"
+                value={`"${prayer.content}"
 
 - ${prayer.author_name || 'Anonymous'}
 
-🙏 Shared from Prayer Wall
+Shared from Prayer Wall
 ${shareUrl}`}
-                    readOnly
-                    rows={6}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm resize-none"
-                  />
-                </div>
-                
-                <button
-                  onClick={handleCopyText}
-                  className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm"
-                >
-                  {copySuccess ? '✓ Copied to Clipboard' : 'Copy Formatted Text'}
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Success message */}
-          {copySuccess && (
-            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm text-center">
-              ✓ Copied to clipboard successfully!
+                readOnly
+                rows={6}
+                className="resize-none"
+              />
             </div>
-          )}
+            
+            <Button onClick={handleCopyText} className="w-full">
+              {copySuccess ? <CheckCircle className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />}
+              {copySuccess ? 'Copied to Clipboard' : 'Copy Formatted Text'}
+            </Button>
+          </TabsContent>
+        </Tabs>
 
-          {/* Info note */}
-          <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-sm text-blue-700">
-              💡 Shared prayers can be viewed by anyone with the link. The prayer will be displayed in a beautiful, shareable format.
-            </p>
-          </div>
+        {/* Success message */}
+        {copySuccess && (
+          <Alert>
+            <CheckCircle className="h-4 w-4" />
+            <AlertDescription>Copied to clipboard successfully!</AlertDescription>
+          </Alert>
+        )}
 
-          {/* Close button */}
-          <div className="mt-6 flex justify-end">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-            >
-              Close
-            </button>
-          </div>
+        {/* Info note */}
+        <Alert>
+          <Share2 className="h-4 w-4" />
+          <AlertDescription>
+            Shared prayers can be viewed by anyone with the link. The prayer will be displayed in a beautiful, shareable format.
+          </AlertDescription>
+        </Alert>
+
+        {/* Close button */}
+        <div className="flex justify-end">
+          <Button onClick={onClose} variant="outline">
+            Close
+          </Button>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   )
 }

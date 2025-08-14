@@ -2,6 +2,11 @@
 import { useEffect, useState } from 'react'
 import { createBrowserSupabase } from '@/lib/supabase-browser'
 import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Label } from '@/components/ui/label'
+import { User, Link as LinkIcon } from 'lucide-react'
 
 export default function AccountPage() {
   const router = useRouter()
@@ -94,44 +99,106 @@ export default function AccountPage() {
     setMsg(error ? error.message : 'Saved!')
   }
 
-  if (!authChecked || loading) return <p className="p-8">Loading...</p>
+  if (!authChecked || loading) {
+    return (
+      <main className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-200">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
+          <Card>
+            <CardContent className="flex items-center justify-center py-8">
+              <p className="text-muted-foreground">Loading...</p>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+    )
+  }
 
   return (
-    <main className="max-w-lg mx-auto p-8 space-y-6">
-      <h1 className="text-2xl font-semibold">Account</h1>
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-200">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <User className="w-5 h-5" />
+              Account Settings
+            </CardTitle>
+            <CardDescription>
+              Manage your profile information and preferences
+            </CardDescription>
+          </CardHeader>
+          
+          <CardContent>
+            <form onSubmit={handleSave} className="space-y-6">
+              {/* Avatar Preview */}
+              {profile.avatar_url && (
+                <div className="flex justify-center">
+                  <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-200 border-2 border-gray-300">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img 
+                      src={profile.avatar_url} 
+                      alt="Profile avatar" 
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none'
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+              
+              <div className="space-y-2">
+                <Label htmlFor="username" className="flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  Username
+                </Label>
+                <Input
+                  id="username"
+                  type="text"
+                  maxLength={32}
+                  value={profile.username}
+                  onChange={e => setProfile({ ...profile, username: e.target.value })}
+                  placeholder="Enter your username"
+                />
+              </div>
 
-      <form onSubmit={handleSave} className="space-y-4">
-        <label className="block">
-          <span className="text-sm text-gray-600">Username</span>
-          <input
-            type="text"
-            maxLength={32}
-            value={profile.username}
-            onChange={e => setProfile({ ...profile, username: e.target.value })}
-            className="w-full border rounded p-2"
-          />
-        </label>
+              <div className="space-y-2">
+                <Label htmlFor="avatar" className="flex items-center gap-2">
+                  <LinkIcon className="w-4 h-4" />
+                  Avatar URL
+                </Label>
+                <Input
+                  id="avatar"
+                  type="url"
+                  value={profile.avatar_url}
+                  onChange={e => setProfile({ ...profile, avatar_url: e.target.value })}
+                  placeholder="https://example.com/avatar.jpg"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Provide a direct link to your profile image
+                </p>
+              </div>
 
-        {/* 头像上传可后做；暂时只手动填 URL */}
-        <label className="block">
-          <span className="text-sm text-gray-600">Avatar URL</span>
-          <input
-            type="url"
-            value={profile.avatar_url}
-            onChange={e => setProfile({ ...profile, avatar_url: e.target.value })}
-            className="w-full border rounded p-2"
-          />
-        </label>
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full"
+              >
+                {loading ? 'Saving...' : 'Save Changes'}
+              </Button>
 
-        <button
-          disabled={loading}
-          className="bg-indigo-600 text-white rounded py-2 px-6 hover:bg-indigo-700 disabled:opacity-50"
-        >
-          {loading ? 'Saving...' : 'Save'}
-        </button>
-
-        {msg && <p className="text-sm text-center text-gray-600">{msg}</p>}
-      </form>
+              {msg && (
+                <div className={`text-sm text-center p-3 rounded-md ${
+                  msg === 'Saved!' 
+                    ? 'bg-green-50 text-green-700 border border-green-200' 
+                    : 'bg-red-50 text-red-700 border border-red-200'
+                }`}>
+                  {msg}
+                </div>
+              )}
+            </form>
+          </CardContent>
+        </Card>
+      </div>
     </main>
   )
 }

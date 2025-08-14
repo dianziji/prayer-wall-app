@@ -1,21 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { toast } from 'sonner'                // 你的全局 toast，如无可换成 alert
+import { toast } from 'sonner'
 import { useSession } from '@/lib/useSession'
 import { createBrowserSupabase } from '@/lib/supabase-browser'
+import { Button } from '@/components/ui/button'
+import { Heart } from 'lucide-react'
 
-// Heart icons (outline ↔ solid)
-const HeartIcon = ({ filled }: { filled: boolean }) => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24">
-    <path
-      d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-      className={filled ? "fill-pink-500" : "fill-none stroke-gray-400 stroke-2"}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
 
 type Props = {
   prayerId: string
@@ -81,13 +72,28 @@ export function LikeButton({
   }
 
   return (
-    <button
+    <Button
+      variant="ghost"
+      size="sm"
       onClick={toggleLike}
       disabled={loading}
-      className="flex items-center gap-1 disabled:opacity-40"
+      className={`
+        flex items-center gap-1.5 h-auto p-2 min-h-[44px] sm:min-h-auto sm:p-1.5 
+        disabled:opacity-40 transition-all duration-200 hover:scale-105
+        ${liked 
+          ? 'text-red-600 hover:text-red-600' 
+          : 'text-gray-500 hover:text-red-500'
+        }
+        ${loading ? 'animate-pulse' : ''}
+      `}
     >
-      <HeartIcon filled={liked} />
-      <span className="text-sm text-gray-600">{count}</span>
-    </button>
+      <Heart 
+        className={`w-4 h-4 sm:w-5 sm:h-5 transition-all duration-200 flex-shrink-0 ${
+          liked ? 'fill-current scale-110' : 'hover:scale-110'
+        }`}
+        style={{ transformOrigin: 'center' }}
+      />
+      <span className="text-sm font-medium">{count}</span>
+    </Button>
   )
 }

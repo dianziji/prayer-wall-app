@@ -4,6 +4,10 @@ import { useState } from 'react'
 import { formatDistanceToNow } from 'date-fns'
 import { useSession } from '@/lib/useSession'
 import { CommentList } from '@/components/comment-list'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { MoreHorizontal, Heart, MessageSquare, ChevronDown, ChevronRight, Share2, Edit, Trash2 } from 'lucide-react'
 
 interface Prayer {
   id: string
@@ -63,167 +67,183 @@ export default function UserPrayerCard({
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 hover:shadow-md transition-shadow overflow-hidden">
-      {/* Header with avatar, name, and actions */}
-      <div className="flex items-start gap-3 mb-3 min-w-0">
-        {/* Avatar */}
-        <div className="flex-shrink-0">
-          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center text-xs sm:text-sm font-semibold text-gray-600">
-            {(() => {
-              const anyPrayer = prayer as any
-              const isMine = session?.user?.id && anyPrayer?.user_id && session.user.id === anyPrayer.user_id
-              const src = isMine ? (profile?.avatar_url ?? null) : null
-              if (src) {
-                return (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={src} alt={(prayer.author_name || 'User') + ' avatar'} className="w-full h-full object-cover" />
-                )
-              }
-              const name = prayer.author_name || 'U'
-              const initials = name.trim().slice(0, 2).toUpperCase()
-              return <span>{initials}</span>
-            })()}
+    <Card className="hover:shadow-md transition-shadow overflow-hidden">
+      <CardContent className="p-3 sm:p-4">
+        {/* Header with avatar, name, and actions */}
+        <div className="flex items-start gap-3 mb-3 min-w-0">
+          {/* Avatar */}
+          <div className="flex-shrink-0">
+            <Avatar className="w-8 h-8 sm:w-10 sm:h-10">
+              <AvatarImage 
+                src={(() => {
+                  const anyPrayer = prayer as any
+                  const isMine = session?.user?.id && anyPrayer?.user_id && session.user.id === anyPrayer.user_id
+                  return isMine ? (profile?.avatar_url ?? '') : ''
+                })()} 
+                alt={(prayer.author_name || 'User') + ' avatar'} 
+              />
+              <AvatarFallback className="text-xs sm:text-sm">
+                {(prayer.author_name || 'U').trim().slice(0, 2).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
           </div>
-        </div>
-        
-        {/* Name and timestamp */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1 sm:gap-2 mb-1 min-w-0">
-            <span className="font-medium text-gray-900 text-sm sm:text-base truncate">
-              {prayer.author_name || 'Anonymous'}
-            </span>
-            <span className="text-xs sm:text-sm text-gray-500 flex-shrink-0">•</span>
-            <span className="text-xs sm:text-sm text-gray-500 truncate">{timeAgo}</span>
-          </div>
-          {prayer.created_at && (
-            <div className="text-xs text-gray-400 truncate">
-              {new Date(prayer.created_at).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-              })}
-            </div>
-          )}
-        </div>
-        
-        {/* Action buttons */}
-        <div className="relative flex-shrink-0">
-          <button
-            onClick={() => setShowActions(!showActions)}
-            className="p-1 text-gray-400 hover:text-gray-600 rounded"
-            aria-label="More actions"
-          >
-            ⋯
-          </button>
           
-          {showActions && (
-            <div className="absolute right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-dropdown min-w-32 transform-gpu will-change-transform">
-              {onShare && (
-                <button
-                  onClick={handleShare}
-                  className="w-full px-3 py-2 text-sm text-left text-blue-600 hover:bg-blue-50 rounded-t-lg"
-                >
-                  📤 Share
-                </button>
-              )}
-              {onEdit && (
-                <button
-                  onClick={handleEdit}
-                  className={`w-full px-3 py-2 text-sm text-left text-gray-700 hover:bg-gray-50 ${onShare && !onDelete ? 'rounded-b-lg' : ''}`}
-                >
-                  ✏️ Edit
-                </button>
-              )}
-              {onDelete && (
-                <button
-                  onClick={handleDelete}
-                  className="w-full px-3 py-2 text-sm text-left text-red-600 hover:bg-red-50 rounded-b-lg"
-                >
-                  🗑️ Delete
-                </button>
-              )}
+          {/* Name and timestamp */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1 sm:gap-2 mb-1 min-w-0">
+              <span className="font-medium text-foreground text-sm truncate">
+                {prayer.author_name || 'Anonymous'}
+              </span>
+              <span className="text-xs text-muted-foreground flex-shrink-0">•</span>
+              <span className="text-xs text-muted-foreground truncate">{timeAgo}</span>
             </div>
+            {prayer.created_at && (
+              <div className="text-xs text-muted-foreground truncate">
+                {new Date(prayer.created_at).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </div>
+            )}
+          </div>
+          
+          {/* Action buttons */}
+          <div className="relative flex-shrink-0">
+            <Button
+              onClick={() => setShowActions(!showActions)}
+              variant="ghost"
+              size="sm"
+              className="p-1 h-auto w-auto"
+            >
+              <MoreHorizontal className="w-4 h-4" />
+            </Button>
+            
+            {showActions && (
+              <div className="absolute right-0 mt-1 bg-background border border-border rounded-lg shadow-lg z-dropdown min-w-32">
+                {onShare && (
+                  <Button
+                    onClick={handleShare}
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start px-3 py-2 h-auto rounded-t-lg"
+                  >
+                    <Share2 className="w-4 h-4 mr-2" />
+                    Share
+                  </Button>
+                )}
+                {onEdit && (
+                  <Button
+                    onClick={handleEdit}
+                    variant="ghost"
+                    size="sm"
+                    className={`w-full justify-start px-3 py-2 h-auto ${onShare && !onDelete ? 'rounded-b-lg' : ''}`}
+                  >
+                    <Edit className="w-4 h-4 mr-2" />
+                    Edit
+                  </Button>
+                )}
+                {onDelete && (
+                  <Button
+                    onClick={handleDelete}
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start px-3 py-2 h-auto text-destructive hover:text-destructive rounded-b-lg"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Prayer content */}
+        <div className="mb-4 min-w-0">
+          <p className="text-foreground leading-relaxed whitespace-pre-wrap break-words text-sm">
+            {isExpanded ? prayer.content : contentPreview}
+          </p>
+          
+          {prayer.content.length > 200 && (
+            <Button
+              onClick={() => setIsExpanded(!isExpanded)}
+              variant="link"
+              size="sm"
+              className="mt-2 p-0 h-auto text-sm"
+            >
+              {isExpanded ? 'Show less' : 'Show more'}
+            </Button>
           )}
         </div>
-      </div>
 
-      {/* Prayer content */}
-      <div className="mb-4 min-w-0">
-        <p className="text-gray-800 leading-relaxed whitespace-pre-wrap break-words text-sm sm:text-base">
-          {isExpanded ? prayer.content : contentPreview}
-        </p>
-        
-        {prayer.content.length > 200 && (
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="mt-2 text-sm text-indigo-600 hover:text-indigo-800 font-medium touch-manipulation"
-          >
-            {isExpanded ? 'Show less' : 'Show more'}
-          </button>
-        )}
-      </div>
-
-      {/* Engagement stats */}
-      {showEngagement && (
-        <div className="py-2 border-t border-gray-100">
-          <div className="flex items-center justify-between gap-2 sm:gap-4 mb-3 min-w-0">
-            <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
-              <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-600 flex-shrink-0">
-                <span className={prayer.liked_by_me ? '💙' : '🤍'}>
-                  {prayer.liked_by_me ? '💙' : '🤍'}
-                </span>
-                <span>{prayer.like_count || 0}</span>
-                <span className="text-gray-400 hidden sm:inline">
-                  {(prayer.like_count || 0) === 1 ? 'like' : 'likes'}
-                </span>
+        {/* Engagement stats */}
+        {showEngagement && (
+          <div className="py-2 border-t border-border">
+            <div className="flex items-center justify-between gap-2 sm:gap-4 mb-3 min-w-0">
+              <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
+                <div className="flex items-center gap-1 text-xs text-muted-foreground flex-shrink-0">
+                  <Heart className={`w-4 h-4 ${prayer.liked_by_me ? 'fill-red-500 text-red-500' : ''}`} />
+                  <span>{prayer.like_count || 0}</span>
+                  <span className="hidden sm:inline">
+                    {(prayer.like_count || 0) === 1 ? 'like' : 'likes'}
+                  </span>
+                </div>
+                
+                {(prayer.comment_count || 0) > 0 ? (
+                  <Button
+                    onClick={() => setShowComments(!showComments)}
+                    variant="ghost"
+                    size="sm"
+                    className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary h-auto p-0"
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                    <span>{prayer.comment_count}</span>
+                    <span className="hidden sm:inline truncate">
+                      {prayer.comment_count === 1 ? 'comment' : 'comments'}
+                    </span>
+                    {showComments ? <ChevronDown className="w-3 h-3 ml-1" /> : <ChevronRight className="w-3 h-3 ml-1" />}
+                  </Button>
+                ) : (
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <MessageSquare className="w-4 h-4" />
+                    <span>0</span>
+                    <span className="hidden sm:inline truncate">comments</span>
+                  </div>
+                )}
               </div>
               
-              <button
-                onClick={() => setShowComments(!showComments)}
-                className="flex items-center gap-1 text-xs sm:text-sm text-gray-600 hover:text-indigo-600 transition-colors touch-manipulation min-w-0"
-              >
-                <span>💬</span>
-                <span>{prayer.comment_count || 0}</span>
-                <span className="text-gray-400 hidden sm:inline truncate">
-                  {(prayer.comment_count || 0) === 1 ? 'comment' : 'comments'}
+              <div className="flex-shrink-0">
+                <span className="text-xs text-muted-foreground truncate max-w-20">
+                  ID: {prayer.id.substring(0, 6)}...
                 </span>
-                <span className="ml-1 text-xs flex-shrink-0">
-                  {showComments ? '▼' : '▶'}
-                </span>
-              </button>
-            </div>
-            
-            <div className="flex-shrink-0">
-              <span className="text-xs text-gray-400 truncate max-w-20">
-                ID: {prayer.id.substring(0, 6)}...
-              </span>
-            </div>
-          </div>
-          
-          {/* Comments section */}
-          {showComments && (
-            <div className="mt-3 pt-3 border-t border-gray-100">
-              <div className="mb-3">
-                <h4 className="text-sm font-medium text-gray-700 mb-2">
-                  Comments ({prayer.comment_count || 0})
-                </h4>
-                <CommentList prayerId={prayer.id} />
               </div>
             </div>
-          )}
-        </div>
-      )}
+            
+            {/* Comments section */}
+            {showComments && (prayer.comment_count || 0) > 0 && (
+              <div className="mt-3 pt-3 border-t border-border">
+                <div className="mb-3">
+                  <h4 className="text-sm font-medium text-foreground mb-2">
+                    Comments ({prayer.comment_count})
+                  </h4>
+                  <CommentList prayerId={prayer.id} />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
-
-      {/* Click outside to close actions menu */}
-      {showActions && (
-        <div 
-          className="fixed inset-0 z-0"
-          onClick={() => setShowActions(false)}
-        />
-      )}
-    </div>
+        {/* Click outside to close actions menu */}
+        {showActions && (
+          <div 
+            className="fixed inset-0 z-0"
+            onClick={() => setShowActions(false)}
+          />
+        )}
+      </CardContent>
+    </Card>
   )
 }

@@ -81,13 +81,15 @@ export function CommentList({ prayerId }: { prayerId: string }) {
     [mutate, supa]
   )
 
-  if (error) return <p className="text-sm text-red-500">加载评论失败</p>
-  if (isLoading) return <p className="text-sm text-gray-400">加载中…</p>
+  if (error) return <p className="text-sm text-destructive">加载评论失败</p>
+  if (isLoading) return <p className="text-sm text-muted-foreground">加载中…</p>
+
+  if (comments.length === 0) {
+    return <p className="text-sm text-muted-foreground text-center py-4">暂无评论</p>
+  }
 
   return (
-    <ul className="space-y-3">
-
-
+    <div className="space-y-3">
       {comments.map((c) => (
         <CommentItem
           key={c.id}
@@ -97,6 +99,6 @@ export function CommentList({ prayerId }: { prayerId: string }) {
           onEdit={handleEdit}
         />
       ))}
-    </ul>
+    </div>
   )
 }

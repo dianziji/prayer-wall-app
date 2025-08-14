@@ -2,6 +2,13 @@
 
 import { useState } from 'react'
 import { createBrowserSupabase } from '@/lib/supabase-browser'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Card, CardContent } from '@/components/ui/card'
+import { Loader2, Download, FileText, Code, Table } from 'lucide-react'
 
 interface Prayer {
   id: string
@@ -172,129 +179,106 @@ ${'='.repeat(50)}
 
   const filteredCount = filterPrayersByDate(prayers).length
 
-  if (!isOpen) return null
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-modal">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
-        <div className="p-6">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-800">
-              📥 Export Prayers
-            </h2>
-            <button
-              onClick={onClose}
-              disabled={isExporting}
-              className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded disabled:opacity-50"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Download className="w-5 h-5" />
+            Export Prayers
+          </DialogTitle>
+          <DialogDescription>
+            Download your prayers in various formats
+          </DialogDescription>
+        </DialogHeader>
 
+        <div className="space-y-6">
           {/* Format selection */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Export Format
-            </label>
-            <div className="space-y-2">
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  value="txt"
-                  checked={format === 'txt'}
-                  onChange={(e) => setFormat(e.target.value as ExportFormat)}
-                  className="mr-2"
-                  disabled={isExporting}
-                />
-                <span className="text-sm">Text File (.txt) - Readable format</span>
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  value="json"
-                  checked={format === 'json'}
-                  onChange={(e) => setFormat(e.target.value as ExportFormat)}
-                  className="mr-2"
-                  disabled={isExporting}
-                />
-                <span className="text-sm">JSON (.json) - Structured data</span>
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  value="csv"
-                  checked={format === 'csv'}
-                  onChange={(e) => setFormat(e.target.value as ExportFormat)}
-                  className="mr-2"
-                  disabled={isExporting}
-                />
-                <span className="text-sm">CSV (.csv) - Spreadsheet format</span>
-              </label>
-            </div>
+          <div className="space-y-3">
+            <Label className="text-sm font-medium">Export Format</Label>
+            <RadioGroup value={format} onValueChange={(value) => setFormat(value as ExportFormat)}>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="txt" id="txt" disabled={isExporting} />
+                <Label htmlFor="txt" className="flex items-center gap-2 text-sm">
+                  <FileText className="w-4 h-4" />
+                  Text File (.txt) - Readable format
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="json" id="json" disabled={isExporting} />
+                <Label htmlFor="json" className="flex items-center gap-2 text-sm">
+                  <Code className="w-4 h-4" />
+                  JSON (.json) - Structured data
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="csv" id="csv" disabled={isExporting} />
+                <Label htmlFor="csv" className="flex items-center gap-2 text-sm">
+                  <Table className="w-4 h-4" />
+                  CSV (.csv) - Spreadsheet format
+                </Label>
+              </div>
+            </RadioGroup>
           </div>
 
           {/* Date range selection */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Date Range
-            </label>
-            <select
-              value={dateRange}
-              onChange={(e) => setDateRange(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              disabled={isExporting}
-            >
-              <option value="all">All Time ({prayers.length} prayers)</option>
-              <option value="this_month">This Month</option>
-              <option value="last_3_months">Last 3 Months</option>
-            </select>
-            <p className="text-xs text-gray-500 mt-1">
+          <div className="space-y-3">
+            <Label className="text-sm font-medium">Date Range</Label>
+            <Select value={dateRange} onValueChange={setDateRange} disabled={isExporting}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Time ({prayers.length} prayers)</SelectItem>
+                <SelectItem value="this_month">This Month</SelectItem>
+                <SelectItem value="last_3_months">Last 3 Months</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
               {filteredCount} prayers will be exported
             </p>
           </div>
 
           {/* Export preview info */}
-          <div className="mb-6 p-3 bg-gray-50 border border-gray-200 rounded-lg">
-            <div className="text-sm text-gray-600">
-              <p><strong>Export will include:</strong></p>
-              <ul className="list-disc list-inside mt-1 space-y-1">
-                <li>Prayer content and dates</li>
-                <li>Author names</li>
-                <li>Like and comment counts</li>
-                <li>Export metadata</li>
-              </ul>
-            </div>
-          </div>
+          <Card>
+            <CardContent className="p-4">
+              <div className="text-sm text-muted-foreground">
+                <p className="font-medium mb-2">Export will include:</p>
+                <ul className="list-disc list-inside space-y-1">
+                  <li>Prayer content and dates</li>
+                  <li>Author names</li>
+                  <li>Like and comment counts</li>
+                  <li>Export metadata</li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Action buttons */}
           <div className="flex justify-end gap-3">
-            <button
+            <Button
               onClick={onClose}
               disabled={isExporting}
-              className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
+              variant="outline"
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleExport}
               disabled={isExporting || filteredCount === 0}
-              className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50"
             >
               {isExporting ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   Exporting...
-                </div>
+                </>
               ) : (
                 `Export ${filteredCount} Prayers`
               )}
-            </button>
+            </Button>
           </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   )
 }

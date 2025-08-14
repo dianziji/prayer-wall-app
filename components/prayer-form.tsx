@@ -1,6 +1,8 @@
 "use client"
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { useSession } from '@/lib/useSession'
 
 export type PrayerFormProps = {
@@ -94,42 +96,56 @@ export function PrayerForm({ weekStart, onPost, onCancel, mode = 'create', praye
   }
 
   return (
-    <form className="mb-4 sm:mb-6 space-y-3 sm:space-y-4" onSubmit={handleSubmit}>
+    <form className="mb-4 sm:mb-6 space-y-4" onSubmit={handleSubmit}>
       {weekStart && (
         <p className="text-xs text-gray-500">Posting to week: {weekStart}</p>
       )}
 
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && (
+        <div className="text-sm text-red-500 bg-red-50 border border-red-200 rounded-md p-3">
+          {error}
+        </div>
+      )}
 
-      <div>
-        <input
-          className="border p-3 sm:p-2 w-full mb-2 rounded-md text-base sm:text-sm touch-manipulation"
+      <div className="space-y-2">
+        <Input
           placeholder="Your name (optional)"
           value={author}
           readOnly={!!profile?.username}
           onChange={(e) => setAuthor(e.target.value)}
           maxLength={MAX_NAME}
+          className="min-h-[44px] text-base sm:text-sm"
         />
-        <div className="text-xs text-gray-500 text-right">{author.length}/{MAX_NAME}</div>
+        <div className="text-xs text-muted-foreground text-right">{author.length}/{MAX_NAME}</div>
       </div>
 
-      <div>
-        <textarea
-          className="border p-3 sm:p-2 w-full rounded-md text-base sm:text-sm touch-manipulation"
+      <div className="space-y-2">
+        <Textarea
           placeholder="Write your prayer here..."
           maxLength={MAX_CONTENT}
           rows={4}
           value={content}
           onChange={(e) => setContent(e.target.value)}
+          className="min-h-[120px] text-base md:text-sm resize-none"
         />
-        <div className="text-xs text-gray-500 text-right mb-2">{content.length}/{MAX_CONTENT}</div>
+        <div className="text-xs text-muted-foreground text-right">{content.length}/{MAX_CONTENT}</div>
       </div>
 
-      <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-2 mt-4">
-        <Button type="button" onClick={onCancel} className="bg-gray-300 text-gray-800 py-3 sm:py-2 px-4 rounded text-base sm:text-sm min-h-[44px] touch-manipulation" disabled={loading}>
+      <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-2 pt-2">
+        <Button 
+          type="button" 
+          variant="outline"
+          onClick={onCancel} 
+          disabled={loading}
+          className="order-2 sm:order-1 min-h-[44px] text-base sm:text-sm"
+        >
           Cancel
         </Button>
-        <Button type="submit" disabled={loading} className="bg-blue-500 text-white py-3 sm:py-2 px-4 rounded disabled:opacity-50 text-base sm:text-sm min-h-[44px] touch-manipulation">
+        <Button 
+          type="submit" 
+          disabled={loading}
+          className="order-1 sm:order-2 min-h-[44px] text-base sm:text-sm"
+        >
           {loading 
             ? (mode === 'edit' ? "Updating..." : "Posting...") 
             : (mode === 'edit' ? "Update Prayer" : "Post Prayer")
