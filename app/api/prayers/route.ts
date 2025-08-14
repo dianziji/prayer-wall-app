@@ -59,22 +59,80 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json()
+    
+    // Support both new and legacy formats
     let content: string = (body?.content ?? '').toString().trim()
+    let thanksgiving_content: string | null = (body?.thanksgiving_content ?? '').toString().trim() || null
+    let intercession_content: string | null = (body?.intercession_content ?? '').toString().trim() || null
     let author_name: string | null = (body?.author_name ?? '').toString().trim() || null
 
-    // 校验内容（1 ~ 500 字符）
-    if (!content || content.length > 500) {
-      return NextResponse.json({ error: 'Invalid content' }, { status: 400 })
+    // Determine if this is new format (dual-field) or legacy format
+    const hasNewContent = thanksgiving_content || intercession_content
+    const hasLegacyContent = content.length > 0
+
+    // Calculate total user content (no markers)
+    const userContentLength = (thanksgiving_content?.length || 0) + (intercession_content?.length || 0)
+    const totalContentLength = userContentLength + content.length
+
+    // Validation
+    if (hasNewContent) {
+      // New format validation - check user content only (500 chars)
+      if (userContentLength === 0) {
+        return NextResponse.json({ error: '至少需要填写感恩祷告或代祷请求中的一项' }, { status: 400 })
+      }
+      if (userContentLength > 500) {
+        return NextResponse.json({ error: '总字数不能超过500字符' }, { status: 400 })
+      }
+    } else if (hasLegacyContent) {
+      // Legacy format validation
+      if (content.length > 500) {
+        return NextResponse.json({ error: 'Invalid content' }, { status: 400 })
+      }
+    } else {
+      return NextResponse.json({ error: '内容不能为空' }, { status: 400 })
     }
 
-    // 限制作者名长度（可按需调整，例如 24）
+    // 限制作者名长度
     if (author_name && author_name.length > 24) {
       author_name = author_name.slice(0, 24)
     }
 
+    // Prepare insert data
+    const insertData: any = {
+      author_name,
+      user_id: user?.id || null
+    }
+
+    if (hasNewContent) {
+      // New format: merge with markers into content field
+      let mergedContent = ''
+      if (thanksgiving_content) {
+        mergedContent += `[感恩] ${thanksgiving_content}`
+      }
+      if (intercession_content) {
+        if (mergedContent) mergedContent += '\n\n'
+        mergedContent += `[代祷] ${intercession_content}`
+      }
+      
+      // Safety check - should not happen with proper frontend validation
+      if (mergedContent.length > 512) {
+        return NextResponse.json({ 
+          error: '内容过长，请减少字数' 
+        }, { status: 400 })
+      }
+      
+      insertData.content = mergedContent
+      // Store in separate fields for frontend to know the structure
+      insertData.thanksgiving_content = thanksgiving_content
+      insertData.intercession_content = intercession_content
+    } else {
+      // Legacy format: single content field
+      insertData.content = content
+    }
+
     const { data, error } = await supabase
       .from('prayers')
-      .insert([{ content, author_name, user_id: user?.id || null }])
+      .insert([insertData])
       .select()
 
     if (error) {
@@ -137,21 +195,67 @@ export async function PATCH(req: Request) {
     }
 
     const body = await req.json()
+    
+    // Support both new and legacy formats (same as POST)
     let content: string = (body?.content ?? '').toString().trim()
+    let thanksgiving_content: string | null = (body?.thanksgiving_content ?? '').toString().trim() || null
+    let intercession_content: string | null = (body?.intercession_content ?? '').toString().trim() || null
     let author_name: string | null = (body?.author_name ?? '').toString().trim() || null
 
-    // Validation (reuse from POST)
-    if (!content || content.length > 500) {
-      return NextResponse.json({ error: 'Invalid content' }, { status: 400 })
+    // Determine format and validate (reuse from POST)
+    const hasNewContent = thanksgiving_content || intercession_content
+    const hasLegacyContent = content.length > 0
+    const userContentLength = (thanksgiving_content?.length || 0) + (intercession_content?.length || 0)
+    const totalContentLength = userContentLength + content.length
+
+    // Validation
+    if (hasNewContent) {
+      if (userContentLength === 0) {
+        return NextResponse.json({ error: '至少需要填写感恩祷告或代祷请求中的一项' }, { status: 400 })
+      }
+      if (userContentLength > 500) {
+        return NextResponse.json({ error: '总字数不能超过500字符' }, { status: 400 })
+      }
+    } else if (hasLegacyContent) {
+      if (content.length > 500) {
+        return NextResponse.json({ error: 'Invalid content' }, { status: 400 })
+      }
+    } else {
+      return NextResponse.json({ error: '内容不能为空' }, { status: 400 })
     }
 
     if (author_name && author_name.length > 24) {
       author_name = author_name.slice(0, 24)
     }
 
+    // Prepare update data
+    const updateData: any = { author_name }
+
+    if (hasNewContent) {
+      // New format: merge with markers into content field
+      let mergedContent = ''
+      if (thanksgiving_content) {
+        mergedContent += `[感恩] ${thanksgiving_content}`
+      }
+      if (intercession_content) {
+        if (mergedContent) mergedContent += '\n\n'
+        mergedContent += `[代祷] ${intercession_content}`
+      }
+      
+      updateData.content = mergedContent
+      // Store in separate fields for frontend to know the structure
+      updateData.thanksgiving_content = thanksgiving_content
+      updateData.intercession_content = intercession_content
+    } else {
+      // Legacy format: update single content field, clear dual fields
+      updateData.content = content
+      updateData.thanksgiving_content = null
+      updateData.intercession_content = null
+    }
+
     const { error: updateError } = await supabase
       .from('prayers')
-      .update({ content, author_name })
+      .update(updateData)
       .eq('id', prayerId)
       .eq('user_id', user.id) // Double-check ownership
 

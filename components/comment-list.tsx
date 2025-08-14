@@ -90,7 +90,7 @@ export function CommentList({ prayerId }: { prayerId: string }) {
   if (isLoading) return <p className="text-sm text-muted-foreground">加载中…</p>
 
   if (comments.length === 0) {
-    return <p className="text-sm text-muted-foreground text-center py-4">暂无评论</p>
+    return null // Don't show anything when no comments
   }
 
   return (
@@ -104,7 +104,7 @@ export function CommentList({ prayerId }: { prayerId: string }) {
             onEdit={handleEdit}
           />
           {index < comments.length - 1 && (
-            <Separator className="opacity-20 my-2" />
+            <Separator className="opacity-20 my-1" />
           )}
         </div>
       ))}

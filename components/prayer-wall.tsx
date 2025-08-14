@@ -5,9 +5,9 @@ import { PrayerCard } from "./prayer-card"
 import Masonry from 'react-masonry-css'
 import type { Prayer } from '@/types/models'
 const breakpointColumnsObj = {
-  default: 3,
-  1024: 2,
-  640: 2,  // Changed from 1 to 2 for mobile two-column layout
+  default: 4,  // 4 columns for desktop
+  1024: 3,     // 3 columns for tablet
+  640: 2,      // 2 columns for mobile
 }
 
 
@@ -94,7 +94,7 @@ export function PrayerWall({
   ))
 
   return (
-    <div className="px-0 sm:px-4 py-4 sm:py-8 max-w-6xl mx-auto">
+    <div className="px-0 sm:px-4 py-4 sm:py-8 max-w-6xl lg:max-w-7xl xl:max-w-8xl mx-auto">
       {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
       <Masonry
