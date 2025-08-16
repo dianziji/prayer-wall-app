@@ -25,7 +25,7 @@ interface StatCardProps {
 function StatCard({ title, value, icon, isLoading }: StatCardProps) {
   if (isLoading) {
     return (
-      <Card>
+      <Card className="bg-white/50 border-white/30">
         <CardContent className="p-4 text-center">
           <div className="w-6 h-6 bg-gray-300 rounded mx-auto mb-2 animate-pulse"></div>
           <div className="h-3 bg-gray-300 rounded mb-2 animate-pulse"></div>
@@ -36,7 +36,7 @@ function StatCard({ title, value, icon, isLoading }: StatCardProps) {
   }
 
   return (
-    <Card className="hover:shadow-md transition-shadow">
+    <Card className="hover:shadow-md transition-shadow bg-white/50 border-white/30">
       <CardContent className="p-4 text-center">
         <div className="flex justify-center mb-2">{icon}</div>
         <div className="text-xs text-muted-foreground mb-1">{title}</div>
@@ -84,7 +84,7 @@ export default function PrayerStats() {
 
   if (error) {
     return (
-      <Card>
+      <Card className="bg-transparent border-none shadow-none">
         <CardHeader>
           <div className="flex justify-between items-center">
             <CardTitle className="text-lg flex items-center gap-2">
@@ -118,7 +118,7 @@ export default function PrayerStats() {
   }
 
   return (
-    <Card>
+    <Card className="bg-transparent border-none shadow-none">
       <CardHeader>
         <div className="flex justify-between items-center">
           <CardTitle className="text-lg flex items-center gap-2">

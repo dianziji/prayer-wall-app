@@ -8,6 +8,7 @@ import PrayerEditModal from './PrayerEditModal'
 import PrayerExportModal from './PrayerExportModal'
 import PrayerShareModal from './PrayerShareModal'
 import { getCurrentWeekStartET } from '@/lib/utils'
+import { FELLOWSHIP_OPTIONS, type Fellowship } from '@/types/models'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -23,6 +24,9 @@ interface Prayer {
   like_count: number | null
   liked_by_me: boolean | null
   comment_count?: number
+  fellowship?: Fellowship
+  thanksgiving_content?: string | null
+  intercession_content?: string | null
 }
 
 interface PaginatedResponse {
@@ -42,8 +46,8 @@ interface TimeGroupProps {
 
 function TimeGroup({ title, children }: TimeGroupProps) {
   return (
-    <div className="mb-6">
-      <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
+    <div className="mb-3">
+      <h3 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-1">
         <Calendar className="w-4 h-4" />
         {title}
       </h3>
@@ -86,6 +90,7 @@ export default function PrayerTimeline({ initialLimit = 10 }: PrayerTimelineProp
   const [limit] = useState(initialLimit)
   const [sort, setSort] = useState('recent')
   const [timeRange, setTimeRange] = useState('all')
+  const [fellowshipFilter, setFellowshipFilter] = useState<Fellowship | 'all'>('all')
   const [allPrayers, setAllPrayers] = useState<Prayer[]>([])
   const [editingPrayer, setEditingPrayer] = useState<Prayer | null>(null)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
@@ -99,7 +104,8 @@ export default function PrayerTimeline({ initialLimit = 10 }: PrayerTimelineProp
     page: page.toString(),
     limit: limit.toString(),
     sort,
-    timeRange
+    timeRange,
+    ...(fellowshipFilter !== 'all' && { fellowship: fellowshipFilter })
   }).toString()
 
   const { data, error, isLoading, mutate } = useSWR<PaginatedResponse>(
@@ -123,19 +129,26 @@ export default function PrayerTimeline({ initialLimit = 10 }: PrayerTimelineProp
     }
   }, [data, page])
 
-  // Filter prayers based on search query
+  // Filter prayers based on search query and fellowship
   useEffect(() => {
-    if (!searchQuery.trim()) {
-      setFilteredPrayers(allPrayers)
-    } else {
+    let filtered = allPrayers
+    
+    // Apply fellowship filter
+    if (fellowshipFilter !== 'all') {
+      filtered = filtered.filter(prayer => prayer.fellowship === fellowshipFilter)
+    }
+    
+    // Apply search filter
+    if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase()
-      const filtered = allPrayers.filter(prayer => 
+      filtered = filtered.filter(prayer => 
         prayer.content.toLowerCase().includes(query) ||
         (prayer.author_name && prayer.author_name.toLowerCase().includes(query))
       )
-      setFilteredPrayers(filtered)
     }
-  }, [allPrayers, searchQuery])
+    
+    setFilteredPrayers(filtered)
+  }, [allPrayers, searchQuery, fellowshipFilter])
 
   const handleLoadMore = () => {
     if (data && page < data.pagination.totalPages) {
@@ -143,17 +156,20 @@ export default function PrayerTimeline({ initialLimit = 10 }: PrayerTimelineProp
     }
   }
 
-  const handleFilterChange = (newSort: string, newTimeRange: string) => {
+  const handleFilterChange = (newSort: string, newTimeRange: string, newFellowship?: Fellowship | 'all') => {
     setSort(newSort)
     setTimeRange(newTimeRange)
+    if (newFellowship !== undefined) {
+      setFellowshipFilter(newFellowship)
+    }
     setPage(1) // Reset to first page
     setAllPrayers([]) // Clear existing prayers
   }
 
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     setPage(1)
-    setAllPrayers([])
-    mutate()
+    setAllPrayers([]) // Clear existing prayers
+    await mutate() // Wait for data to reload
   }
 
   const handleEdit = (prayer: Prayer) => {
@@ -249,8 +265,8 @@ export default function PrayerTimeline({ initialLimit = 10 }: PrayerTimelineProp
 
   if (error) {
     return (
-      <Card>
-        <CardHeader>
+      <Card className="bg-transparent border-none shadow-none">
+        <CardHeader >
           <div className="flex justify-between items-center">
             <CardTitle className="text-lg flex items-center gap-2">
               <BookOpen className="w-5 h-5" />
@@ -260,7 +276,7 @@ export default function PrayerTimeline({ initialLimit = 10 }: PrayerTimelineProp
               <RefreshCw className="w-4 h-4" />
             </Button>
           </div>
-        </CardHeader>
+        </CardHeader >
         <CardContent>
           <div className="text-center py-8">
             <p className="text-muted-foreground">{error.message || 'Failed to load prayers'}</p>
@@ -273,25 +289,26 @@ export default function PrayerTimeline({ initialLimit = 10 }: PrayerTimelineProp
   const weeklyGroups = groupPrayersByWeek(filteredPrayers)
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex justify-between items-center">
+    <Card className="bg-transparent border-none shadow-none">
+      <CardHeader className="pb-3">
+        {/* Title Row */}
+        <div className="flex justify-between items-center mb-4">
           <CardTitle className="text-lg flex items-center gap-2">
             <BookOpen className="w-5 h-5" />
             My Prayer Timeline
           </CardTitle>
           
-          {/* Action buttons */}
-          <div className="flex items-center gap-2">
+          {/* Action buttons - Desktop only */}
+          <div className="hidden md:flex items-center gap-2">
             <Button
               onClick={() => setIsExportModalOpen(true)}
               size="sm"
               variant="outline"
               disabled={allPrayers.length === 0}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 h-9"
             >
               <Download className="w-4 h-4" />
-              <span className="hidden md:inline">Export</span>
+              <span>Export</span>
             </Button>
             
             <Button
@@ -299,15 +316,13 @@ export default function PrayerTimeline({ initialLimit = 10 }: PrayerTimelineProp
               size="sm"
               variant="outline"
               disabled={isLoading}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 h-9"
             >
               <RefreshCw className="w-4 h-4" />
-              <span className="hidden md:inline">Refresh</span>
+              <span>Refresh</span>
             </Button>
           </div>
         </div>
-      </CardHeader>
-      <CardContent>
         
         {/* Search and filters row */}
         <div className="flex flex-col sm:flex-row gap-3">
@@ -318,7 +333,7 @@ export default function PrayerTimeline({ initialLimit = 10 }: PrayerTimelineProp
               placeholder="Search prayers..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 pr-8"
+              className="pl-8 pr-8 h-9"
             />
             <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             {searchQuery && (
@@ -333,35 +348,88 @@ export default function PrayerTimeline({ initialLimit = 10 }: PrayerTimelineProp
             )}
           </div>
           
-          {/* Filters - inline on mobile, side by side on desktop */}
-          <div className="flex gap-2 sm:gap-3 min-w-0">
-            <div className="flex-1 sm:flex-none min-w-0">
-              <Select value={sort} onValueChange={(value) => handleFilterChange(value, timeRange)}>
-                <SelectTrigger className="w-full sm:w-40">
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="recent">Most Recent</SelectItem>
-                  <SelectItem value="most_liked">Most Liked</SelectItem>
-                  <SelectItem value="most_commented">Most Commented</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          {/* Filters and mobile actions */}
+          <div className="flex gap-2">
+            {/* Sort and Time Range Selectors */}
+            <Select value={sort} onValueChange={(value) => handleFilterChange(value, timeRange)}>
+              <SelectTrigger className="flex-1 sm:w-32 h-9">
+                <SelectValue placeholder="Sort" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="recent">Most Recent</SelectItem>
+                <SelectItem value="most_liked">Most Liked</SelectItem>
+                <SelectItem value="most_commented">Most Commented</SelectItem>
+              </SelectContent>
+            </Select>
             
-            <div className="flex-1 sm:flex-none min-w-0">
-              <Select value={timeRange} onValueChange={(value) => handleFilterChange(sort, value)}>
-                <SelectTrigger className="w-full sm:w-36">
-                  <SelectValue placeholder="Time range" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Time</SelectItem>
-                  <SelectItem value="this_month">This Month</SelectItem>
-                  <SelectItem value="last_3_months">Last 3 Months</SelectItem>
-                </SelectContent>
-              </Select>
+            <Select value={timeRange} onValueChange={(value) => handleFilterChange(sort, value)}>
+              <SelectTrigger className="flex-1 sm:w-28 h-9">
+                <SelectValue placeholder="Time" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Time</SelectItem>
+                <SelectItem value="this_month">This Month</SelectItem>
+                <SelectItem value="last_3_months">Last 3 Months</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            {/* Mobile action buttons */}
+            <div className="flex md:hidden gap-1">
+              <Button
+                onClick={() => setIsExportModalOpen(true)}
+                size="sm"
+                variant="outline"
+                disabled={allPrayers.length === 0}
+                className="h-9 w-9 p-0"
+              >
+                <Download className="w-4 h-4" />
+              </Button>
+              
+              <Button
+                onClick={handleRefresh}
+                size="sm"
+                variant="outline"
+                disabled={isLoading}
+                className="h-9 w-9 p-0"
+              >
+                <RefreshCw className="w-4 h-4" />
+              </Button>
             </div>
           </div>
         </div>
+        
+        {/* Fellowship Filter Row */}
+        <div className="flex flex-wrap gap-2 items-center justify-end mt-2">
+          <Button
+            onClick={() => handleFilterChange(sort, timeRange, 'all')}
+            size="sm"
+            variant={fellowshipFilter === 'all' ? 'default' : 'outline'}
+            className="h-8 px-3 text-xs"
+          >
+            全部
+          </Button>
+          {FELLOWSHIP_OPTIONS.map((fellowship) => (
+            <Button
+              key={fellowship.id}
+              onClick={() => handleFilterChange(sort, timeRange, fellowship.id)}
+              size="sm"
+              variant={fellowshipFilter === fellowship.id ? 'default' : 'outline'}
+              className="h-8 px-3 text-xs flex items-center gap-1"
+              style={{
+                borderColor: fellowshipFilter === fellowship.id ? fellowship.color : undefined,
+                backgroundColor: fellowshipFilter === fellowship.id ? fellowship.color : undefined
+              }}
+            >
+              <div 
+                className="w-2 h-2 rounded-full" 
+                style={{ backgroundColor: fellowship.color }}
+              />
+              {fellowship.name}
+            </Button>
+          ))}
+        </div>
+      </CardHeader>
+      <CardContent className="pt-0">
 
         {/* Content */}
         {isLoading && page === 1 ? (
@@ -382,7 +450,7 @@ export default function PrayerTimeline({ initialLimit = 10 }: PrayerTimelineProp
             ))}
           </div>
         ) : weeklyGroups.length > 0 ? (
-          <div className="mt-6">
+          <div className="mt-3">
             {weeklyGroups.map(({ week, prayers }) => (
               <TimeGroup key={week} title={week}>
                 {prayers.map(prayer => (

@@ -64,21 +64,27 @@ async function isDomainDeliverable(addr: string) {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-200 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            <div className="p-3 bg-gray-100 rounded-full">
-              <Heart className="w-8 h-8 text-black-600" />
+    <main className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: '#F8F6F0' }}>
+      <div className="w-full max-w-md">
+        <section 
+          className="rounded-lg sm:rounded-xl border-0 sm:border sm:border-white/20 shadow-none sm:shadow-sm p-6"
+          style={{ 
+            background: 'radial-gradient(circle at top left, rgba(255, 215, 111, 0.5) 0%, rgba(255, 185, 108, 0.5) 20%, rgba(253, 226, 195, 0.5) 40%, rgba(168, 199, 255, 0.35) 65%, rgba(221, 238, 225, 0.8) 100%)'
+          }}
+        >
+          <div className="text-center mb-6">
+            <div className="flex justify-center mb-4">
+              <div className="p-3 bg-white/80 rounded-full">
+                <Heart className="w-8 h-8 text-gray-600" />
+              </div>
             </div>
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">Welcome to Prayer Wall</h1>
+            <p className="text-sm text-gray-600">
+              Join our community of prayer and support
+            </p>
           </div>
-          <CardTitle className="text-2xl">Welcome to Prayer Wall</CardTitle>
-          <CardDescription>
-            Join our community of prayer and support
-          </CardDescription>
-        </CardHeader>
-        
-        <CardContent className="space-y-4">
+          
+          <div className="space-y-4">
           {/* Email Login Section (commented out but styled) */}
           {/* <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
@@ -162,8 +168,9 @@ async function isDomainDeliverable(addr: string) {
               {msg}
             </div>
           )}
-        </CardContent>
-      </Card>
+          </div>
+        </section>
+      </div>
     </main>
   )
 }

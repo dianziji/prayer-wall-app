@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerSupabase } from '@/lib/supabase-server'
+import { FELLOWSHIP_OPTIONS } from '@/types/models'
 
 interface AnalyticsData {
   prayerFrequency: {
@@ -32,6 +33,21 @@ interface AnalyticsData {
       average: number
       shortest: number
       longest: number
+    }
+  }
+  fellowshipAnalytics: {
+    breakdown: Array<{
+      fellowship: string
+      fellowshipName: string
+      count: number
+      percentage: number
+      color: string
+    }>
+    mostActiveFellowship: string
+    prayerTypes: {
+      thanksgiving: number
+      intercession: number
+      mixed: number
     }
   }
   monthlyBreakdown: Array<{
@@ -78,7 +94,10 @@ export async function GET(request: NextRequest) {
         id,
         content,
         created_at,
-        author_name
+        author_name,
+        fellowship,
+        thanksgiving_content,
+        intercession_content
       `)
       .eq('user_id', userId)
       .gte('created_at', timeFilter)
@@ -108,6 +127,11 @@ export async function GET(request: NextRequest) {
           totalDays: 0,
           preferredTimeOfDay: 'mixed',
           wordCount: { average: 0, shortest: 0, longest: 0 }
+        },
+        fellowshipAnalytics: {
+          breakdown: [],
+          mostActiveFellowship: '',
+          prayerTypes: { thanksgiving: 0, intercession: 0, mixed: 0 }
         },
         monthlyBreakdown: []
       }
@@ -315,10 +339,55 @@ export async function GET(request: NextRequest) {
       .sort((a, b) => new Date(`${a.month} 1`).getTime() - new Date(`${b.month} 1`).getTime())
       .slice(-12) // Last 12 months
 
+    // Calculate fellowship analytics
+    const fellowshipCounts = new Map<string, number>()
+    const prayerTypeCounts = { thanksgiving: 0, intercession: 0, mixed: 0 }
+    
+    prayers.forEach(prayer => {
+      const fellowship = (prayer as any).fellowship || 'weekday'
+      fellowshipCounts.set(fellowship, (fellowshipCounts.get(fellowship) || 0) + 1)
+      
+      // Analyze prayer types
+      const hasThanksgiving = (prayer as any).thanksgiving_content && (prayer as any).thanksgiving_content.trim().length > 0
+      const hasIntercession = (prayer as any).intercession_content && (prayer as any).intercession_content.trim().length > 0
+      
+      if (hasThanksgiving && hasIntercession) {
+        prayerTypeCounts.mixed++
+      } else if (hasThanksgiving) {
+        prayerTypeCounts.thanksgiving++
+      } else if (hasIntercession) {
+        prayerTypeCounts.intercession++
+      }
+    })
+    
+    // Calculate fellowship breakdown
+    const fellowshipBreakdown = Array.from(fellowshipCounts.entries()).map(([fellowship, count]) => {
+      const fellowshipInfo = FELLOWSHIP_OPTIONS.find(f => f.id === fellowship)
+      return {
+        fellowship,
+        fellowshipName: fellowshipInfo?.name || fellowship,
+        count,
+        percentage: (count / prayers.length) * 100,
+        color: fellowshipInfo?.color || '#6b7280'
+      }
+    }).sort((a, b) => b.count - a.count)
+    
+    // Find most active fellowship
+    const mostActiveFellowship = fellowshipBreakdown.length > 0 
+      ? fellowshipBreakdown[0].fellowshipName 
+      : ''
+    
+    const fellowshipAnalytics = {
+      breakdown: fellowshipBreakdown,
+      mostActiveFellowship,
+      prayerTypes: prayerTypeCounts
+    }
+
     const analytics: AnalyticsData = {
       prayerFrequency,
       engagementTrends,
       prayerPatterns,
+      fellowshipAnalytics,
       monthlyBreakdown
     }
 

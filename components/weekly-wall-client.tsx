@@ -1,11 +1,14 @@
 // components/weekly-wall-client.tsx
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { PrayerWall } from "@/components/prayer-wall"
 import { PrayerForm } from "@/components/prayer-form"
 import { Button } from "@/components/ui/button"
-import type { Prayer } from '@/types/models'
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import type { Prayer, Fellowship } from '@/types/models'
+import { FELLOWSHIP_OPTIONS, getFellowshipInfo } from '@/types/models'
 
 type Props = {
   weekStart: string
@@ -13,9 +16,29 @@ type Props = {
 }
 
 export function WeeklyWallClient({ weekStart, readOnly }: Props) {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const [showForm, setShowForm] = useState(false)
   const [editingPrayer, setEditingPrayer] = useState<Prayer | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
+  const [selectedFellowship, setSelectedFellowship] = useState<Fellowship | 'all'>('all')
+
+  // Get fellowship from URL params
+  useEffect(() => {
+    const fellowship = searchParams.get('fellowship') as Fellowship | null
+    setSelectedFellowship(fellowship || 'all')
+  }, [searchParams])
+
+  const handleFellowshipChange = (fellowship: Fellowship | 'all') => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (fellowship === 'all') {
+      params.delete('fellowship')
+    } else {
+      params.set('fellowship', fellowship)
+    }
+    const newUrl = `/week/${weekStart}${params.toString() ? '?' + params.toString() : ''}`
+    router.push(newUrl)
+  }
   
   const handleEdit = (prayer: Prayer) => {
     setEditingPrayer(prayer)
@@ -60,7 +83,7 @@ export function WeeklyWallClient({ weekStart, readOnly }: Props) {
               <p className="text-gray-600">
                 {readOnly
                   ? "Viewing a past week (read-only)"
-                  : "Share your prayers and find strength in community"}
+                  : "Share your prayers and find strength in MGC"}
               </p>
               <p className="text-sm text-gray-500 mt-1">Week of {weekStart}</p>
             </div>
@@ -83,8 +106,42 @@ export function WeeklyWallClient({ weekStart, readOnly }: Props) {
           
           }} className="bg-transparent sm:bg-white/70 sm:backdrop-blur-sm rounded-lg sm:rounded-xl border-0 sm:border sm:border-white/20 shadow-none sm:shadow-sm p-0 sm:p-6">
          
+          {/* Prayer Wall Header with Compact Filter - Aligned with cards */}
+          <div className="flex items-center justify-between mb-2.5 px-0 sm:px-4 mx-auto max-w-6xl lg:max-w-7xl xl:max-w-8xl">
+            <div className="flex items-center gap-2">
+              <div 
+                className="w-2 h-2 sm:w-3 sm:h-3 rounded-full" 
+                style={{ 
+                  backgroundColor: selectedFellowship === 'all' 
+                    ? '#6b7280' 
+                    : getFellowshipInfo(selectedFellowship).color 
+                }}
+              />
+              <span className="text-sm font-medium text-gray-700">
+                {selectedFellowship === 'all' 
+                  ? '所有祷告' 
+                  : getFellowshipInfo(selectedFellowship).name}
+              </span>
+            </div>
+            
+            {/* Compact Fellowship Filter */}
+            <select 
+              value={selectedFellowship} 
+              onChange={(e) => handleFellowshipChange(e.target.value as Fellowship | 'all')}
+              className="text-xs bg-white/80 border border-white/40 rounded-md px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-400 appearance-none cursor-pointer min-w-[80px]"
+            >
+              <option value="all">全部</option>
+              {FELLOWSHIP_OPTIONS.map((option) => (
+                <option key={option.id} value={option.id}>
+                  {option.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <PrayerWall 
             weekStart={weekStart} 
+            fellowship={selectedFellowship === 'all' ? undefined : selectedFellowship}
             onEdit={!readOnly ? handleEdit : undefined}
             onDelete={!readOnly ? handleDelete : undefined}
             refreshKey={refreshKey}
@@ -105,7 +162,10 @@ export function WeeklyWallClient({ weekStart, readOnly }: Props) {
               prayerId={editingPrayer?.id}
               initialValues={editingPrayer ? {
                 content: editingPrayer.content,
-                author_name: editingPrayer.author_name || ''
+                thanksgiving_content: (editingPrayer as any).thanksgiving_content || undefined,
+                intercession_content: (editingPrayer as any).intercession_content || undefined,
+                author_name: editingPrayer.author_name || '',
+                fellowship: (editingPrayer as any).fellowship || undefined
               } : undefined}
               onPost={handleFormClose}
               onCancel={handleFormClose}

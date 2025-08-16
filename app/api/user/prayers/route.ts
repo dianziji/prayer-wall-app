@@ -21,6 +21,7 @@ export async function GET(request: NextRequest) {
   const limit = Math.min(50, Math.max(1, parseInt(searchParams.get('limit') || '10')))
   const sort = searchParams.get('sort') || 'recent' // recent, most_liked, most_commented
   const timeRange = searchParams.get('timeRange') || 'all' // all, this_month, last_3_months
+  const fellowship = searchParams.get('fellowship') || null // fellowship filter
 
   try {
     // Calculate time range filter
@@ -36,20 +37,26 @@ export async function GET(request: NextRequest) {
       timeFilter = threeMonthsAgo.toISOString()
     }
 
-    // Build base query using the v_prayers_likes view for enriched data
+    // Build base query using the prayers table directly
     let query = supabase
-      .from('v_prayers_likes')
+      .from('prayers')
       .select(`
         id,
         content,
         author_name,
         user_id,
         created_at,
-        like_count,
-        liked_by_me
+        fellowship,
+        thanksgiving_content,
+        intercession_content
       `)
       .eq('user_id', userId)
       .gte('created_at', timeFilter)
+    
+    // Apply fellowship filter if specified
+    if (fellowship && fellowship !== 'all') {
+      query = query.eq('fellowship', fellowship)
+    }
 
     // Apply sorting
     switch (sort) {
@@ -69,11 +76,18 @@ export async function GET(request: NextRequest) {
     }
 
     // Get total count for pagination
-    const { count: totalCount } = await supabase
+    let countQuery = supabase
       .from('v_prayers_likes')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', userId)
       .gte('created_at', timeFilter)
+    
+    // Apply fellowship filter to count query as well
+    if (fellowship && fellowship !== 'all') {
+      countQuery = countQuery.eq('fellowship', fellowship)
+    }
+    
+    const { count: totalCount } = await countQuery
 
     // Apply pagination
     const offset = (page - 1) * limit
@@ -88,36 +102,54 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // For each prayer, get comment count (needed for all prayers, not just sorting)
-    const prayersWithComments = await Promise.all(
+    // For each prayer, get comment count and like info
+    const prayersWithEngagement = await Promise.all(
       (prayers || []).map(async (prayer: any) => {
         if (prayer.id) {
+          // Get comment count
           const { count: commentCount } = await supabase
             .from('comments')
             .select('*', { count: 'exact', head: true })
             .eq('prayer_id', prayer.id)
           
+          // Get like count and user's like status
+          const { count: likeCount } = await supabase
+            .from('likes')
+            .select('*', { count: 'exact', head: true })
+            .eq('prayer_id', prayer.id)
+          
+          const { data: userLike } = await supabase
+            .from('likes')
+            .select('*', { head: true })
+            .eq('prayer_id', prayer.id)
+            .eq('user_id', userId)
+            .maybeSingle()
+          
           return {
             ...prayer,
-            comment_count: commentCount || 0
+            comment_count: commentCount || 0,
+            like_count: likeCount || 0,
+            liked_by_me: !!userLike
           }
         }
         return {
           ...prayer,
-          comment_count: 0
+          comment_count: 0,
+          like_count: 0,
+          liked_by_me: false
         }
       })
     )
 
     // Sort by comment count if requested
     if (sort === 'most_commented') {
-      prayersWithComments.sort((a, b) => ((b as any).comment_count || 0) - ((a as any).comment_count || 0))
+      prayersWithEngagement.sort((a, b) => ((b as any).comment_count || 0) - ((a as any).comment_count || 0))
     }
 
     const totalPages = Math.ceil((totalCount || 0) / limit)
 
     const response = {
-      prayers: prayersWithComments,
+      prayers: prayersWithEngagement,
       pagination: {
         page,
         limit,

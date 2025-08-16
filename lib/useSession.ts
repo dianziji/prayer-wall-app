@@ -9,6 +9,7 @@ export type UserProfile = {
   user_id: string
   username: string | null
   avatar_url: string | null
+  default_fellowship?: string | null
 }
 
 export function useSession() {
@@ -127,7 +128,7 @@ export function useSession() {
     // 1) 安全查询（0 行不报错）
     const { data: row } = await supa
       .from('user_profiles')
-      .select('user_id, username, avatar_url')
+      .select('user_id, username, avatar_url, default_fellowship')
       .eq('user_id', uid)
       .maybeSingle()
 
@@ -176,7 +177,7 @@ export function useSession() {
               username: desiredName,
               avatar_url: desiredAvatar ?? null,
             })
-            .select('user_id, username, avatar_url')
+            .select('user_id, username, avatar_url, default_fellowship')
             .single()
 
           // 更新profile状态

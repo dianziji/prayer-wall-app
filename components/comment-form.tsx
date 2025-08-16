@@ -10,6 +10,7 @@ import type { Comment } from '@/types/models'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Smile } from 'lucide-react'
+import { filterContent } from '@/lib/content-filter'
 
 export function CommentForm({ prayerId, onPosted }: {
   prayerId: string
@@ -25,11 +26,19 @@ const { session, profile } = useSession()
 
   async function submit() {
     if (!session) return toast.error('请先登录')
+    
+    const trimmedText = text.trim()
+    
+    // Content filtering validation
+    const contentFilter = filterContent(trimmedText)
+    if (!contentFilter.isValid) {
+      return toast.error(contentFilter.reason || '评论内容包含不当词汇，请修改后重新提交')
+    }
         
     const {  data: inserted, error } = await supa.from('comments').insert({
       prayer_id: prayerId,
       user_id: session.user.id,
-      content: text.trim(),
+      content: trimmedText,
      
     })      .select('id, content, user_id, created_at, prayer_id')
   .single()

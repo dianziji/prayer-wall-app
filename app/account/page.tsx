@@ -101,33 +101,55 @@ export default function AccountPage() {
 
   if (!authChecked || loading) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-200">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
-          <Card>
-            <CardContent className="flex items-center justify-center py-8">
-              <p className="text-muted-foreground">Loading...</p>
-            </CardContent>
-          </Card>
+      <main className="min-h-screen py-4 sm:py-8" style={{ backgroundColor: '#F8F6F0' }}>
+        <div className="max-w-6xl lg:max-w-7xl xl:max-w-8xl mx-auto px-2 sm:px-6">
+          <section 
+            className="rounded-lg sm:rounded-xl border-0 sm:border sm:border-white/20 shadow-none sm:shadow-sm p-6"
+            style={{ 
+              background: 'radial-gradient(circle at top left, rgba(255, 215, 111, 0.5) 0%, rgba(255, 185, 108, 0.5) 20%, rgba(253, 226, 195, 0.5) 40%, rgba(168, 199, 255, 0.35) 65%, rgba(221, 238, 225, 0.8) 100%)'
+            }}
+          >
+            <div className="flex items-center justify-center py-8">
+              <p className="text-gray-600">Loading...</p>
+            </div>
+          </section>
         </div>
       </main>
     )
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-200">
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="w-5 h-5" />
-              Account Settings
-            </CardTitle>
-            <CardDescription>
-              Manage your profile information and preferences
-            </CardDescription>
-          </CardHeader>
-          
-          <CardContent>
+    <main className="min-h-screen py-4 sm:py-8" style={{ backgroundColor: '#F8F6F0' }}>
+      <div className="max-w-6xl lg:max-w-7xl xl:max-w-8xl mx-auto px-2 sm:px-6 space-y-4 sm:space-y-6">
+        {/* Header */}
+        <section 
+          className="rounded-lg sm:rounded-xl border-0 sm:border sm:border-white/20 shadow-none sm:shadow-sm p-3 sm:p-6"
+          style={{ 
+            background: 'radial-gradient(circle at top left, rgba(255, 215, 111, 0.5) 0%, rgba(255, 185, 108, 0.5) 20%, rgba(253, 226, 195, 0.5) 40%, rgba(168, 199, 255, 0.35) 65%, rgba(221, 238, 225, 0.8) 100%)'
+          }}
+        >
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-white/80 rounded-full">
+              <User className="w-5 h-5 text-gray-600" />
+            </div>
+            <div>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-1">Account Settings</h1>
+              <p className="text-sm text-gray-600">
+                Manage your profile information and preferences
+              </p>
+            </div>
+          </div>
+        </section>
+        
+        {/* Content */}
+        <section 
+          className="bg-transparent sm:bg-white/70 sm:backdrop-blur-sm rounded-lg sm:rounded-xl border-0 sm:border sm:border-white/20 shadow-none sm:shadow-sm p-0 sm:p-6"
+          style={{ 
+            background: 'linear-gradient(to top right, rgba(255, 215, 111, 0.2) 0%, rgba(255, 185, 108, 0.2) 20%, rgba(253, 226, 195, 0.2) 40%, rgba(168, 199, 255, 0.05) 65%, rgba(221, 238, 225, 0.5) 100%)'
+          }}
+        >
+          <Card className="bg-transparent border-none shadow-none">
+            <CardContent className="p-6">
             <form onSubmit={handleSave} className="space-y-6">
               {/* Avatar Preview */}
               {profile.avatar_url && (
@@ -181,7 +203,8 @@ export default function AccountPage() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full"
+                className="w-full px-4 sm:px-6 py-3 text-base sm:text-lg min-h-[44px] touch-manipulation focus:outline-none focus:bg-transparent active:bg-transparent text-black hover:opacity-90"
+                style={{ backgroundColor: '#ffca39' }}
               >
                 {loading ? 'Saving...' : 'Save Changes'}
               </Button>
@@ -196,8 +219,9 @@ export default function AccountPage() {
                 </div>
               )}
             </form>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </section>
       </div>
     </main>
   )
