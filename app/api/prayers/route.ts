@@ -1,43 +1,91 @@
 import { createServerSupabase } from '@/lib/supabase-server'
 import { NextResponse } from 'next/server'
 import { getWeekRangeUtc, getCurrentWeekStartET, isCurrentWeek } from '@/lib/utils'
+import { filterContent } from '@/lib/content-filter'
 import dayjs from 'dayjs'
 
 /**
- * GET /api/prayers?week_start=YYYY-MM-DD
- * - 按“美东周日”为起点的当周范围（在服务端换算为 UTC ISO）过滤
+ * GET /api/prayers?week_start=YYYY-MM-DD&fellowship=ypf
+ * - 按"美东周日"为起点的当周范围（在服务端换算为 UTC ISO）过滤
  * - 如果未提供 week_start，则默认使用当前周（ET）的周日
+ * - fellowship 参数用于过滤指定团契的祷告，不提供则显示所有
  */
 export async function GET(req: Request) {
   const supabase = await createServerSupabase()
   try {
     const { searchParams } = new URL(req.url)
     const qsWeekStart = searchParams.get('week_start') || getCurrentWeekStartET()
+    const fellowship = searchParams.get('fellowship')
 
     // 计算该周在 UTC 下的起止 ISO（用于数据库过滤）
     const { startUtcISO, endUtcISO } = getWeekRangeUtc(qsWeekStart)
 
-    const { data, error } = await supabase
-      .from('v_prayers_likes')
+    let query = supabase
+      .from('prayers')
       .select(`
         id,
         content,
         author_name,
         user_id,
         created_at,
-        like_count,
-        liked_by_me
+        fellowship,
+        thanksgiving_content,
+        intercession_content
       `)
       .gte('created_at', startUtcISO)
       .lt('created_at', endUtcISO)
       .order('created_at', { ascending: false })
+
+    // Add fellowship filter if specified
+    if (fellowship) {
+      query = query.eq('fellowship', fellowship)
+    } else {
+      // When no fellowship filter, show all prayers (including those without fellowship)
+      // This ensures backward compatibility with existing prayers
+    }
+
+    const { data: prayers, error } = await query
 
     if (error) {
       console.error('Supabase fetch error:', error)
       return NextResponse.json({ error: 'Failed to fetch prayers' }, { status: 500 })
     }
 
-    return NextResponse.json(data ?? [])
+    // Get current user for like information
+    const { data: { user } } = await supabase.auth.getUser()
+    const userId = user?.id
+
+    // Add like information to each prayer
+    const prayersWithLikes = await Promise.all(
+      (prayers || []).map(async (prayer: any) => {
+        // Get like count
+        const { count: likeCount } = await supabase
+          .from('likes')
+          .select('*', { count: 'exact', head: true })
+          .eq('prayer_id', prayer.id)
+        
+        // Get user's like status if logged in
+        let likedByMe = false
+        if (userId) {
+          const { data: userLike } = await supabase
+            .from('likes')
+            .select('*', { head: true })
+            .eq('prayer_id', prayer.id)
+            .eq('user_id', userId)
+            .maybeSingle()
+          
+          likedByMe = !!userLike
+        }
+        
+        return {
+          ...prayer,
+          like_count: likeCount || 0,
+          liked_by_me: likedByMe
+        }
+      })
+    )
+
+    return NextResponse.json(prayersWithLikes)
   } catch (e) {
     console.error('Unhandled GET error:', e)
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
@@ -46,9 +94,10 @@ export async function GET(req: Request) {
 
 /**
  * POST /api/prayers
- * body: { content: string; author_name?: string }
+ * body: { content: string; author_name?: string; fellowship?: string }
  * - 服务器端进行基础校验（长度、必填）
  * - 只依赖默认 created_at=now()，周归属由查询时段决定
+ * - fellowship 指定祷告所属团契，默认为 weekday
  */
 export async function POST(req: Request) {
   const supabase = await createServerSupabase()
@@ -65,6 +114,7 @@ export async function POST(req: Request) {
     let thanksgiving_content: string | null = (body?.thanksgiving_content ?? '').toString().trim() || null
     let intercession_content: string | null = (body?.intercession_content ?? '').toString().trim() || null
     let author_name: string | null = (body?.author_name ?? '').toString().trim() || null
+    let fellowship: string = (body?.fellowship ?? 'weekday').toString().trim()
 
     // Determine if this is new format (dual-field) or legacy format
     const hasNewContent = thanksgiving_content || intercession_content
@@ -75,6 +125,37 @@ export async function POST(req: Request) {
     const totalContentLength = userContentLength + content.length
 
     // Validation
+    if (!author_name) {
+      return NextResponse.json({ error: '请输入您的姓名' }, { status: 400 })
+    }
+    
+    // Content filtering validation
+    const authorFilter = filterContent(author_name)
+    if (!authorFilter.isValid) {
+      return NextResponse.json({ error: '姓名可能包含不当词汇，请修改后重新提交' }, { status: 400 })
+    }
+    
+    if (thanksgiving_content) {
+      const thanksgivingFilter = filterContent(thanksgiving_content)
+      if (!thanksgivingFilter.isValid) {
+        return NextResponse.json({ error: thanksgivingFilter.reason || '感恩祷告内容可能包含不当词汇' }, { status: 400 })
+      }
+    }
+    
+    if (intercession_content) {
+      const intercessionFilter = filterContent(intercession_content)
+      if (!intercessionFilter.isValid) {
+        return NextResponse.json({ error: intercessionFilter.reason || '代祷请求内容可能包含不当词汇' }, { status: 400 })
+      }
+    }
+    
+    if (content) {
+      const contentFilter = filterContent(content)
+      if (!contentFilter.isValid) {
+        return NextResponse.json({ error: contentFilter.reason || '祷告内容可能包含不当词汇' }, { status: 400 })
+      }
+    }
+    
     if (hasNewContent) {
       // New format validation - check user content only (500 chars)
       if (userContentLength === 0) {
@@ -97,10 +178,17 @@ export async function POST(req: Request) {
       author_name = author_name.slice(0, 24)
     }
 
+    // Validate fellowship value
+    const validFellowships = ['sunday', 'ypf', 'jcf', 'student', 'lic', 'weekday']
+    if (!validFellowships.includes(fellowship)) {
+      fellowship = 'weekday'
+    }
+
     // Prepare insert data
     const insertData: any = {
       author_name,
-      user_id: user?.id || null
+      user_id: user?.id || null,
+      fellowship
     }
 
     if (hasNewContent) {
@@ -201,6 +289,7 @@ export async function PATCH(req: Request) {
     let thanksgiving_content: string | null = (body?.thanksgiving_content ?? '').toString().trim() || null
     let intercession_content: string | null = (body?.intercession_content ?? '').toString().trim() || null
     let author_name: string | null = (body?.author_name ?? '').toString().trim() || null
+    let fellowship: string = (body?.fellowship ?? 'weekday').toString().trim()
 
     // Determine format and validate (reuse from POST)
     const hasNewContent = thanksgiving_content || intercession_content
@@ -209,6 +298,37 @@ export async function PATCH(req: Request) {
     const totalContentLength = userContentLength + content.length
 
     // Validation
+    if (!author_name) {
+      return NextResponse.json({ error: '请输入您的姓名' }, { status: 400 })
+    }
+    
+    // Content filtering validation  
+    const authorFilter = filterContent(author_name)
+    if (!authorFilter.isValid) {
+      return NextResponse.json({ error: '姓名可能包含不当词汇，请修改后重新提交' }, { status: 400 })
+    }
+    
+    if (thanksgiving_content) {
+      const thanksgivingFilter = filterContent(thanksgiving_content)
+      if (!thanksgivingFilter.isValid) {
+        return NextResponse.json({ error: thanksgivingFilter.reason || '感恩祷告内容可能包含不当词汇' }, { status: 400 })
+      }
+    }
+    
+    if (intercession_content) {
+      const intercessionFilter = filterContent(intercession_content)
+      if (!intercessionFilter.isValid) {
+        return NextResponse.json({ error: intercessionFilter.reason || '代祷请求内容可能包含不当词汇' }, { status: 400 })
+      }
+    }
+    
+    if (content) {
+      const contentFilter = filterContent(content)
+      if (!contentFilter.isValid) {
+        return NextResponse.json({ error: contentFilter.reason || '祷告内容可能包含不当词汇' }, { status: 400 })
+      }
+    }
+    
     if (hasNewContent) {
       if (userContentLength === 0) {
         return NextResponse.json({ error: '至少需要填写感恩祷告或代祷请求中的一项' }, { status: 400 })
@@ -228,8 +348,14 @@ export async function PATCH(req: Request) {
       author_name = author_name.slice(0, 24)
     }
 
+    // Validate fellowship value
+    const validFellowships = ['sunday', 'ypf', 'jcf', 'student', 'lic', 'weekday']
+    if (!validFellowships.includes(fellowship)) {
+      fellowship = 'weekday'
+    }
+
     // Prepare update data
-    const updateData: any = { author_name }
+    const updateData: any = { author_name, fellowship }
 
     if (hasNewContent) {
       // New format: merge with markers into content field

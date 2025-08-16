@@ -4,7 +4,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useSession } from '@/lib/useSession'
-import { PRAYER_COLORS } from '@/types/models'
+import { PRAYER_COLORS, FELLOWSHIP_OPTIONS, type Fellowship, getFellowshipInfo } from '@/types/models'
+import { Label } from '@/components/ui/label'
+import { filterContent } from '@/lib/content-filter'
 
 export type PrayerFormProps = {
   weekStart?: string
@@ -17,7 +19,15 @@ export type PrayerFormProps = {
     thanksgiving_content?: string
     intercession_content?: string
     author_name: string
+    fellowship?: Fellowship
   }
+}
+
+// 根据当前日期确定默认团契
+const getDefaultFellowship = (): Fellowship => {
+  const today = new Date()
+  const dayOfWeek = today.getDay() // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+  return dayOfWeek === 0 ? 'sunday' : 'weekday'
 }
 
 export function PrayerForm({ weekStart, onPost, onCancel, mode = 'create', prayerId, initialValues }: PrayerFormProps) {
@@ -25,6 +35,9 @@ export function PrayerForm({ weekStart, onPost, onCancel, mode = 'create', praye
   const [author, setAuthor] = useState(initialValues?.author_name ?? profile?.username ?? "")
   const [thanksgivingContent, setThanksgivingContent] = useState(initialValues?.thanksgiving_content ?? "")
   const [intercessionContent, setIntercessionContent] = useState(initialValues?.intercession_content ?? "")
+  const [fellowship, setFellowship] = useState<Fellowship>(
+    initialValues?.fellowship ?? profile?.default_fellowship as Fellowship ?? getDefaultFellowship()
+  )
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -46,6 +59,7 @@ export function PrayerForm({ weekStart, onPost, onCancel, mode = 'create', praye
   // Calculate total user content (no markers, user sees full 500 chars)
   const totalCharCount = thanksgivingContent.length + intercessionContent.length
   const hasContent = thanksgivingContent.trim().length > 0 || intercessionContent.trim().length > 0
+  const hasAuthor = author.trim().length > 0
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -55,6 +69,10 @@ export function PrayerForm({ weekStart, onPost, onCancel, mode = 'create', praye
     const trimmedIntercession = intercessionContent.trim()
     const trimmedAuthor = author.trim()
 
+    if (!trimmedAuthor) {
+      setError("请输入您的姓名")
+      return
+    }
     if (!trimmedThanksgiving && !trimmedIntercession) {
       setError("至少需要填写感恩祷告或代祷请求中的一项")
       return
@@ -65,6 +83,25 @@ export function PrayerForm({ weekStart, onPost, onCancel, mode = 'create', praye
     }
     if (trimmedAuthor.length > MAX_NAME) {
       setError(`名字不能超过 ${MAX_NAME} 个字符`)
+      return
+    }
+
+    // Content filtering validation
+    const thanksgivingFilter = filterContent(trimmedThanksgiving)
+    if (!thanksgivingFilter.isValid) {
+      setError(thanksgivingFilter.reason || '感恩祷告内容包含不当词汇')
+      return
+    }
+    
+    const intercessionFilter = filterContent(trimmedIntercession)
+    if (!intercessionFilter.isValid) {
+      setError(intercessionFilter.reason || '代祷请求内容包含不当词汇')
+      return
+    }
+    
+    const authorFilter = filterContent(trimmedAuthor)
+    if (!authorFilter.isValid) {
+      setError('姓名包含不当词汇，请修改后重新提交')
       return
     }
 
@@ -82,6 +119,7 @@ export function PrayerForm({ weekStart, onPost, onCancel, mode = 'create', praye
           author_name: trimmedAuthor || null,
           thanksgiving_content: trimmedThanksgiving || null,
           intercession_content: trimmedIntercession || null,
+          fellowship,
         }),
       })
 
@@ -118,15 +156,43 @@ export function PrayerForm({ weekStart, onPost, onCancel, mode = 'create', praye
         </div>
       )}
 
+      {/* Fellowship selection */}
+      <div className="space-y-2">
+        <Label htmlFor="fellowship-select" className="text-sm font-medium flex items-center gap-2">
+          <div 
+            className="w-3 h-3 rounded-full" 
+            style={{ backgroundColor: getFellowshipInfo(fellowship).color }}
+          />
+          团契选择
+        </Label>
+        
+        <select 
+          id="fellowship-select"
+          value={fellowship} 
+          onChange={(e) => setFellowship(e.target.value as Fellowship)}
+          className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none cursor-pointer"
+        >
+          {FELLOWSHIP_OPTIONS.map((option) => (
+            <option key={option.id} value={option.id}>
+              {option.name}
+            </option>
+          ))}
+        </select>
+        <p className="text-xs text-muted-foreground">
+          当前选择: {getFellowshipInfo(fellowship).name}
+        </p>
+      </div>
+
       {/* Author name */}
       <div className="space-y-2">
         <Input
-          placeholder="Your name (optional)"
+          placeholder="请输入您的姓名"
           value={author}
           readOnly={!!profile?.username}
           onChange={(e) => setAuthor(e.target.value)}
           maxLength={MAX_NAME}
           className="min-h-[36px] sm:min-h-[44px] text-sm sm:text-base"
+          required
         />
         <div className="text-xs text-muted-foreground text-right">{author.length}/{MAX_NAME}</div>
       </div>
@@ -215,7 +281,7 @@ export function PrayerForm({ weekStart, onPost, onCancel, mode = 'create', praye
         </Button>
         <Button 
           type="submit" 
-          disabled={loading || !hasContent || totalCharCount > MAX_CONTENT}
+          disabled={loading || !hasContent || !hasAuthor || totalCharCount > MAX_CONTENT}
           className="order-1 sm:order-2 min-h-[36px] sm:min-h-[44px] text-sm sm:text-base py-2 sm:py-3 focus:outline-none focus:bg-transparent active:bg-transparent"
         >
           {loading 
