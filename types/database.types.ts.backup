@@ -124,9 +124,7 @@ export type Database = {
           font_style: string | null
           guest_id: string | null
           id: string
-          intercession_content: string | null
           metadata: Json | null
-          thanksgiving_content: string | null
           user_id: string | null
           wall_id: string | null
         }
@@ -139,9 +137,7 @@ export type Database = {
           font_style?: string | null
           guest_id?: string | null
           id?: string
-          intercession_content?: string | null
           metadata?: Json | null
-          thanksgiving_content?: string | null
           user_id?: string | null
           wall_id?: string | null
         }
@@ -154,9 +150,7 @@ export type Database = {
           font_style?: string | null
           guest_id?: string | null
           id?: string
-          intercession_content?: string | null
           metadata?: Json | null
-          thanksgiving_content?: string | null
           user_id?: string | null
           wall_id?: string | null
         }
