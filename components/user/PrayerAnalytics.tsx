@@ -6,7 +6,7 @@ import { createBrowserSupabase } from '@/lib/supabase-browser'
 import { formatDistanceToNow } from 'date-fns'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { BarChart3, Clock, Calendar, TrendingUp, Heart, MessageSquare } from 'lucide-react'
+import { BarChart3, Clock, Calendar, TrendingUp, Heart, MessageSquare, Users, Tags } from 'lucide-react'
 
 interface AnalyticsData {
   prayerFrequency: {
@@ -39,6 +39,21 @@ interface AnalyticsData {
       average: number
       shortest: number
       longest: number
+    }
+  }
+  fellowshipAnalytics: {
+    breakdown: Array<{
+      fellowship: string
+      fellowshipName: string
+      count: number
+      percentage: number
+      color: string
+    }>
+    mostActiveFellowship: string
+    prayerTypes: {
+      thanksgiving: number
+      intercession: number
+      mixed: number
     }
   }
   monthlyBreakdown: Array<{
@@ -107,7 +122,7 @@ export default function PrayerAnalytics({ className = '' }: PrayerAnalyticsProps
 
   if (error) {
     return (
-      <Card className={className}>
+      <Card className={`bg-transparent border-none shadow-none ${className}`}>
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <BarChart3 className="w-5 h-5" />
@@ -125,7 +140,7 @@ export default function PrayerAnalytics({ className = '' }: PrayerAnalyticsProps
   }
 
   return (
-    <Card className={className}>
+    <Card className={`bg-transparent border-none shadow-none ${className}`}>
       <CardHeader>
         <div className="flex justify-between items-center">
           <CardTitle className="text-lg flex items-center gap-2">
@@ -166,7 +181,7 @@ export default function PrayerAnalytics({ className = '' }: PrayerAnalyticsProps
         ) : analytics ? (
           <div className="space-y-6">
             {/* Prayer Frequency */}
-            <Card>
+            <Card className="bg-white/50 border-white/30">
               <CardContent className="p-4">
                 <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
                   <TrendingUp className="w-4 h-4" />
@@ -196,7 +211,7 @@ export default function PrayerAnalytics({ className = '' }: PrayerAnalyticsProps
             </Card>
 
             {/* Prayer Patterns */}
-            <Card>
+            <Card className="bg-white/50 border-white/30">
               <CardContent className="p-4">
                 <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
                   <Calendar className="w-4 h-4" />
@@ -238,7 +253,7 @@ export default function PrayerAnalytics({ className = '' }: PrayerAnalyticsProps
             </Card>
 
             {/* Engagement Insights */}
-            <Card>
+            <Card className="bg-white/50 border-white/30">
               <CardContent className="p-4">
                 <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
                   <TrendingUp className="w-4 h-4" />
@@ -307,9 +322,91 @@ export default function PrayerAnalytics({ className = '' }: PrayerAnalyticsProps
               </CardContent>
             </Card>
 
+            {/* Fellowship Analytics */}
+            {analytics.fellowshipAnalytics && (
+              <Card className="bg-white/50 border-white/30">
+                <CardContent className="p-4">
+                  <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
+                    <Users className="w-4 h-4" />
+                    Fellowship Participation
+                  </h3>
+                  
+                  {/* Fellowship Breakdown */}
+                  <div className="mb-6">
+                    <h4 className="text-xs font-medium text-muted-foreground mb-3">Prayer Distribution by Fellowship</h4>
+                    <div className="space-y-2">
+                      {analytics.fellowshipAnalytics.breakdown.map((fellowship, index) => (
+                        <div key={index} className="flex items-center gap-3">
+                          <div className="w-24 text-xs text-muted-foreground text-right">
+                            {fellowship.fellowshipName}
+                          </div>
+                          <div className="flex-1 bg-gray-200 rounded-full h-4 relative">
+                            <div 
+                              className="h-4 rounded-full flex items-center justify-end pr-2"
+                              style={{ 
+                                width: `${Math.max(fellowship.percentage, 5)}%`,
+                                backgroundColor: fellowship.color
+                              }}
+                            >
+                              <span className="text-white text-xs font-medium">
+                                {fellowship.count}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="w-12 text-xs text-muted-foreground text-right">
+                            {fellowship.percentage.toFixed(0)}%
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Prayer Types Breakdown */}
+                  <div className="mb-6">
+                    <h4 className="text-xs font-medium text-muted-foreground mb-3 flex items-center gap-2">
+                      <Tags className="w-3 h-3" />
+                      Prayer Content Types
+                    </h4>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="text-center p-3 border border-border rounded">
+                        <div className="text-lg font-semibold" style={{ color: '#edcd52' }}>
+                          {analytics.fellowshipAnalytics.prayerTypes.thanksgiving}
+                        </div>
+                        <div className="text-xs text-muted-foreground">感恩祷告</div>
+                      </div>
+                      <div className="text-center p-3 border border-border rounded">
+                        <div className="text-lg font-semibold" style={{ color: '#607ebf' }}>
+                          {analytics.fellowshipAnalytics.prayerTypes.intercession}
+                        </div>
+                        <div className="text-xs text-muted-foreground">代祷请求</div>
+                      </div>
+                      <div className="text-center p-3 border border-border rounded">
+                        <div className="text-lg font-semibold" style={{ color: '#66b28f' }}>
+                          {analytics.fellowshipAnalytics.prayerTypes.mixed}
+                        </div>
+                        <div className="text-xs text-muted-foreground">综合祷告</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Most Active Fellowship */}
+                  {analytics.fellowshipAnalytics.mostActiveFellowship && (
+                    <div className="p-3 border border-border rounded bg-blue-50">
+                      <div className="text-sm font-medium text-foreground mb-1">
+                        Most Active Fellowship
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        You are most active in <span className="font-medium">{analytics.fellowshipAnalytics.mostActiveFellowship}</span> fellowship
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
             {/* Monthly Breakdown Chart */}
             {analytics.monthlyBreakdown.length > 0 && (
-              <Card>
+              <Card className="bg-white/50 border-white/30">
                 <CardContent className="p-4">
                   <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
                     <Calendar className="w-4 h-4" />

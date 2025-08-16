@@ -120,6 +120,7 @@ export type Database = {
           color: string | null
           content: string
           created_at: string | null
+          fellowship: string | null
           font_style: string | null
           guest_id: string | null
           id: string
@@ -132,6 +133,7 @@ export type Database = {
           color?: string | null
           content: string
           created_at?: string | null
+          fellowship?: string | null
           font_style?: string | null
           guest_id?: string | null
           id?: string
@@ -144,6 +146,7 @@ export type Database = {
           color?: string | null
           content?: string
           created_at?: string | null
+          fellowship?: string | null
           font_style?: string | null
           guest_id?: string | null
           id?: string
@@ -165,6 +168,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
+          default_fellowship: string | null
           updated_at: string
           user_id: string
           username: string | null
@@ -172,6 +176,7 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          default_fellowship?: string | null
           updated_at?: string
           user_id: string
           username?: string | null
@@ -179,6 +184,7 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string
+          default_fellowship?: string | null
           updated_at?: string
           user_id?: string
           username?: string | null
@@ -202,6 +208,7 @@ export type Database = {
           color: string | null
           content: string | null
           created_at: string | null
+          fellowship: string | null
           font_style: string | null
           guest_id: string | null
           id: string | null
@@ -220,6 +227,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      fellowships: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          description: string | null
+          display_name: string
+          id: string
+          is_active: boolean | null
+          sort_order: number | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          display_name: string
+          id: string
+          is_active?: boolean | null
+          sort_order?: number | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          display_name?: string
+          id?: string
+          is_active?: boolean | null
+          sort_order?: number | null
+        }
+        Relationships: []
       }
     }
     Functions: {

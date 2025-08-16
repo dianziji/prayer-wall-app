@@ -1,5 +1,27 @@
 import type { Database } from './database.types'
 
+// Fellowship types
+export type Fellowship = 'sunday' | 'ypf' | 'jcf' | 'student' | 'lic' | 'weekday'
+
+export const FELLOWSHIPS = {
+  sunday: { id: 'sunday' as const, name: '主日祷告', color: '#8b5cf6' },
+  ypf: { id: 'ypf' as const, name: 'YPF团契', color: '#3b82f6' },
+  jcf: { id: 'jcf' as const, name: 'JCF团契', color: '#10b981' },
+  student: { id: 'student' as const, name: '学生团契', color: '#f59e0b' },
+  lic: { id: 'lic' as const, name: 'LIC团契', color: '#ef4444' },
+  weekday: { id: 'weekday' as const, name: '平日祷告', color: '#6b7280' },
+} as const
+
+export const FELLOWSHIP_OPTIONS = Object.values(FELLOWSHIPS)
+
+// Fellowship helper functions
+export function getFellowshipInfo(fellowship: Fellowship | string | null) {
+  if (!fellowship || !(fellowship in FELLOWSHIPS)) {
+    return FELLOWSHIPS.weekday
+  }
+  return FELLOWSHIPS[fellowship as Fellowship]
+}
+
 // 单行别名，之后全项目引用
 // 原始表行
 type PrayerRow = Database['public']['Tables']['prayers']['Row']
@@ -8,7 +30,10 @@ type PrayerRow = Database['public']['Tables']['prayers']['Row']
 export type Prayer = PrayerRow & {
   like_count: number
   liked_by_me: boolean
+  fellowship?: Fellowship | string | null
 }
+
+// Note: FellowshipConfig type will be available after running the migration
 export type CommentRow= Database['public']['Tables']['comments']['Row']
 
 export type Comment= CommentRow & {

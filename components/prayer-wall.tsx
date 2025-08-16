@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import { createBrowserSupabase } from '@/lib/supabase-browser'
 import { PrayerCard } from "./prayer-card"
 import Masonry from 'react-masonry-css'
-import type { Prayer } from '@/types/models'
+import type { Prayer, Fellowship } from '@/types/models'
 const breakpointColumnsObj = {
   default: 4,  // 4 columns for desktop
   1024: 3,     // 3 columns for tablet
@@ -14,11 +14,13 @@ const breakpointColumnsObj = {
 
 export function PrayerWall({ 
   weekStart, 
+  fellowship,
   onEdit, 
   onDelete, 
   refreshKey 
 }: { 
   weekStart: string;
+  fellowship?: Fellowship;
   onEdit?: (prayer: Prayer) => void;
   onDelete?: (prayerId?: string) => void;
   refreshKey?: number;
@@ -35,7 +37,8 @@ export function PrayerWall({
     setLoading(true)
     setError(null)
 
-    const url = `/api/prayers?week_start=${encodeURIComponent(weekStart)}`
+    const fellowshipParam = fellowship ? `&fellowship=${encodeURIComponent(fellowship)}` : ''
+    const url = `/api/prayers?week_start=${encodeURIComponent(weekStart)}${fellowshipParam}`
     fetch(url)
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
@@ -56,7 +59,7 @@ export function PrayerWall({
       })
 
     return () => { isMounted = false }
-  }, [weekStart, refreshKey])
+  }, [weekStart, fellowship, refreshKey])
 
   useEffect(() => {
     // Build unique list of user_ids from current prayers
@@ -94,7 +97,7 @@ export function PrayerWall({
   ))
 
   return (
-    <div className="px-0 sm:px-4 py-4 sm:py-8 max-w-6xl lg:max-w-7xl xl:max-w-8xl mx-auto">
+    <div className="px-0 sm:px-4 pt-0 pb-4 sm:pb-8 max-w-6xl lg:max-w-7xl xl:max-w-8xl mx-auto">
       {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
       <Masonry

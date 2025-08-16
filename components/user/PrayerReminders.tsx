@@ -279,7 +279,7 @@ export default function PrayerReminders() {
   }
 
   return (
-    <Card>
+    <Card className="bg-transparent border-none shadow-none">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-xl flex items-center gap-2">

@@ -26,7 +26,7 @@ export default function RemindersPage() {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-200 flex items-center justify-center">
+      <main className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F8F6F0' }}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-lg text-muted-foreground">Loading...</p>
@@ -40,95 +40,125 @@ export default function RemindersPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-200 py-6 sm:py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <main className="min-h-screen py-4 sm:py-8" style={{ backgroundColor: '#F8F6F0' }}>
+      <div className="max-w-6xl lg:max-w-7xl xl:max-w-8xl mx-auto px-2 sm:px-6 space-y-4 sm:space-y-6">
 
         {/* Page Header */}
-        <Card className="mb-6 sm:mb-8">
-          <CardContent className="p-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div className="flex items-start gap-4">
-                <div className="p-3 bg-gray-100 rounded-full">
-                  <Bell className="w-5 h-5 text-gray-600" />
-                </div>
-                <div>
-                  <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-2">Prayer Reminders</h1>
-                  <p className="text-sm text-muted-foreground">
-                    Set up personalized prayer reminders to help maintain your spiritual practice
-                  </p>
-                </div>
+        <section 
+          className="rounded-lg sm:rounded-xl border-0 sm:border sm:border-white/20 shadow-none sm:shadow-sm p-3 sm:p-6"
+          style={{ 
+            background: 'radial-gradient(circle at top left, rgba(255, 215, 111, 0.5) 0%, rgba(255, 185, 108, 0.5) 20%, rgba(253, 226, 195, 0.5) 40%, rgba(168, 199, 255, 0.35) 65%, rgba(221, 238, 225, 0.8) 100%)'
+          }}
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-start gap-4">
+              <div className="p-3 bg-white/80 rounded-full">
+                <Bell className="w-5 h-5 text-gray-600" />
               </div>
-              <div className="flex flex-col sm:flex-row gap-2">
-                <Button asChild variant="outline" className="w-full sm:w-auto">
-                  <Link href="/my-prayers" className="flex items-center gap-2">
-                    <BarChart3 className="w-4 h-4" />
-                    My Prayers
-                  </Link>
-                </Button>
-                <Button asChild className="w-full sm:w-auto">
-                  <Link href="/" className="flex items-center gap-2">
-                    <Home className="w-4 h-4" />
-                    Prayer Wall
-                  </Link>
-                </Button>
+              <div>
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">Prayer Reminders</h1>
+                <p className="text-sm text-gray-600">
+                  Set up personalized prayer reminders to help maintain your spiritual practice
+                </p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button asChild variant="outline" className="w-full sm:w-auto">
+                <Link href="/my-prayers" className="flex items-center gap-2">
+                  <BarChart3 className="w-4 h-4" />
+                  My Prayers
+                </Link>
+              </Button>
+              <Button 
+                asChild 
+                className="w-full sm:w-auto px-4 sm:px-6 py-3 text-base sm:text-lg min-h-[44px] touch-manipulation focus:outline-none focus:bg-transparent active:bg-transparent text-black hover:opacity-90"
+                style={{ backgroundColor: '#ffca39' }}
+              >
+                <Link href="/" className="flex items-center gap-2">
+                  <Home className="w-4 h-4" />
+                  Prayer Wall
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </section>
 
         {/* Quick Info Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 sm:mb-8">
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Clock className="w-5 h-5 text-primary" />
-                <h3 className="font-semibold text-foreground">Custom Times</h3>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Set personalized reminder times that fit your daily schedule
-              </p>
-            </CardContent>
-          </Card>
+        <section 
+          className="bg-transparent sm:bg-white/70 sm:backdrop-blur-sm rounded-lg sm:rounded-xl border-0 sm:border sm:border-white/20 shadow-none sm:shadow-sm p-3 sm:p-6"
+          style={{ 
+            background: 'linear-gradient(to top right, rgba(255, 215, 111, 0.2) 0%, rgba(255, 185, 108, 0.2) 20%, rgba(253, 226, 195, 0.2) 40%, rgba(168, 199, 255, 0.05) 65%, rgba(221, 238, 225, 0.5) 100%)'
+          }}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="bg-white/60 border-white/40">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Clock className="w-5 h-5 text-primary" />
+                  <h3 className="font-semibold text-foreground">Custom Times</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Set personalized reminder times that fit your daily schedule
+                </p>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Calendar className="w-5 h-5 text-primary" />
-                <h3 className="font-semibold text-foreground">Flexible Schedule</h3>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Choose daily, weekly, or custom day patterns
-              </p>
-            </CardContent>
-          </Card>
+            <Card className="bg-white/60 border-white/40">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Calendar className="w-5 h-5 text-primary" />
+                  <h3 className="font-semibold text-foreground">Flexible Schedule</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Choose daily, weekly, or custom day patterns
+                </p>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <MessageSquare className="w-5 h-5 text-primary" />
-                <h3 className="font-semibold text-foreground">Personal Messages</h3>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Customize reminder messages that inspire you
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+            <Card className="bg-white/60 border-white/40">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <MessageSquare className="w-5 h-5 text-primary" />
+                  <h3 className="font-semibold text-foreground">Personal Messages</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Customize reminder messages that inspire you
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
 
         {/* Main Reminders Component */}
-        <div className="mb-6 sm:mb-8">
+        <section 
+          className="bg-transparent sm:bg-white/70 sm:backdrop-blur-sm rounded-lg sm:rounded-xl border-0 sm:border sm:border-white/20 shadow-none sm:shadow-sm p-0 sm:p-6"
+          style={{ 
+            background: 'linear-gradient(to top right, rgba(255, 215, 111, 0.2) 0%, rgba(255, 185, 108, 0.2) 20%, rgba(253, 226, 195, 0.2) 40%, rgba(168, 199, 255, 0.05) 65%, rgba(221, 238, 225, 0.5) 100%)'
+          }}
+        >
           <PrayerReminders />
-        </div>
+        </section>
 
         {/* Debug: Prayer Reminder Tester - Only in development */}
         {process.env.NODE_ENV === 'development' && (
-          <div className="mb-6 sm:mb-8">
+          <section 
+            className="bg-transparent sm:bg-white/70 sm:backdrop-blur-sm rounded-lg sm:rounded-xl border-0 sm:border sm:border-white/20 shadow-none sm:shadow-sm p-0 sm:p-6"
+            style={{ 
+              background: 'linear-gradient(to top right, rgba(255, 215, 111, 0.2) 0%, rgba(255, 185, 108, 0.2) 20%, rgba(253, 226, 195, 0.2) 40%, rgba(168, 199, 255, 0.05) 65%, rgba(221, 238, 225, 0.5) 100%)'
+            }}
+          >
             <PrayerReminderTester />
-          </div>
+          </section>
         )}
 
         {/* Help & Tips Section */}
-        <Card>
+        <section 
+          className="bg-transparent sm:bg-white/70 sm:backdrop-blur-sm rounded-lg sm:rounded-xl border-0 sm:border sm:border-white/20 shadow-none sm:shadow-sm p-0 sm:p-6"
+          style={{ 
+            background: 'linear-gradient(to top right, rgba(255, 215, 111, 0.2) 0%, rgba(255, 185, 108, 0.2) 20%, rgba(253, 226, 195, 0.2) 40%, rgba(168, 199, 255, 0.05) 65%, rgba(221, 238, 225, 0.5) 100%)'
+          }}
+        >
+        <Card className="bg-transparent border-none shadow-none">
           <CardHeader>
             <CardTitle className="text-xl flex items-center gap-2">
               <Lightbulb className="w-5 h-5" />
@@ -195,6 +225,7 @@ export default function RemindersPage() {
             </div>
           </CardContent>
         </Card>
+        </section>
 
       </div>
     </main>

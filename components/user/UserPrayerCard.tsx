@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { formatDistanceToNow } from 'date-fns'
 import { useSession } from '@/lib/useSession'
 import { CommentList } from '@/components/comment-list'
+import { getFellowshipInfo, type Fellowship } from '@/types/models'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -18,6 +19,9 @@ interface Prayer {
   like_count: number | null
   liked_by_me: boolean | null
   comment_count?: number
+  fellowship?: Fellowship
+  thanksgiving_content?: string | null
+  intercession_content?: string | null
 }
 
 interface UserPrayerCardProps {
@@ -94,6 +98,14 @@ export default function UserPrayerCard({
               <span className="font-medium text-foreground text-sm truncate">
                 {prayer.author_name || 'Anonymous'}
               </span>
+              {prayer.fellowship && (
+                <div 
+                  className="px-1.5 py-0.5 rounded-full text-[10px] font-medium text-white flex-shrink-0"
+                  style={{ backgroundColor: getFellowshipInfo(prayer.fellowship).color }}
+                >
+                  {getFellowshipInfo(prayer.fellowship).name}
+                </div>
+              )}
               <span className="text-xs text-muted-foreground flex-shrink-0">•</span>
               <span className="text-xs text-muted-foreground truncate">{timeAgo}</span>
             </div>
