@@ -12,6 +12,10 @@ export type UserProfile = {
   default_fellowship?: string | null
 }
 
+// 全局缓存以避免重复查询同一用户的profile
+const profileCache = new Map<string, { profile: UserProfile | null; timestamp: number }>()
+const CACHE_TTL = 5 * 60 * 1000 // 5分钟缓存
+
 export function useSession() {
   const supa = createBrowserSupabase()
 
@@ -77,6 +81,13 @@ export function useSession() {
   async function loadProfile(user: User) {
     const uid = user.id
 
+    // 检查缓存
+    const cached = profileCache.get(uid)
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+      setProfile(cached.profile)
+      return
+    }
+
     const isGoogleAvatar = (u?: string | null) => {
       if (!u) return false
       try {
@@ -141,6 +152,9 @@ export function useSession() {
       avatar_url: current?.avatar_url || fallbackAvatar,
     }
     setProfile(quickProfile)
+    
+    // 更新缓存
+    profileCache.set(uid, { profile: quickProfile, timestamp: Date.now() })
 
     // 2) 计算目标用户名/头像；头像若为 Google 源则尝试镜像到 Storage
     let desiredName = current?.username || fallbackName
@@ -181,13 +195,15 @@ export function useSession() {
             .single()
 
           // 更新profile状态
-          setProfile(
-            (upserted as UserProfile) ?? {
-              user_id: uid,
-              username: desiredName,
-              avatar_url: desiredAvatar ?? null,
-            }
-          )
+          const finalProfile = (upserted as UserProfile) ?? {
+            user_id: uid,
+            username: desiredName,
+            avatar_url: desiredAvatar ?? null,
+          }
+          setProfile(finalProfile)
+          
+          // 更新缓存
+          profileCache.set(uid, { profile: finalProfile, timestamp: Date.now() })
         }
       })()
     }
