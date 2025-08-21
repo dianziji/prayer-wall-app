@@ -27,9 +27,11 @@ export function LikeButton({
   const [count, setCount] = useState(initialCount)
   const [loading, setLoading] = useState(false)
 
-  // 若后端没返回 liked 状态，可以在首次渲染时查询 likes 表
+  // 只有当 API 没有返回 liked 状态时才查询（避免 N+1 问题）
   useEffect(() => {
-    if (!session) return
+    // 如果已经通过 initiallyLiked 传入了状态，就不需要额外查询
+    if (initiallyLiked !== false || !session) return
+    
     supa
       .from('likes')
       .select('prayer_id')
@@ -39,7 +41,7 @@ export function LikeButton({
       .then(({ data, error }) => {
         if (!error) setLiked(!!data)
       })
-  }, [session?.user.id, prayerId])
+  }, [session?.user.id, prayerId, initiallyLiked])
 
   async function toggleLike() {
     if (!session) return toast.error('请先登录')
