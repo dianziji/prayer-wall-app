@@ -102,44 +102,63 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // For each prayer, get comment count and like info
-    const prayersWithEngagement = await Promise.all(
-      (prayers || []).map(async (prayer: any) => {
-        if (prayer.id) {
-          // Get comment count
-          const { count: commentCount } = await supabase
-            .from('comments')
-            .select('*', { count: 'exact', head: true })
-            .eq('prayer_id', prayer.id)
-          
-          // Get like count and user's like status
-          const { count: likeCount } = await supabase
-            .from('likes')
-            .select('*', { count: 'exact', head: true })
-            .eq('prayer_id', prayer.id)
-          
-          const { data: userLike } = await supabase
-            .from('likes')
-            .select('*', { head: true })
-            .eq('prayer_id', prayer.id)
-            .eq('user_id', userId)
-            .maybeSingle()
-          
-          return {
-            ...prayer,
-            comment_count: commentCount || 0,
-            like_count: likeCount || 0,
-            liked_by_me: !!userLike
-          }
-        }
-        return {
+    // Optimized: Fix N+1 query problem by using batch queries
+    let prayersWithEngagement = prayers || []
+    
+    if (prayers && prayers.length > 0) {
+      const prayerIds = prayers.map((p: any) => p.id).filter(Boolean)
+      
+      if (prayerIds.length > 0) {
+        // Batch query 1: Get all comment counts
+        const { data: commentsData } = await supabase
+          .from('comments')
+          .select('prayer_id')
+          .in('prayer_id', prayerIds)
+        
+        // Batch query 2: Get all like counts  
+        const { data: likesData } = await supabase
+          .from('likes')
+          .select('prayer_id')
+          .in('prayer_id', prayerIds)
+        
+        // Batch query 3: Get user's like status for all prayers
+        const { data: userLikesData } = await supabase
+          .from('likes')
+          .select('prayer_id')
+          .eq('user_id', userId)
+          .in('prayer_id', prayerIds)
+        
+        // Create lookup maps for O(1) access
+        const commentCounts = new Map<string, number>()
+        const likeCounts = new Map<string, number>()
+        const userLikedSet = new Set<string>()
+        
+        // Process comment counts
+        commentsData?.forEach(comment => {
+          const count = commentCounts.get(comment.prayer_id) || 0
+          commentCounts.set(comment.prayer_id, count + 1)
+        })
+        
+        // Process like counts
+        likesData?.forEach(like => {
+          const count = likeCounts.get(like.prayer_id) || 0
+          likeCounts.set(like.prayer_id, count + 1)
+        })
+        
+        // Process user likes
+        userLikesData?.forEach(userLike => {
+          userLikedSet.add(userLike.prayer_id)
+        })
+        
+        // Combine results with engagement data
+        prayersWithEngagement = prayers.map((prayer: any) => ({
           ...prayer,
-          comment_count: 0,
-          like_count: 0,
-          liked_by_me: false
-        }
-      })
-    )
+          comment_count: commentCounts.get(prayer.id) || 0,
+          like_count: likeCounts.get(prayer.id) || 0,
+          liked_by_me: userLikedSet.has(prayer.id)
+        }))
+      }
+    }
 
     // Sort by comment count if requested
     if (sort === 'most_commented') {

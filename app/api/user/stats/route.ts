@@ -22,35 +22,25 @@ export async function GET(request: NextRequest) {
       .select('*', { count: 'exact', head: true })
       .eq('user_id', userId)
 
-    // Get total likes received on user's prayers
-    // First get user's prayer IDs
-    const { data: userPrayers } = await supabase
-      .from('prayers')
-      .select('id')
-      .eq('user_id', userId)
-
+    // Optimized: Use aggregate queries to get likes and comments count more efficiently
     let totalLikes = 0
     let totalComments = 0
 
-    if (userPrayers && userPrayers.length > 0) {
-      const prayerIds = userPrayers.map(p => p.id)
-      
-      // Count likes on user's prayers
-      const { count: likesCount } = await supabase
-        .from('likes')
-        .select('*', { count: 'exact', head: true })
-        .in('prayer_id', prayerIds)
-      
-      totalLikes = likesCount || 0
+    // Single query to get likes count using a join with prayers
+    const { count: likesCount } = await supabase
+      .from('likes')
+      .select('*, prayers!inner(user_id)', { count: 'exact', head: true })
+      .eq('prayers.user_id', userId)
+    
+    totalLikes = likesCount || 0
 
-      // Count comments on user's prayers  
-      const { count: commentsCount } = await supabase
-        .from('comments')
-        .select('*', { count: 'exact', head: true })
-        .in('prayer_id', prayerIds)
-      
-      totalComments = commentsCount || 0
-    }
+    // Single query to get comments count using a join with prayers  
+    const { count: commentsCount } = await supabase
+      .from('comments')
+      .select('*, prayers!inner(user_id)', { count: 'exact', head: true })
+      .eq('prayers.user_id', userId)
+    
+    totalComments = commentsCount || 0
 
     // Get most active week (week with most prayers)
     const { data: weeklyData } = await supabase

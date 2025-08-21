@@ -55,35 +55,60 @@ export async function GET(req: Request) {
     const { data: { user } } = await supabase.auth.getUser()
     const userId = user?.id
 
-    // Add like information to each prayer
-    const prayersWithLikes = await Promise.all(
-      (prayers || []).map(async (prayer: any) => {
-        // Get like count
-        const { count: likeCount } = await supabase
+    // Optimized: Fix N+1 query problem - get like data in batch queries
+    let prayersWithLikes = prayers || []
+    
+    if (prayers && prayers.length > 0) {
+      const prayerIds = prayers.map((p: any) => p.id).filter(Boolean)
+      
+      if (prayerIds.length > 0) {
+        // Batch query 1: Get all like counts
+        const { data: likesData } = await supabase
           .from('likes')
-          .select('*', { count: 'exact', head: true })
-          .eq('prayer_id', prayer.id)
+          .select('prayer_id')
+          .in('prayer_id', prayerIds)
         
-        // Get user's like status if logged in
-        let likedByMe = false
+        // Batch query 2: Get user's like status (if logged in)
+        let userLikesData: any[] = []
         if (userId) {
-          const { data: userLike } = await supabase
+          const { data: userLikes } = await supabase
             .from('likes')
-            .select('*', { head: true })
-            .eq('prayer_id', prayer.id)
+            .select('prayer_id')
             .eq('user_id', userId)
-            .maybeSingle()
-          
-          likedByMe = !!userLike
+            .in('prayer_id', prayerIds)
+          userLikesData = userLikes || []
         }
         
-        return {
+        // Create lookup maps for O(1) access
+        const likeCounts = new Map<string, number>()
+        const userLikedSet = new Set<string>()
+        
+        // Process like counts
+        likesData?.forEach(like => {
+          const count = likeCounts.get(like.prayer_id) || 0
+          likeCounts.set(like.prayer_id, count + 1)
+        })
+        
+        // Process user likes
+        userLikesData.forEach(userLike => {
+          userLikedSet.add(userLike.prayer_id)
+        })
+        
+        // Combine results with like data
+        prayersWithLikes = prayers.map((prayer: any) => ({
           ...prayer,
-          like_count: likeCount || 0,
-          liked_by_me: likedByMe
-        }
-      })
-    )
+          like_count: likeCounts.get(prayer.id) || 0,
+          liked_by_me: userLikedSet.has(prayer.id)
+        }))
+      }
+    } else {
+      // Set default values for empty results
+      prayersWithLikes = prayers?.map((prayer: any) => ({
+        ...prayer,
+        like_count: 0,
+        liked_by_me: false
+      })) || []
+    }
 
     return NextResponse.json(prayersWithLikes)
   } catch (e) {
