@@ -69,7 +69,7 @@ export async function GET(req: Request) {
           .in('prayer_id', prayerIds)
         
         // Batch query 2: Get user's like status (if logged in)
-        let userLikesData = []
+        let userLikesData: any[] = []
         if (userId) {
           const { data: userLikes } = await supabase
             .from('likes')
