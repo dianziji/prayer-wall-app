@@ -67,8 +67,7 @@ export function CommentList({ prayerId }: { prayerId: string }) {
       const { error } = await supa.from('comments').delete().eq('id', id)
       if (!error) {
         mutate()
-        // 同时更新评论数量缓存
-        globalMutate(`comments-count-${prayerId}`, (prevCount: number = 1) => Math.max(0, prevCount - 1), { revalidate: false })
+        // Note: comment count is now provided by API, no need to update separate cache
       }
     },
     [mutate, supa, prayerId]

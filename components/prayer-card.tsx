@@ -1,8 +1,6 @@
 'use client'
 import { formatDistanceToNow } from "date-fns"
-import { useState, useCallback } from "react"
-import useSWR from 'swr'
-import { createBrowserSupabase } from '@/lib/supabase-browser'
+import { useState } from "react"
 import type { Prayer } from '@/types/models'
 import { getPrayerContentType, getPrayerBorderStyle, getPrayerBorderColor, getPrayerBackgroundColor, parseContentWithMarkers, getFellowshipInfo } from '@/types/models'
 import { LikeButton } from '@/components/like-button'
@@ -39,17 +37,8 @@ export function PrayerCard({ prayer, authorAvatarUrl = null, onEdit, onDelete }:
   const hasThanksgiving = (prayer as any).thanksgiving_content || parsed.thanksgiving
   const hasIntercession = (prayer as any).intercession_content || parsed.intercession
   
-  // Fetch comment count
-  const supa = createBrowserSupabase()
-  const fetchCommentCount = useCallback(async () => {
-    const { count } = await supa
-      .from('comments')
-      .select('*', { count: 'exact', head: true })
-      .eq('prayer_id', prayer.id)
-    return count || 0
-  }, [prayer.id, supa])
-  
-  const { data: commentCount = 0 } = useSWR(`comments-count-${prayer.id}`, fetchCommentCount)
+  // Use comment count from API (avoid N+1 queries)
+  const commentCount = (prayer as any).comment_count ?? 0
   
   // Check if current user owns this prayer
   const isOwner = session?.user?.id && (prayer as any)?.user_id && session.user.id === (prayer as any).user_id

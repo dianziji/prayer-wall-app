@@ -54,8 +54,7 @@ const { session, profile } = useSession()
       return next
     }, { revalidate: false })
     
-    // 同时更新评论数量缓存
-    mutate(`comments-count-${prayerId}`, (prevCount: number = 0) => prevCount + 1, { revalidate: false })
+    // Note: comment count is now provided by API, will be refreshed when prayers are refetched
     onPosted()
   }
 

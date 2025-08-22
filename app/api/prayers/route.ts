@@ -79,9 +79,16 @@ export async function GET(req: Request) {
           userLikesData = userLikes || []
         }
         
+        // Batch query 3: Get all comment counts
+        const { data: commentsData } = await supabase
+          .from('comments')
+          .select('prayer_id')
+          .in('prayer_id', prayerIds)
+        
         // Create lookup maps for O(1) access
         const likeCounts = new Map<string, number>()
         const userLikedSet = new Set<string>()
+        const commentCounts = new Map<string, number>()
         
         // Process like counts
         likesData?.forEach(like => {
@@ -94,11 +101,18 @@ export async function GET(req: Request) {
           userLikedSet.add(userLike.prayer_id)
         })
         
-        // Combine results with like data
+        // Process comment counts
+        commentsData?.forEach(comment => {
+          const count = commentCounts.get(comment.prayer_id) || 0
+          commentCounts.set(comment.prayer_id, count + 1)
+        })
+        
+        // Combine results with like and comment data
         prayersWithLikes = prayers.map((prayer: any) => ({
           ...prayer,
           like_count: likeCounts.get(prayer.id) || 0,
-          liked_by_me: userLikedSet.has(prayer.id)
+          liked_by_me: userLikedSet.has(prayer.id),
+          comment_count: commentCounts.get(prayer.id) || 0
         }))
       }
     } else {
@@ -106,7 +120,8 @@ export async function GET(req: Request) {
       prayersWithLikes = prayers?.map((prayer: any) => ({
         ...prayer,
         like_count: 0,
-        liked_by_me: false
+        liked_by_me: false,
+        comment_count: 0
       })) || []
     }
 
