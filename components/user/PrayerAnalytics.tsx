@@ -132,7 +132,7 @@ export default function PrayerAnalytics({ className = '' }: PrayerAnalyticsProps
         <CardContent>
           <div className="text-center py-8">
             <p className="text-muted-foreground">Failed to load analytics</p>
-            <p className="text-sm text-muted-foreground mt-2">{error.message}</p>
+            <p className="text-sm text-muted-foreground mt-2">{error instanceof Error ? error.message : 'Unknown error'}</p>
           </div>
         </CardContent>
       </Card>

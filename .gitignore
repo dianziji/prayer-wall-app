@@ -54,3 +54,22 @@ claude.md
 # Documentation and development guides
 /docs/
 
+.mcp.json
+
+# Test results and debug files
+/tests/results/
+/tests/sql/supabase/
+/tests/debug/
+*-test-results.json
+*-results-*.json
+timezone_performance_results.json
+demo_load_test_results.json
+load-test-*.js
+test-n1-*.js
+final-n1-*.js
+cleanup-*.sql
+check-test-data.sql
+
+# Performance optimization artifacts
+PRODUCTION_DEPLOYMENT_CHECKLIST.md
+PROJECT_BACKGROUND.md

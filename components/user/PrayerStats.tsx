@@ -103,7 +103,7 @@ export default function PrayerStats() {
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
-            <p className="text-muted-foreground">{error.message || 'Failed to load statistics'}</p>
+            <p className="text-muted-foreground">{error instanceof Error ? error.message : 'Failed to load statistics'}</p>
             <Button 
               onClick={handleRefresh}
               disabled={isLoading}

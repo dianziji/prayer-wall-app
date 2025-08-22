@@ -279,7 +279,7 @@ export default function PrayerTimeline({ initialLimit = 10 }: PrayerTimelineProp
         </CardHeader >
         <CardContent>
           <div className="text-center py-8">
-            <p className="text-muted-foreground">{error.message || 'Failed to load prayers'}</p>
+            <p className="text-muted-foreground">{error instanceof Error ? error.message : 'Failed to load prayers'}</p>
           </div>
         </CardContent>
       </Card>
