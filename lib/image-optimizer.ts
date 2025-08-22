@@ -114,7 +114,7 @@ export async function optimizeAvatar(inputBuffer: Buffer, options: OptimizeOptio
 
   } catch (error) {
     console.error('Image optimization failed:', error)
-    throw new Error(`Image optimization failed: ${error.message}`)
+    throw new Error(`Image optimization failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }
 
