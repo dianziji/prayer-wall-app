@@ -12,7 +12,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
-import { Bell, Clock, Calendar, MessageSquare, Save, TestTube, Zap, Trash2, AlertTriangle, CheckCircle, XCircle, Info, Loader2 } from 'lucide-react'
+import { Bell, Clock, Calendar, MessageSquare, Save, AlertTriangle, CheckCircle, XCircle, Loader2 } from 'lucide-react'
 
 interface ReminderSettings {
   enabled: boolean
@@ -39,7 +39,6 @@ export default function PrayerReminders() {
   const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>('default')
   const [isLoading, setIsLoading] = useState(false)
   const [saveSuccess, setSaveSuccess] = useState(false)
-  const [debugInfo, setDebugInfo] = useState<string>('')
   
   // Use ref to store timer IDs to avoid stale closures
   const timersRef = useRef<NodeJS.Timeout[]>([])
@@ -69,7 +68,6 @@ export default function PrayerReminders() {
   const clearAllTimers = useCallback(() => {
     timersRef.current.forEach(timer => clearTimeout(timer))
     timersRef.current = []
-    setDebugInfo(prev => prev + '\nCleared all existing timers')
   }, [])
 
   // Show notification
@@ -83,13 +81,9 @@ export default function PrayerReminders() {
           requireInteraction: false,
           silent: false
         })
-        setDebugInfo(prev => prev + '\nNotification shown successfully')
       } catch (error) {
         console.error('Error showing notification:', error)
-        setDebugInfo(prev => prev + '\nError showing notification')
       }
-    } else {
-      setDebugInfo(prev => prev + '\nCannot show notification - permission not granted')
     }
   }, [notificationPermission, settings.message])
 
@@ -127,7 +121,6 @@ export default function PrayerReminders() {
     clearAllTimers()
     
     if (!settings.enabled || notificationPermission !== 'granted') {
-      setDebugInfo(prev => prev + '\nNot scheduling - reminders disabled or permission not granted')
       return
     }
 
@@ -141,8 +134,6 @@ export default function PrayerReminders() {
     } else if (settings.frequency === 'custom') {
       scheduledDays = settings.customDays
     }
-
-    setDebugInfo(prev => prev + `\nScheduling for days: ${scheduledDays.join(', ')} at ${settings.dailyTime}`)
 
     // Schedule for each selected day
     scheduledDays.forEach(dayOfWeek => {
@@ -159,9 +150,6 @@ export default function PrayerReminders() {
 
         timersRef.current.push(timer)
 
-        const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][dayOfWeek]
-        const timeFormatted = nextTime.toLocaleString()
-        setDebugInfo(prev => prev + `\nScheduled for ${dayName} at ${timeFormatted} (in ${Math.round(timeUntilNotification / 1000 / 60)} minutes)`)
       }
     })
   }, [settings, notificationPermission, clearAllTimers, getNextReminderTime, showNotification])
@@ -181,26 +169,17 @@ export default function PrayerReminders() {
   // Request notification permission
   const requestNotificationPermission = async () => {
     if (!notificationSupported) {
-      setDebugInfo(prev => prev + '\nNotifications not supported')
       return 'denied' as NotificationPermission
     }
     
     try {
       const permission = await Notification.requestPermission()
       setNotificationPermission(permission)
-      setDebugInfo(prev => prev + `\nPermission result: ${permission}`)
       return permission
     } catch (error) {
       console.error('Error requesting notification permission:', error)
-      setDebugInfo(prev => prev + '\nError requesting permission')
       return 'denied' as NotificationPermission
     }
-  }
-
-  // Test notification immediately
-  const testNotification = () => {
-    setDebugInfo(prev => prev + '\nTesting notification...')
-    showNotification()
   }
 
   // Save settings to localStorage
@@ -211,33 +190,8 @@ export default function PrayerReminders() {
     setTimeout(() => {
       setIsLoading(false)
       setSaveSuccess(true)
-      setDebugInfo(prev => prev + '\nSettings saved to localStorage')
       setTimeout(() => setSaveSuccess(false), 2000)
     }, 500)
-  }
-
-  // Toggle reminders with permission check
-  const toggleReminders = async () => {
-    if (!settings.enabled && notificationPermission !== 'granted') {
-      setDebugInfo(prev => prev + '\nRequesting notification permission...')
-      const permission = await requestNotificationPermission()
-      if (permission !== 'granted') {
-        setDebugInfo(prev => prev + '\nPermission denied, cannot enable reminders')
-        return
-      }
-    }
-    
-    setSettings(prev => {
-      const newSettings = { ...prev, enabled: !prev.enabled }
-      // Auto-save when toggling
-      setTimeout(() => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(newSettings))
-        setDebugInfo(prevDebug => prevDebug + '\nAuto-saved settings')
-      }, 100)
-      return newSettings
-    })
-    
-    setDebugInfo(prev => prev + `\nReminders ${!settings.enabled ? 'enabled' : 'disabled'}`)
   }
 
   // Auto-save settings when they change
@@ -250,27 +204,6 @@ export default function PrayerReminders() {
       return () => clearTimeout(timeoutId)
     }
   }, [settings])
-
-  // Clear debug info
-  const clearDebugInfo = () => {
-    setDebugInfo('')
-  }
-
-  // Quick test - schedule a notification in 5 seconds
-  const quickTest = () => {
-    if (notificationPermission !== 'granted') {
-      setDebugInfo(prev => prev + '\nCannot quick test - permission not granted')
-      return
-    }
-
-    setDebugInfo(prev => prev + '\nQuick test: notification in 5 seconds...')
-    const timer = setTimeout(() => {
-      showNotification()
-      setDebugInfo(prev => prev + '\nQuick test notification sent!')
-    }, 5000)
-
-    timersRef.current.push(timer)
-  }
 
   const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
@@ -290,11 +223,14 @@ export default function PrayerReminders() {
             <Switch
               id="reminder-toggle"
               checked={settings.enabled}
-              onCheckedChange={(checked) => {
-                setSettings(prev => ({ ...prev, enabled: checked }))
+              onCheckedChange={async (checked) => {
                 if (checked && notificationPermission !== 'granted') {
-                  toggleReminders()
+                  const permission = await requestNotificationPermission()
+                  if (permission !== 'granted') {
+                    return
+                  }
                 }
+                setSettings(prev => ({ ...prev, enabled: checked }))
               }}
             />
             <Label htmlFor="reminder-toggle" className="text-sm">
@@ -326,7 +262,7 @@ export default function PrayerReminders() {
 
         {notificationSupported && notificationPermission === 'default' && !settings.enabled && (
           <Alert className="mb-4">
-            <Info className="h-4 w-4" />
+            <Bell className="h-4 w-4" />
             <AlertDescription>
               Enable reminders to allow notifications for prayer reminders.
             </AlertDescription>
@@ -469,7 +405,8 @@ export default function PrayerReminders() {
                 <Button
                   onClick={saveSettings}
                   disabled={isLoading}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 text-black hover:opacity-90"
+                  style={{ backgroundColor: '#ffca39' }}
                 >
                   {isLoading ? (
                     <>
@@ -485,54 +422,8 @@ export default function PrayerReminders() {
                 </Button>
               </div>
               
-              {/* Testing Actions */}
-              {settings.enabled && notificationPermission === 'granted' && (
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    onClick={testNotification}
-                    variant="outline"
-                    className="flex items-center gap-2"
-                    size="sm"
-                  >
-                    <TestTube className="w-4 h-4" />
-                    Test Now
-                  </Button>
-                  
-                  <Button
-                    onClick={quickTest}
-                    variant="outline"
-                    className="flex items-center gap-2"
-                    size="sm"
-                  >
-                    <Zap className="w-4 h-4" />
-                    Test in 5s
-                  </Button>
-                </div>
-              )}
-              
-              {/* Utility Actions */}
-              <div className="flex flex-wrap gap-2 ml-auto">
-                <Button
-                  onClick={clearDebugInfo}
-                  variant="ghost"
-                  className="flex items-center gap-2"
-                  size="sm"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  Clear Log
-                </Button>
-              </div>
             </div>
             
-            {/* Testing Status */}
-            {settings.enabled && notificationPermission !== 'granted' && (
-              <Alert variant="destructive">
-                <AlertTriangle className="h-4 w-4" />
-                <AlertDescription>
-                  Testing is disabled. Please grant notification permissions to test reminders.
-                </AlertDescription>
-              </Alert>
-            )}
           </div>
 
           {/* Success Message */}
@@ -545,110 +436,6 @@ export default function PrayerReminders() {
             </Alert>
           )}
 
-          {/* Debug Information */}
-          {debugInfo && (
-            <Card className="border-dashed">
-              <CardHeader className="pb-3">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <CardTitle className="text-sm font-medium">Debug Log</CardTitle>
-                    <Badge variant="secondary" className="text-xs px-2 py-1">
-                      Developer Mode
-                    </Badge>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs">
-                      Timers: {timersRef.current.length}
-                    </Badge>
-                    <Button
-                      onClick={clearDebugInfo}
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 w-6 p-0"
-                    >
-                      <XCircle className="h-3 w-3" />
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="relative">
-                  <pre className="text-xs font-mono text-muted-foreground whitespace-pre-wrap max-h-48 overflow-y-auto bg-muted/50 p-4 rounded-md border">
-                    {debugInfo}
-                  </pre>
-                  <div className="absolute top-2 right-2">
-                    <Badge variant="outline" className="text-xs bg-background/80 backdrop-blur-sm">
-                      Live
-                    </Badge>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Testing Instructions */}
-          <Card className="bg-gray-100 border-gray-200">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm flex items-center gap-2">
-                <Info className="h-4 w-4 text-blue-600" />
-                Testing Guide
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-3">
-                  <h4 className="text-sm font-medium text-black-900">Test Functions</h4>
-                  <div className="space-y-2 text-xs">
-                    <div className="flex items-start gap-2">
-                      <TestTube className="h-3 w-3 mt-0.5 text-blue-600 flex-shrink-0" />
-                      <div>
-                        <span className="font-medium">Test Now:</span> Immediate notification
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <Zap className="h-3 w-3 mt-0.5 text-blue-600 flex-shrink-0" />
-                      <div>
-                        <span className="font-medium">Test in 5s:</span> Delayed notification (5 seconds)
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <MessageSquare className="h-3 w-3 mt-0.5 text-blue-600 flex-shrink-0" />
-                      <div>
-                        <span className="font-medium">Debug Log:</span> Real-time scheduling info
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="space-y-3">
-                  <h4 className="text-sm font-medium text-black-900">Requirements</h4>
-                  <div className="space-y-2 text-xs">
-                    <div className="flex items-start gap-2">
-                      <CheckCircle className="h-3 w-3 mt-0.5 text-green-600 flex-shrink-0" />
-                      <div>Enable browser notifications for this site</div>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <CheckCircle className="h-3 w-3 mt-0.5 text-green-600 flex-shrink-0" />
-                      <div>Keep the browser tab active during testing</div>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <CheckCircle className="h-3 w-3 mt-0.5 text-green-600 flex-shrink-0" />
-                      <div>Check debug log for detailed information</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              {notificationPermission === 'granted' && settings.enabled && (
-                <Alert className="mt-4 bg-green-50 border-green-200">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                  <AlertDescription className="text-green-800">
-                    ✅ All systems ready for testing!
-                  </AlertDescription>
-                </Alert>
-              )}
-            </CardContent>
-          </Card>
         </div>
       </CardContent>
     </Card>

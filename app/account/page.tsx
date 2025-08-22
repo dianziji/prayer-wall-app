@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
-import { User, Link as LinkIcon } from 'lucide-react'
+import { User, Link as LinkIcon, Bell } from 'lucide-react'
+import PrayerReminders from '@/components/user/PrayerReminders'
 
 export default function AccountPage() {
   const router = useRouter()
@@ -141,7 +142,7 @@ export default function AccountPage() {
           </div>
         </section>
         
-        {/* Content */}
+        {/* Profile Settings */}
         <section 
           className="bg-transparent sm:bg-white/70 sm:backdrop-blur-sm rounded-lg sm:rounded-xl border-0 sm:border sm:border-white/20 shadow-none sm:shadow-sm p-0 sm:p-6"
           style={{ 
@@ -149,6 +150,15 @@ export default function AccountPage() {
           }}
         >
           <Card className="bg-transparent border-none shadow-none">
+            <CardHeader>
+              <CardTitle className="text-xl flex items-center gap-2">
+                <User className="w-5 h-5" />
+                Profile Information
+              </CardTitle>
+              <CardDescription>
+                Update your profile details and avatar
+              </CardDescription>
+            </CardHeader>
             <CardContent className="p-6">
             <form onSubmit={handleSave} className="space-y-6">
               {/* Avatar Preview */}
@@ -221,6 +231,16 @@ export default function AccountPage() {
             </form>
             </CardContent>
           </Card>
+        </section>
+
+        {/* Prayer Reminders */}
+        <section 
+          className="bg-transparent sm:bg-white/70 sm:backdrop-blur-sm rounded-lg sm:rounded-xl border-0 sm:border sm:border-white/20 shadow-none sm:shadow-sm p-0 sm:p-6"
+          style={{ 
+            background: 'linear-gradient(to top right, rgba(255, 215, 111, 0.2) 0%, rgba(255, 185, 108, 0.2) 20%, rgba(253, 226, 195, 0.2) 40%, rgba(168, 199, 255, 0.05) 65%, rgba(221, 238, 225, 0.5) 100%)'
+          }}
+        >
+          <PrayerReminders />
         </section>
       </div>
     </main>

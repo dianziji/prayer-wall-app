@@ -114,13 +114,6 @@ export default function Header() {
                     >
                       My Prayers
                     </Link>
-                    <Link
-                      href="/reminders"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      Reminders
-                    </Link>
                     <hr className="my-1 border-gray-200" />
                     <Button
                       variant="ghost"
