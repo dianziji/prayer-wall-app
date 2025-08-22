@@ -154,7 +154,7 @@ export async function validateImage(buffer: Buffer) {
 
   } catch (error) {
     console.error('Image validation failed:', error)
-    throw new Error(`Invalid image: ${error.message}`)
+    throw new Error(`Invalid image: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }
 
