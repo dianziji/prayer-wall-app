@@ -96,7 +96,7 @@ export default function AccountPage() {
       avatar_url: profile.avatar_url || null
     })
     setLoading(false)
-    setMsg(error ? error.message : 'Saved!')
+    setMsg(error ? (error instanceof Error ? error.message : 'Save error') : 'Saved!')
   }
 
   if (!authChecked || loading) {

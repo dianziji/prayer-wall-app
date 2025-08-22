@@ -179,7 +179,7 @@ export async function generateAvatarSizes(inputBuffer: Buffer) {
       
       return {
         name,
-        size,
+        targetSize: size,
         ...optimized
       }
     })

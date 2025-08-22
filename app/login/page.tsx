@@ -59,7 +59,7 @@ async function isDomainDeliverable(addr: string) {
       },
     })
     setLoading(false)
-    setMsg(error ? error.message : 'Magic link 已发送，请查收邮件并返回本站')
+    setMsg(error ? (error instanceof Error ? error.message : 'Login error') : 'Magic link 已发送，请查收邮件并返回本站')
     if (!error) setEmail('')
   }
 
