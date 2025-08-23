@@ -1,4 +1,3 @@
-
 export type Json =
   | string
   | number
@@ -8,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.12 (cd3cf9e)"
@@ -52,7 +51,44 @@ export type Database = {
             referencedRelation: "v_prayers_likes"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "comments_prayer_id_fkey"
+            columns: ["prayer_id"]
+            isOneToOne: false
+            referencedRelation: "v_prayers_likes_archive"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      fellowships: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          description: string | null
+          display_name: string
+          id: string
+          is_active: boolean | null
+          sort_order: number | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          display_name: string
+          id: string
+          is_active?: boolean | null
+          sort_order?: number | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          display_name?: string
+          id?: string
+          is_active?: boolean | null
+          sort_order?: number | null
+        }
+        Relationships: []
       }
       likes: {
         Row: {
@@ -83,6 +119,13 @@ export type Database = {
             columns: ["prayer_id"]
             isOneToOne: false
             referencedRelation: "v_prayers_likes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "likes_prayer_id_fkey"
+            columns: ["prayer_id"]
+            isOneToOne: false
+            referencedRelation: "v_prayers_likes_archive"
             referencedColumns: ["id"]
           },
         ]
@@ -162,6 +205,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_prayers_fellowship"
+            columns: ["fellowship"]
+            isOneToOne: false
+            referencedRelation: "fellowships"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "prayers_wall_id_fkey"
             columns: ["wall_id"]
             isOneToOne: false
@@ -170,9 +220,28 @@ export type Database = {
           },
         ]
       }
+      timezone_cache: {
+        Row: {
+          created_at: string | null
+          display_name: string | null
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          display_name?: string | null
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          display_name?: string | null
+          name?: string
+        }
+        Relationships: []
+      }
       user_profiles: {
         Row: {
           avatar_url: string | null
+          birthday: string | null
           created_at: string
           default_fellowship: string | null
           updated_at: string
@@ -181,6 +250,7 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          birthday?: string | null
           created_at?: string
           default_fellowship?: string | null
           updated_at?: string
@@ -189,22 +259,61 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          birthday?: string | null
           created_at?: string
           default_fellowship?: string | null
           updated_at?: string
           user_id?: string
           username?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_user_profiles_fellowship"
+            columns: ["default_fellowship"]
+            isOneToOne: false
+            referencedRelation: "fellowships"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
+      api_timezones: {
+        Row: {
+          display_name: string | null
+          is_common: boolean | null
+          name: string | null
+        }
+        Insert: {
+          display_name?: string | null
+          is_common?: never
+          name?: string | null
+        }
+        Update: {
+          display_name?: string | null
+          is_common?: never
+          name?: string | null
+        }
+        Relationships: []
+      }
       archive_weeks: {
         Row: {
           first_prayer_at: string | null
           last_prayer_at: string | null
           prayer_count: number | null
           week_start_et: string | null
+        }
+        Relationships: []
+      }
+      common_timezones: {
+        Row: {
+          name: string | null
+        }
+        Relationships: []
+      }
+      common_timezones_mv: {
+        Row: {
+          name: string | null
         }
         Relationships: []
       }
@@ -218,11 +327,73 @@ export type Database = {
           font_style: string | null
           guest_id: string | null
           id: string | null
+          intercession_content: string | null
+          like_count: number | null
+          liked_by_me: boolean | null
+          metadata: Json | null
+          thanksgiving_content: string | null
+          user_id: string | null
+          wall_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_prayers_fellowship"
+            columns: ["fellowship"]
+            isOneToOne: false
+            referencedRelation: "fellowships"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prayers_wall_id_fkey"
+            columns: ["wall_id"]
+            isOneToOne: false
+            referencedRelation: "prayer_walls"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_prayers_likes_archive: {
+        Row: {
+          author_name: string | null
+          color: string | null
+          content: string | null
+          created_at: string | null
+          font_style: string | null
+          guest_id: string | null
+          id: string | null
           like_count: number | null
           liked_by_me: boolean | null
           metadata: Json | null
           user_id: string | null
           wall_id: string | null
+        }
+        Insert: {
+          author_name?: string | null
+          color?: string | null
+          content?: string | null
+          created_at?: string | null
+          font_style?: string | null
+          guest_id?: string | null
+          id?: string | null
+          like_count?: never
+          liked_by_me?: never
+          metadata?: Json | null
+          user_id?: string | null
+          wall_id?: string | null
+        }
+        Update: {
+          author_name?: string | null
+          color?: string | null
+          content?: string | null
+          created_at?: string | null
+          font_style?: string | null
+          guest_id?: string | null
+          id?: string | null
+          like_count?: never
+          liked_by_me?: never
+          metadata?: Json | null
+          user_id?: string | null
+          wall_id?: string | null
         }
         Relationships: [
           {
@@ -234,39 +405,60 @@ export type Database = {
           },
         ]
       }
-      fellowships: {
-        Row: {
-          color: string | null
-          created_at: string | null
-          description: string | null
-          display_name: string
-          id: string
-          is_active: boolean | null
-          sort_order: number | null
-        }
-        Insert: {
-          color?: string | null
-          created_at?: string | null
-          description?: string | null
-          display_name: string
-          id: string
-          is_active?: boolean | null
-          sort_order?: number | null
-        }
-        Update: {
-          color?: string | null
-          created_at?: string | null
-          description?: string | null
-          display_name?: string
-          id?: string
-          is_active?: boolean | null
-          sort_order?: number | null
-        }
-        Relationships: []
-      }
     }
     Functions: {
-      [_ in never]: never
+      get_common_timezones: {
+        Args: Record<PropertyKey, never>
+        Returns: string[]
+      }
+      gtrgm_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gtrgm_decompress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gtrgm_in: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gtrgm_options: {
+        Args: { "": unknown }
+        Returns: undefined
+      }
+      gtrgm_out: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      is_valid_timezone: {
+        Args: { tz_name: string }
+        Returns: boolean
+      }
+      refresh_common_timezones: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      refresh_timezone_cache: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      search_timezones: {
+        Args: { limit_count?: number; search_term?: string }
+        Returns: string[]
+      }
+      set_limit: {
+        Args: { "": number }
+        Returns: number
+      }
+      show_limit: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
+      show_trgm: {
+        Args: { "": string }
+        Returns: string[]
+      }
     }
     Enums: {
       [_ in never]: never

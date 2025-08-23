@@ -10,6 +10,7 @@ export type UserProfile = {
   username: string | null
   avatar_url: string | null
   default_fellowship?: string | null
+  birthday?: string | null
 }
 
 // 全局缓存以避免重复查询同一用户的profile
@@ -100,8 +101,10 @@ export function useSession() {
 
     const email = user.email ?? ''
     // Try to get display_name and picture from user_metadata or Google identity
+    // Note: Birthday is only set manually by users in Account Settings
     let displayName: string | null = null
     let avatarUrl: string | null = null
+    
     // user_metadata priority
     if (user.user_metadata) {
       displayName =
@@ -114,9 +117,12 @@ export function useSession() {
         user.user_metadata.picture ||
         null
     }
-    // Try Google identity if available
+    // Try Google identity if available (prioritize Google over email provider)
     if ((!displayName || !avatarUrl) && Array.isArray(user.identities) && user.identities.length > 0) {
-      const identityData = user.identities[0]?.identity_data
+      // Look for Google provider first
+      const googleIdentity = user.identities.find(identity => identity.provider === 'google')
+      const identityData = googleIdentity?.identity_data || user.identities[0]?.identity_data
+      
       if (identityData) {
         displayName =
           displayName ||
@@ -131,15 +137,17 @@ export function useSession() {
           null
       }
     }
+    
     // Fallbacks
     const emailLocal = (email || '').split('@')[0] || ''
     const fallbackName = displayName || emailLocal || `user-${uid.slice(0, 6)}`
     const fallbackAvatar = avatarUrl ?? null
+    const fallbackBirthday = null // Birthday is always null from OAuth, only set manually
 
     // 1) 安全查询（0 行不报错）
     const { data: row } = await supa
       .from('user_profiles')
-      .select('user_id, username, avatar_url, default_fellowship')
+      .select('user_id, username, avatar_url, default_fellowship, birthday')
       .eq('user_id', uid)
       .maybeSingle()
 
@@ -150,15 +158,17 @@ export function useSession() {
       user_id: uid,
       username: current?.username || fallbackName,
       avatar_url: current?.avatar_url || fallbackAvatar,
+      birthday: current?.birthday || fallbackBirthday,
     }
     setProfile(quickProfile)
     
     // 更新缓存
     profileCache.set(uid, { profile: quickProfile, timestamp: Date.now() })
 
-    // 2) 计算目标用户名/头像；头像若为 Google 源则尝试镜像到 Storage
+    // 2) 计算目标用户名/头像/生日；头像若为 Google 源则尝试镜像到 Storage
     let desiredName = current?.username || fallbackName
     let desiredAvatar = current?.avatar_url || fallbackAvatar
+    let desiredBirthday = current?.birthday || fallbackBirthday
 
     // 后台异步处理头像镜像和数据库更新，不阻塞UI
     const needUpsert = !current || !current.username || !current.avatar_url
@@ -191,7 +201,7 @@ export function useSession() {
               username: desiredName,
               avatar_url: desiredAvatar ?? null,
             })
-            .select('user_id, username, avatar_url, default_fellowship')
+            .select('user_id, username, avatar_url, default_fellowship, birthday')
             .single()
 
           // 更新profile状态
@@ -199,6 +209,7 @@ export function useSession() {
             user_id: uid,
             username: desiredName,
             avatar_url: desiredAvatar ?? null,
+            birthday: current?.birthday || null,
           }
           setProfile(finalProfile)
           
