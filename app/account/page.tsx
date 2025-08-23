@@ -6,12 +6,13 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
-import { User, Link as LinkIcon, Bell } from 'lucide-react'
+import { User, Link as LinkIcon, Bell, Calendar } from 'lucide-react'
+import { DatePicker } from '@/components/ui/date-picker'
 import PrayerReminders from '@/components/user/PrayerReminders'
 
 export default function AccountPage() {
   const router = useRouter()
-  const [profile, setProfile] = useState({ username: '', avatar_url: '' })
+  const [profile, setProfile] = useState({ username: '', avatar_url: '', birthday: '' })
   const [loading, setLoading] = useState(true)
   const [msg, setMsg] = useState<string | null>(null)
   const [authChecked, setAuthChecked] = useState(false)
@@ -55,16 +56,18 @@ export default function AccountPage() {
     // 1) Fetch existing profile row (0 rows is OK)
     const { data, error } = await supabase
       .from('user_profiles')
-      .select('username,avatar_url')
+      .select('username,avatar_url,birthday')
       .eq('user_id', uid)
       .maybeSingle()
 
     const currentName = data?.username ?? ''
     const currentAvatar = data?.avatar_url ?? ''
+    const currentBirthday = data?.birthday ?? ''
 
     // Decide the desired (next) values
     const desiredName = currentName || googleName || fallbackNameFromEmail
     const desiredAvatar = currentAvatar || googleAvatar || ''
+    const desiredBirthday = currentBirthday || ''
 
     // 2) Upsert only when missing row or missing critical fields
     if (!data || !currentName || (!currentAvatar && googleAvatar)) {
@@ -76,10 +79,10 @@ export default function AccountPage() {
           avatar_url: desiredAvatar || null,
         })
 
-      setProfile({ username: desiredName, avatar_url: desiredAvatar })
+      setProfile({ username: desiredName, avatar_url: desiredAvatar, birthday: desiredBirthday })
     } else {
       // already has both; just reflect it in UI
-      setProfile({ username: currentName, avatar_url: currentAvatar })
+      setProfile({ username: currentName, avatar_url: currentAvatar, birthday: currentBirthday })
     }
 
     setLoading(false)
@@ -94,7 +97,8 @@ export default function AccountPage() {
     const { error } = await supabase.from('user_profiles').upsert({
       user_id: user.id,
       username: profile.username || null,
-      avatar_url: profile.avatar_url || null
+      avatar_url: profile.avatar_url || null,
+      birthday: profile.birthday || null
     })
     setLoading(false)
     setMsg(error ? (error instanceof Error ? error.message : 'Save error') : 'Saved!')
@@ -191,6 +195,27 @@ export default function AccountPage() {
                   onChange={e => setProfile({ ...profile, username: e.target.value })}
                   placeholder="Enter your username"
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />
+                  Birthday
+                </Label>
+                <DatePicker
+                  date={profile.birthday ? new Date(profile.birthday) : undefined}
+                  onDateChange={(date) => {
+                    setProfile({ 
+                      ...profile, 
+                      birthday: date ? date.toISOString().split('T')[0] : '' 
+                    })
+                  }}
+                  placeholder="Select your birthday"
+                  className="w-full"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Optional - used for birthday greetings
+                </p>
               </div>
 
               <div className="space-y-2">
