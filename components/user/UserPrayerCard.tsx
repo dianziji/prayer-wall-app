@@ -8,7 +8,9 @@ import { getFellowshipInfo, type Fellowship } from '@/types/models'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { MoreHorizontal, Heart, MessageSquare, ChevronDown, ChevronRight, Share2, Edit, Trash2 } from 'lucide-react'
+import { MoreHorizontal, Heart, MessageSquare, ChevronDown, ChevronRight, Share2, Edit, Trash2, Eye } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { isPrayerWeekVisible } from '@/lib/utils'
 
 interface Prayer {
   id: string
@@ -30,6 +32,8 @@ interface UserPrayerCardProps {
   onEdit?: (prayer: Prayer) => void
   onDelete?: (prayerId: string) => void
   onShare?: (prayer: Prayer) => void
+  prayerWeek?: string
+  authorPrivacyWeeks?: number | null
 }
 
 export default function UserPrayerCard({ 
@@ -37,12 +41,26 @@ export default function UserPrayerCard({
   showEngagement = true,
   onEdit,
   onDelete,
-  onShare 
+  onShare,
+  prayerWeek,
+  authorPrivacyWeeks
 }: UserPrayerCardProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [showActions, setShowActions] = useState(false)
   const [showComments, setShowComments] = useState(false)
   const { session, profile } = useSession()
+
+  // Check if current user owns this prayer
+  const isOwner = session?.user?.id && prayer.user_id && session.user.id === prayer.user_id
+  
+  // Check if this prayer is hidden from others due to privacy settings
+  const isPrivateToOthers = (() => {
+    if (!isOwner || !prayerWeek || !authorPrivacyWeeks) return false
+    
+    // Calculate if this prayer would be hidden from others
+    const wouldBeVisible = isPrayerWeekVisible(prayerWeek, authorPrivacyWeeks, false)
+    return !wouldBeVisible
+  })()
 
   const contentPreview = prayer.content.length > 200 
     ? prayer.content.substring(0, 200) + '...'
@@ -105,6 +123,12 @@ export default function UserPrayerCard({
                 >
                   {getFellowshipInfo(prayer.fellowship).name}
                 </div>
+              )}
+              {isPrivateToOthers && (
+                <Badge variant="secondary" className="text-[10px] px-1.5 py-0.5 bg-amber-100 text-amber-800 border-amber-200">
+                  <Eye className="w-3 h-3 mr-1" />
+                  仅自己可见
+                </Badge>
               )}
               <span className="text-xs text-muted-foreground flex-shrink-0">•</span>
               <span className="text-xs text-muted-foreground truncate">{timeAgo}</span>

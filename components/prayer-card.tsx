@@ -3,6 +3,7 @@ import { formatDistanceToNow } from "date-fns"
 import { useState } from "react"
 import type { Prayer } from '@/types/models'
 import { getPrayerContentType, getPrayerBorderStyle, getPrayerBorderColor, getPrayerBackgroundColor, parseContentWithMarkers, getFellowshipInfo } from '@/types/models'
+import { isPrayerWeekVisible, normalizeToEtSunday } from '@/lib/utils'
 import { LikeButton } from '@/components/like-button'
 import { useSession } from '@/lib/useSession'
 import { CommentForm } from '@/components/comment-form'
@@ -10,16 +11,19 @@ import { CommentList } from '@/components/comment-list'
 import { Card, CardContent, CardHeader, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { MessageCircle, ChevronUp } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { MessageCircle, ChevronUp, Eye } from 'lucide-react'
 
 type PrayerCardProps = { 
   prayer: Prayer; 
   authorAvatarUrl?: string | null;
   onEdit?: (prayer: Prayer) => void;
   onDelete?: (prayerId: string) => void;
+  prayerWeek?: string; // YYYY-MM-DD format of the week this prayer belongs to
+  authorPrivacyWeeks?: number | null; // Author's privacy setting
 }
 
-export function PrayerCard({ prayer, authorAvatarUrl = null, onEdit, onDelete }: PrayerCardProps) {
+export function PrayerCard({ prayer, authorAvatarUrl = null, onEdit, onDelete, prayerWeek, authorPrivacyWeeks }: PrayerCardProps) {
   const time = typeof prayer.created_at === "string" ? new Date(prayer.created_at) : prayer.created_at ?? new Date()
   const { session, profile } = useSession()
   const [showCommentForm, setShowCommentForm] = useState(false)
@@ -42,6 +46,15 @@ export function PrayerCard({ prayer, authorAvatarUrl = null, onEdit, onDelete }:
   
   // Check if current user owns this prayer
   const isOwner = session?.user?.id && (prayer as any)?.user_id && session.user.id === (prayer as any).user_id
+  
+  // Check if this prayer is hidden from others due to privacy settings
+  const isPrivateToOthers = (() => {
+    if (!isOwner || !prayerWeek || !authorPrivacyWeeks) return false
+    
+    // Calculate if this prayer would be hidden from others
+    const wouldBeVisible = isPrayerWeekVisible(prayerWeek, authorPrivacyWeeks, false)
+    return !wouldBeVisible
+  })()
   
   // Debug logging (remove in production)
   if (process.env.NODE_ENV === 'development') {
@@ -88,14 +101,22 @@ export function PrayerCard({ prayer, authorAvatarUrl = null, onEdit, onDelete }:
               <p className="text-xs sm:text-sm font-normal sm:font-medium text-gray-800 truncate leading-tight">
                 {prayer.author_name || "Unknown"}
               </p>
-              {prayer.fellowship && (
-                <div 
-                  className="px-1.5 py-0.5 rounded-full text-[10px] font-medium text-white flex-shrink-0"
-                  style={{ backgroundColor: getFellowshipInfo(prayer.fellowship).color }}
-                >
-                  {getFellowshipInfo(prayer.fellowship).name}
-                </div>
-              )}
+              <div className="flex items-center gap-1 flex-shrink-0">
+                {prayer.fellowship && (
+                  <div 
+                    className="px-1.5 py-0.5 rounded-full text-[10px] font-medium text-white"
+                    style={{ backgroundColor: getFellowshipInfo(prayer.fellowship).color }}
+                  >
+                    {getFellowshipInfo(prayer.fellowship).name}
+                  </div>
+                )}
+                {isPrivateToOthers && (
+                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0.5 bg-amber-100 text-amber-800 border-amber-200">
+                    <Eye className="w-3 h-3 mr-1" />
+                    仅自己可见
+                  </Badge>
+                )}
+              </div>
             </div>
             <CardDescription className="text-xs leading-tight mt-0 sm:mt-1 text-gray-500" style={{ fontSize: '10px' }}>
               {formatDistanceToNow(time, { addSuffix: true })}

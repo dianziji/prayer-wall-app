@@ -11,6 +11,7 @@ export type UserProfile = {
   avatar_url: string | null
   default_fellowship?: string | null
   birthday?: string | null
+  prayers_visibility_weeks?: number | null
 }
 
 // 全局缓存以避免重复查询同一用户的profile
@@ -147,7 +148,7 @@ export function useSession() {
     // 1) 安全查询（0 行不报错）
     const { data: row } = await supa
       .from('user_profiles')
-      .select('user_id, username, avatar_url, default_fellowship, birthday')
+      .select('user_id, username, avatar_url, default_fellowship, birthday, prayers_visibility_weeks')
       .eq('user_id', uid)
       .maybeSingle()
 
@@ -159,6 +160,7 @@ export function useSession() {
       username: current?.username || fallbackName,
       avatar_url: current?.avatar_url || fallbackAvatar,
       birthday: current?.birthday || fallbackBirthday,
+      prayers_visibility_weeks: current?.prayers_visibility_weeks || null,
     }
     setProfile(quickProfile)
     
@@ -201,7 +203,7 @@ export function useSession() {
               username: desiredName,
               avatar_url: desiredAvatar ?? null,
             })
-            .select('user_id, username, avatar_url, default_fellowship, birthday')
+            .select('user_id, username, avatar_url, default_fellowship, birthday, prayers_visibility_weeks')
             .single()
 
           // 更新profile状态
@@ -210,6 +212,7 @@ export function useSession() {
             username: desiredName,
             avatar_url: desiredAvatar ?? null,
             birthday: current?.birthday || null,
+            prayers_visibility_weeks: current?.prayers_visibility_weeks || null,
           }
           setProfile(finalProfile)
           

@@ -1,6 +1,6 @@
 // app/archive/page.tsx
 import { createServerSupabase } from '@/lib/supabase-server'
-import { getCurrentWeekStartET } from '@/lib/utils'
+import { getCurrentWeekStartET, getWeeksDifference, getWeekRangeUtc, isPrayerWeekVisible } from '@/lib/utils'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Calendar, Archive } from 'lucide-react'
@@ -12,6 +12,11 @@ type WeekRow = { week_start_et: string; prayer_count: number }
 
 export default async function ArchivePage() {
   const supabase = await createServerSupabase()
+  
+  // Get current user for privacy filtering
+  const { data: { user } } = await supabase.auth.getUser()
+  const userId = user?.id
+  
   const { data, error } = await supabase
     .from('archive_weeks')
     .select('week_start_et, prayer_count')
@@ -46,7 +51,56 @@ export default async function ArchivePage() {
 
   const current = getCurrentWeekStartET()              // 本周周日（ET）
   const rows: WeekRow[] = (data ?? []) as WeekRow[]    // 明确类型
-  const weeks = rows.filter((w) => w.week_start_et !== current)
+  let weeks = rows.filter((w) => w.week_start_et !== current)
+  
+  // Apply privacy filtering: recalculate prayer counts for each week
+  if (weeks.length > 0) {
+    const weekPrayerCounts = await Promise.all(
+      weeks.map(async (week) => {
+        // Get all prayers for this week with author info
+        const { startUtcISO, endUtcISO } = getWeekRangeUtc(week.week_start_et)
+        const { data: weekPrayers } = await supabase
+          .from('prayers')
+          .select('user_id')
+          .gte('created_at', startUtcISO)
+          .lt('created_at', endUtcISO)
+        
+        if (!weekPrayers || weekPrayers.length === 0) {
+          return { ...week, prayer_count: 0 }
+        }
+        
+        // Get unique author IDs and their privacy settings
+        const authorIds = [...new Set(weekPrayers.map(p => p.user_id).filter(Boolean))] as string[]
+        if (authorIds.length === 0) {
+          return { ...week, prayer_count: weekPrayers.length }
+        }
+        
+        const { data: authorProfiles } = await supabase
+          .from('user_profiles')
+          .select('user_id, prayers_visibility_weeks')
+          .in('user_id', authorIds)
+        
+        const privacyMap = new Map(
+          (authorProfiles || []).map(p => [p.user_id, p.prayers_visibility_weeks])
+        )
+        
+        // Count visible prayers
+        const visibleCount = weekPrayers.filter(prayer => {
+          // Skip prayers without user_id (guest prayers are always visible)
+          if (!prayer.user_id) return true
+          
+          const authorPrivacy = privacyMap.get(prayer.user_id) ?? null
+          const isOwnPrayer = userId === prayer.user_id
+          return isPrayerWeekVisible(week.week_start_et, authorPrivacy, isOwnPrayer)
+        }).length
+        
+        return { ...week, prayer_count: visibleCount }
+      })
+    )
+    
+    // Filter out weeks with no visible prayers
+    weeks = weekPrayerCounts.filter(w => w.prayer_count > 0)
+  }
 
   return (
     <main className="min-h-screen py-4 sm:py-8" style={{ backgroundColor: '#F8F6F0' }}>
