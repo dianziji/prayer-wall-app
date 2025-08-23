@@ -226,6 +226,7 @@ export type Database = {
           birthday: string | null
           created_at: string
           default_fellowship: string | null
+          prayers_visibility_weeks: number | null
           updated_at: string
           user_id: string
           username: string | null
@@ -235,6 +236,7 @@ export type Database = {
           birthday?: string | null
           created_at?: string
           default_fellowship?: string | null
+          prayers_visibility_weeks?: number | null
           updated_at?: string
           user_id: string
           username?: string | null
@@ -244,6 +246,7 @@ export type Database = {
           birthday?: string | null
           created_at?: string
           default_fellowship?: string | null
+          prayers_visibility_weeks?: number | null
           updated_at?: string
           user_id?: string
           username?: string | null

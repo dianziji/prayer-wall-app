@@ -209,3 +209,51 @@ export function formatWeekRange(start: Date, end: Date): string {
     return 'Invalid Date Range'
   }
 }
+
+/**
+ * Calculate the difference in weeks between two ET Sunday dates
+ * @param currentWeekET Current week start (YYYY-MM-DD)
+ * @param targetWeekET Target week start (YYYY-MM-DD) 
+ * @returns Number of weeks difference (positive = target is in past)
+ */
+export function getWeeksDifference(currentWeekET: string, targetWeekET: string): number {
+  try {
+    const current = dayjs(currentWeekET).tz(APP_TZ)
+    const target = dayjs(targetWeekET).tz(APP_TZ)
+    
+    if (!current.isValid() || !target.isValid()) {
+      return 0
+    }
+    
+    // Calculate difference in weeks (rounded to handle any time differences)
+    const diffDays = current.diff(target, 'day')
+    return Math.floor(diffDays / 7)
+  } catch (error) {
+    return 0
+  }
+}
+
+/**
+ * Check if a prayer week should be visible based on user privacy settings
+ * @param prayerWeekET The week when prayer was posted (YYYY-MM-DD)
+ * @param authorPrivacyWeeks Author's privacy setting (null = all visible)
+ * @param isOwnPrayer Whether current user is viewing their own prayer
+ * @returns true if prayer should be visible
+ */
+export function isPrayerWeekVisible(
+  prayerWeekET: string, 
+  authorPrivacyWeeks: number | null, 
+  isOwnPrayer: boolean
+): boolean {
+  // Users always see their own prayers
+  if (isOwnPrayer) return true
+  
+  // No privacy setting = all prayers visible
+  if (!authorPrivacyWeeks) return true
+  
+  // Check if within privacy window
+  const currentWeek = getCurrentWeekStartET()
+  const weeksDiff = getWeeksDifference(currentWeek, prayerWeekET)
+  
+  return weeksDiff <= authorPrivacyWeeks
+}

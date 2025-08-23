@@ -6,13 +6,14 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
-import { User, Link as LinkIcon, Bell, Calendar } from 'lucide-react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { User, Link as LinkIcon, Bell, Calendar, Eye } from 'lucide-react'
 import { BirthdayPicker } from '@/components/ui/birthday-picker'
 import PrayerReminders from '@/components/user/PrayerReminders'
 
 export default function AccountPage() {
   const router = useRouter()
-  const [profile, setProfile] = useState({ username: '', avatar_url: '', birthday: '' })
+  const [profile, setProfile] = useState({ username: '', avatar_url: '', birthday: '', prayers_visibility_weeks: null as number | null })
   const [loading, setLoading] = useState(true)
   const [msg, setMsg] = useState<string | null>(null)
   const [authChecked, setAuthChecked] = useState(false)
@@ -56,18 +57,20 @@ export default function AccountPage() {
     // 1) Fetch existing profile row (0 rows is OK)
     const { data, error } = await supabase
       .from('user_profiles')
-      .select('username,avatar_url,birthday')
+      .select('username,avatar_url,birthday,prayers_visibility_weeks')
       .eq('user_id', uid)
       .maybeSingle()
 
     const currentName = data?.username ?? ''
     const currentAvatar = data?.avatar_url ?? ''
     const currentBirthday = data?.birthday ?? ''
+    const currentPrivacy = data?.prayers_visibility_weeks ?? null
 
     // Decide the desired (next) values
     const desiredName = currentName || googleName || fallbackNameFromEmail
     const desiredAvatar = currentAvatar || googleAvatar || ''
     const desiredBirthday = currentBirthday || ''
+    const desiredPrivacy = currentPrivacy
 
     // 2) Upsert only when missing row or missing critical fields
     if (!data || !currentName || (!currentAvatar && googleAvatar)) {
@@ -79,10 +82,10 @@ export default function AccountPage() {
           avatar_url: desiredAvatar || null,
         })
 
-      setProfile({ username: desiredName, avatar_url: desiredAvatar, birthday: desiredBirthday })
+      setProfile({ username: desiredName, avatar_url: desiredAvatar, birthday: desiredBirthday, prayers_visibility_weeks: desiredPrivacy })
     } else {
       // already has both; just reflect it in UI
-      setProfile({ username: currentName, avatar_url: currentAvatar, birthday: currentBirthday })
+      setProfile({ username: currentName, avatar_url: currentAvatar, birthday: currentBirthday, prayers_visibility_weeks: currentPrivacy })
     }
 
     setLoading(false)
@@ -98,7 +101,8 @@ export default function AccountPage() {
       user_id: user.id,
       username: profile.username || null,
       avatar_url: profile.avatar_url || null,
-      birthday: profile.birthday || null
+      birthday: profile.birthday || null,
+      prayers_visibility_weeks: profile.prayers_visibility_weeks || null
     })
     setLoading(false)
     setMsg(error ? (error instanceof Error ? error.message : 'Save error') : 'Saved!')
@@ -215,6 +219,33 @@ export default function AccountPage() {
                 />
                 <p className="text-xs text-muted-foreground">
                   Optional - used for birthday greetings
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <Eye className="w-4 h-4" />
+                  Prayer Privacy
+                </Label>
+                <Select 
+                  value={profile.prayers_visibility_weeks?.toString() || "all"} 
+                  onValueChange={(value) => setProfile({ 
+                    ...profile, 
+                    prayers_visibility_weeks: value === "all" ? null : parseInt(value) 
+                  })}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Choose privacy setting" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All prayers visible</SelectItem>
+                    <SelectItem value="1">Only last 1 week visible</SelectItem>
+                    <SelectItem value="3">Only last 3 weeks visible</SelectItem>
+                    <SelectItem value="26">Only last 6 months visible</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  Controls who can see your older prayers. You always see all your prayers. Current week is always visible to everyone.
                 </p>
               </div>
 

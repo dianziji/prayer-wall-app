@@ -1,6 +1,6 @@
 import { createServerSupabase } from '@/lib/supabase-server'
 import { NextResponse } from 'next/server'
-import { getWeekRangeUtc, getCurrentWeekStartET, isCurrentWeek } from '@/lib/utils'
+import { getWeekRangeUtc, getCurrentWeekStartET, isCurrentWeek, isPrayerWeekVisible } from '@/lib/utils'
 import { filterContent } from '@/lib/content-filter'
 import dayjs from 'dayjs'
 
@@ -51,15 +51,45 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Failed to fetch prayers' }, { status: 500 })
     }
 
-    // Get current user for like information
+    // Get current user for like information and privacy filtering
     const { data: { user } } = await supabase.auth.getUser()
     const userId = user?.id
 
-    // Optimized: Fix N+1 query problem - get like data in batch queries
-    let prayersWithLikes = prayers || []
+    // Privacy filtering: Get user profiles for privacy settings
+    let filteredPrayers = prayers || []
     
-    if (prayers && prayers.length > 0) {
-      const prayerIds = prayers.map((p: any) => p.id).filter(Boolean)
+    if (filteredPrayers.length > 0) {
+      // Get unique user IDs from prayers
+      const authorIds = [...new Set(filteredPrayers.map((p: any) => p.user_id).filter(Boolean))]
+      
+      if (authorIds.length > 0) {
+        // Get privacy settings for all authors
+        const { data: authorProfiles } = await supabase
+          .from('user_profiles')
+          .select('user_id, prayers_visibility_weeks')
+          .in('user_id', authorIds)
+        
+        const privacyMap = new Map(
+          (authorProfiles || []).map(p => [p.user_id, p.prayers_visibility_weeks])
+        )
+        
+        // Filter prayers based on privacy settings
+        filteredPrayers = filteredPrayers.filter((prayer: any) => {
+          // Skip prayers without user_id (guest prayers are always visible)
+          if (!prayer.user_id) return true
+          
+          const authorPrivacy = privacyMap.get(prayer.user_id) ?? null
+          const isOwnPrayer = userId === prayer.user_id
+          return isPrayerWeekVisible(qsWeekStart, authorPrivacy, isOwnPrayer)
+        })
+      }
+    }
+
+    // Optimized: Fix N+1 query problem - get like data in batch queries
+    let prayersWithLikes = filteredPrayers
+    
+    if (filteredPrayers && filteredPrayers.length > 0) {
+      const prayerIds = filteredPrayers.map((p: any) => p.id).filter(Boolean)
       
       if (prayerIds.length > 0) {
         // Batch query 1: Get all like counts
@@ -108,7 +138,7 @@ export async function GET(req: Request) {
         })
         
         // Combine results with like and comment data
-        prayersWithLikes = prayers.map((prayer: any) => ({
+        prayersWithLikes = filteredPrayers.map((prayer: any) => ({
           ...prayer,
           like_count: likeCounts.get(prayer.id) || 0,
           liked_by_me: userLikedSet.has(prayer.id),
@@ -117,7 +147,7 @@ export async function GET(req: Request) {
       }
     } else {
       // Set default values for empty results
-      prayersWithLikes = prayers?.map((prayer: any) => ({
+      prayersWithLikes = filteredPrayers?.map((prayer: any) => ({
         ...prayer,
         like_count: 0,
         liked_by_me: false,

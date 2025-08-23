@@ -8,6 +8,7 @@ import PrayerEditModal from './PrayerEditModal'
 import PrayerExportModal from './PrayerExportModal'
 import PrayerShareModal from './PrayerShareModal'
 import { getCurrentWeekStartET } from '@/lib/utils'
+import { useSession } from '@/lib/useSession'
 import { FELLOWSHIP_OPTIONS, type Fellowship } from '@/types/models'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -86,6 +87,7 @@ interface PrayerTimelineProps {
 }
 
 export default function PrayerTimeline({ initialLimit = 10 }: PrayerTimelineProps) {
+  const { session, profile } = useSession()
   const [page, setPage] = useState(1)
   const [limit] = useState(initialLimit)
   const [sort, setSort] = useState('recent')
@@ -99,6 +101,7 @@ export default function PrayerTimeline({ initialLimit = 10 }: PrayerTimelineProp
   const [isShareModalOpen, setIsShareModalOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [filteredPrayers, setFilteredPrayers] = useState<Prayer[]>([])
+  const [privacyByUserId, setPrivacyByUserId] = useState<Record<string, number | null>>({})
 
   const queryParams = new URLSearchParams({
     page: page.toString(),
@@ -128,6 +131,15 @@ export default function PrayerTimeline({ initialLimit = 10 }: PrayerTimelineProp
       }
     }
   }, [data, page])
+
+  // Fetch privacy settings for the current user
+  useEffect(() => {
+    if (session?.user?.id && profile) {
+      setPrivacyByUserId({
+        [session.user.id]: profile.prayers_visibility_weeks ?? null
+      })
+    }
+  }, [session, profile])
 
   // Filter prayers based on search query and fellowship
   useEffect(() => {
@@ -453,16 +465,26 @@ export default function PrayerTimeline({ initialLimit = 10 }: PrayerTimelineProp
           <div className="mt-3">
             {weeklyGroups.map(({ week, prayers }) => (
               <TimeGroup key={week} title={week}>
-                {prayers.map(prayer => (
-                  <UserPrayerCard
-                    key={prayer.id}
-                    prayer={prayer}
-                    showEngagement={true}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                    onShare={handleShare}
-                  />
-                ))}
+                {prayers.map(prayer => {
+                  // Calculate prayer week for privacy badge
+                  const prayerDate = new Date(prayer.created_at || '')
+                  const sunday = new Date(prayerDate)
+                  sunday.setDate(prayerDate.getDate() - prayerDate.getDay())
+                  const prayerWeek = sunday.toISOString().split('T')[0]
+                  
+                  return (
+                    <UserPrayerCard
+                      key={prayer.id}
+                      prayer={prayer}
+                      showEngagement={true}
+                      onEdit={handleEdit}
+                      onDelete={handleDelete}
+                      onShare={handleShare}
+                      prayerWeek={prayerWeek}
+                      authorPrivacyWeeks={privacyByUserId[prayer.user_id || ''] ?? null}
+                    />
+                  )
+                })}
               </TimeGroup>
             ))}
             

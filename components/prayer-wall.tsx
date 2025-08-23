@@ -30,6 +30,7 @@ export function PrayerWall({
   const [loading, setLoading] = useState<boolean>(true)
 
   const [avatarByUserId, setAvatarByUserId] = useState<Record<string, string | null>>({})
+  const [privacyByUserId, setPrivacyByUserId] = useState<Record<string, number | null>>({})
   const supa = createBrowserSupabase()
 
   useEffect(() => {
@@ -69,21 +70,26 @@ export function PrayerWall({
 
     if (ids.length === 0) {
       setAvatarByUserId({})
+      setPrivacyByUserId({})
       return
     }
 
     let aborted = false
     supa
       .from('user_profiles')
-      .select('user_id, avatar_url')
+      .select('user_id, avatar_url, prayers_visibility_weeks')
       .in('user_id', ids)
       .then(({ data, error }) => {
         if (aborted || error) return
-        const map: Record<string, string | null> = {}
+        const avatarMap: Record<string, string | null> = {}
+        const privacyMap: Record<string, number | null> = {}
         for (const row of data || []) {
-          map[(row as any).user_id as string] = (row as any).avatar_url ?? null
+          const userId = (row as any).user_id as string
+          avatarMap[userId] = (row as any).avatar_url ?? null
+          privacyMap[userId] = (row as any).prayers_visibility_weeks ?? null
         }
-        setAvatarByUserId(map)
+        setAvatarByUserId(avatarMap)
+        setPrivacyByUserId(privacyMap)
       })
 
     return () => { aborted = true }
@@ -115,6 +121,8 @@ export function PrayerWall({
                   authorAvatarUrl={avatarByUserId[(p as any).user_id ?? ''] ?? null}
                   onEdit={onEdit}
                   onDelete={onDelete ? () => onDelete() : undefined}
+                  prayerWeek={weekStart}
+                  authorPrivacyWeeks={privacyByUserId[(p as any).user_id ?? ''] ?? null}
                 />
               ))
             : [
