@@ -30,6 +30,12 @@ export function DatePicker({
 }: DatePickerProps) {
   const [open, setOpen] = React.useState(false)
 
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('DatePicker state:', { date, open, placeholder })
+    }
+  }, [date, open, placeholder])
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -46,7 +52,7 @@ export function DatePicker({
           {date ? format(date, "PPP") : <span>{placeholder}</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
+      <PopoverContent className="w-auto p-0 z-50" align="start">
         <Calendar
           mode="single"
           selected={date}
@@ -55,9 +61,10 @@ export function DatePicker({
             setOpen(false)
           }}
           initialFocus
-          captionLayout="dropdown"
+          captionLayout="dropdown-buttons"
           fromYear={1920}
           toYear={new Date().getFullYear()}
+          defaultMonth={date || new Date(1990, 0, 1)}
         />
       </PopoverContent>
     </Popover>

@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { User, Link as LinkIcon, Bell, Calendar } from 'lucide-react'
-import { DatePicker } from '@/components/ui/date-picker'
+import { BirthdayPicker } from '@/components/ui/birthday-picker'
 import PrayerReminders from '@/components/user/PrayerReminders'
 
 export default function AccountPage() {
@@ -202,8 +202,8 @@ export default function AccountPage() {
                   <Calendar className="w-4 h-4" />
                   Birthday
                 </Label>
-                <DatePicker
-                  date={profile.birthday ? new Date(profile.birthday) : undefined}
+                <BirthdayPicker
+                  date={profile.birthday ? new Date(profile.birthday + 'T00:00:00') : undefined}
                   onDateChange={(date) => {
                     setProfile({ 
                       ...profile, 
