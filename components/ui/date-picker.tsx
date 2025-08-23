@@ -61,7 +61,7 @@ export function DatePicker({
             setOpen(false)
           }}
           initialFocus
-          captionLayout="dropdown-buttons"
+          captionLayout="dropdown"
           fromYear={1920}
           toYear={new Date().getFullYear()}
           defaultMonth={date || new Date(1990, 0, 1)}
