@@ -93,7 +93,7 @@ export function PrayerWall({
       })
 
     return () => { aborted = true }
-  }, [prayers])
+  }, [prayers, supa])
 
   const skeletons = Array.from({ length: 6 }).map((_, i) => (
     <div

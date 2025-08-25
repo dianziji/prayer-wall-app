@@ -37,7 +37,7 @@ export default function AccountPage() {
       await fetchProfile(session.user.id, session.user.email ?? '')
       setAuthChecked(true)
     })()
-  }, [])
+  }, [router])
 
   async function fetchProfile(uid: string, email: string) {
     const supabase = createBrowserSupabase()
@@ -61,10 +61,10 @@ export default function AccountPage() {
       .eq('user_id', uid)
       .maybeSingle()
 
-    const currentName = data?.username ?? ''
-    const currentAvatar = data?.avatar_url ?? ''
-    const currentBirthday = data?.birthday ?? ''
-    const currentPrivacy = data?.prayers_visibility_weeks ?? null
+    const currentName = (data as any)?.username ?? ''
+    const currentAvatar = (data as any)?.avatar_url ?? ''
+    const currentBirthday = (data as any)?.birthday ?? ''
+    const currentPrivacy = (data as any)?.prayers_visibility_weeks ?? null
 
     // Decide the desired (next) values
     const desiredName = currentName || googleName || fallbackNameFromEmail
@@ -80,7 +80,7 @@ export default function AccountPage() {
           user_id: uid,
           username: desiredName || null,
           avatar_url: desiredAvatar || null,
-        })
+        } as any)
 
       setProfile({ username: desiredName, avatar_url: desiredAvatar, birthday: desiredBirthday, prayers_visibility_weeks: desiredPrivacy })
     } else {
@@ -103,7 +103,7 @@ export default function AccountPage() {
       avatar_url: profile.avatar_url || null,
       birthday: profile.birthday || null,
       prayers_visibility_weeks: profile.prayers_visibility_weeks || null
-    })
+    } as any)
     setLoading(false)
     setMsg(error ? (error instanceof Error ? error.message : 'Save error') : 'Saved!')
   }

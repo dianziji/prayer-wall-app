@@ -41,7 +41,7 @@ export function LikeButton({
       .then(({ data, error }) => {
         if (!error) setLiked(!!data)
       })
-  }, [session?.user.id, prayerId, initiallyLiked])
+  }, [session, supa, prayerId, initiallyLiked])
 
   async function toggleLike() {
     if (!session) return toast.error('请先登录')
