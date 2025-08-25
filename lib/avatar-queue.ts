@@ -239,7 +239,7 @@ class AvatarProcessingQueue {
           user_id: task.userId, 
           avatar_url: publicUrlData.publicUrl,
           avatar_updated_at: new Date().toISOString()
-        }, 
+        } as any, 
         { onConflict: 'user_id' }
       )
 

@@ -80,7 +80,7 @@ export async function POST(req: Request) {
     // Update or create the profile row for this user (RLS: user_id = auth.uid())
     const { error: updErr } = await supa
       .from('user_profiles')
-      .upsert({ user_id: uid, avatar_url: publicUrl }, { onConflict: 'user_id' })
+      .upsert({ user_id: uid, avatar_url: publicUrl } as any, { onConflict: 'user_id' })
     if (updErr) {
       return NextResponse.json({ error: 'Profile update failed', details: updErr.message, url: publicUrl }, { status: 500 })
     }

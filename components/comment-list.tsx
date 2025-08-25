@@ -70,7 +70,7 @@ export function CommentList({ prayerId }: { prayerId: string }) {
         // Note: comment count is now provided by API, no need to update separate cache
       }
     },
-    [mutate, supa, prayerId]
+    [mutate, supa]
   )
 
   /** 更新评论内容（仅本人） */

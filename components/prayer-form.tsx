@@ -51,7 +51,7 @@ export function PrayerForm({ weekStart, onPost, onCancel, mode = 'create', praye
                            session.user.email?.split('@')[0] || ''
       if (fallbackName) setAuthor(fallbackName)
     }
-  }, [profile?.username, session?.user])
+  }, [profile, session?.user])
 
   const MAX_CONTENT = 500
   const MAX_NAME = 24
