@@ -35,7 +35,7 @@ const { session, profile } = useSession()
       return toast.error(contentFilter.reason || '评论内容包含不当词汇，请修改后重新提交')
     }
         
-    const {  data: inserted, error } = await supa.from('comments').insert({
+    const {  data: inserted, error } = await (supa as any).from('comments').insert({
       prayer_id: prayerId,
       user_id: session.user.id,
       content: trimmedText,

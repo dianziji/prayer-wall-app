@@ -1,7 +1,7 @@
 // lib/useSession.ts
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { createBrowserSupabase } from '@/lib/supabase-browser'   // ← 你已有的浏览器端 client
 import type { User } from '@supabase/supabase-js'
 
@@ -28,59 +28,8 @@ export function useSession() {
 
   const [profile, setProfile] = useState<UserProfile | null>(null)
 
-  // 初次加载
-  useEffect(() => {
-    supa.auth.getSession().then(({ data }) => {
-      setSession(data.session ?? null)
-      if (data.session) {
-        // 立即设置一个基础profile，避免等待
-        const user = data.session.user
-        const quickName = user.user_metadata?.full_name || 
-                          user.user_metadata?.name || 
-                          user.email?.split('@')[0] || 
-                          `user-${user.id.slice(0, 6)}`
-        
-        setProfile({
-          user_id: user.id,
-          username: quickName,
-          avatar_url: user.user_metadata?.avatar_url || user.user_metadata?.picture || null
-        })
-        
-        // 然后异步加载完整的profile
-        loadProfile(data.session.user)
-      }
-    })
-
-    // 监听登录 / 登出
-    const { data: { subscription } } = supa.auth.onAuthStateChange(
-      (_ev, sess) => {
-        setSession(sess)
-        if (sess) {
-          // 同样的立即设置逻辑
-          const user = sess.user
-          const quickName = user.user_metadata?.full_name || 
-                            user.user_metadata?.name || 
-                            user.email?.split('@')[0] || 
-                            `user-${user.id.slice(0, 6)}`
-          
-          setProfile({
-            user_id: user.id,
-            username: quickName,
-            avatar_url: user.user_metadata?.avatar_url || user.user_metadata?.picture || null
-          })
-          
-          loadProfile(sess.user)
-        } else {
-          setProfile(null)
-        }
-      }
-    )
-
-    return () => subscription.unsubscribe()
-  }, [])
-
   // 拉取 / 初始化 profile：若不存在或 username/avatar_url 为空，则用 Google/user_metadata 补全
-  async function loadProfile(user: User) {
+  const loadProfile = useCallback(async (user: User) => {
     const uid = user.id
 
     // 检查缓存
@@ -178,7 +127,7 @@ export function useSession() {
 
     if (needAvatarMirror || needUpsert) {
       // 异步处理，不阻塞当前设置
-      (async () => {
+      ;(async () => {
         // 如果需要头像镜像，先处理
         if (needAvatarMirror) {
           try {
@@ -202,12 +151,12 @@ export function useSession() {
               user_id: uid,
               username: desiredName,
               avatar_url: desiredAvatar ?? null,
-            })
+            } as any)
             .select('user_id, username, avatar_url, default_fellowship, birthday, prayers_visibility_weeks')
             .single()
 
           // 更新profile状态
-          const finalProfile = (upserted as UserProfile) ?? {
+          const finalProfile = (upserted as UserProfile | null) ?? {
             user_id: uid,
             username: desiredName,
             avatar_url: desiredAvatar ?? null,
@@ -221,7 +170,58 @@ export function useSession() {
         }
       })()
     }
-  }
+  }, [supa])
+
+  // 初次加载
+  useEffect(() => {
+    supa.auth.getSession().then(({ data }) => {
+      setSession(data.session ?? null)
+      if (data.session) {
+        // 立即设置一个基础profile，避免等待
+        const user = data.session.user
+        const quickName = user.user_metadata?.full_name || 
+                          user.user_metadata?.name || 
+                          user.email?.split('@')[0] || 
+                          `user-${user.id.slice(0, 6)}`
+        
+        setProfile({
+          user_id: user.id,
+          username: quickName,
+          avatar_url: user.user_metadata?.avatar_url || user.user_metadata?.picture || null
+        })
+        
+        // 然后异步加载完整的profile
+        loadProfile(data.session.user)
+      }
+    })
+
+    // 监听登录 / 登出
+    const { data: { subscription } } = supa.auth.onAuthStateChange(
+      (_ev, sess) => {
+        setSession(sess)
+        if (sess) {
+          // 同样的立即设置逻辑
+          const user = sess.user
+          const quickName = user.user_metadata?.full_name || 
+                            user.user_metadata?.name || 
+                            user.email?.split('@')[0] || 
+                            `user-${user.id.slice(0, 6)}`
+          
+          setProfile({
+            user_id: user.id,
+            username: quickName,
+            avatar_url: user.user_metadata?.avatar_url || user.user_metadata?.picture || null
+          })
+          
+          loadProfile(sess.user)
+        } else {
+          setProfile(null)
+        }
+      }
+    )
+
+    return () => subscription.unsubscribe()
+  }, [loadProfile, supa.auth])
 
   return { session, profile }
 }

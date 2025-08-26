@@ -110,19 +110,19 @@ export async function GET(request: NextRequest) {
       
       if (prayerIds.length > 0) {
         // Batch query 1: Get all comment counts
-        const { data: commentsData } = await supabase
+        const { data: commentsData } = await (supabase as any)
           .from('comments')
           .select('prayer_id')
           .in('prayer_id', prayerIds)
         
         // Batch query 2: Get all like counts  
-        const { data: likesData } = await supabase
+        const { data: likesData } = await (supabase as any)
           .from('likes')
           .select('prayer_id')
           .in('prayer_id', prayerIds)
         
         // Batch query 3: Get user's like status for all prayers
-        const { data: userLikesData } = await supabase
+        const { data: userLikesData } = await (supabase as any)
           .from('likes')
           .select('prayer_id')
           .eq('user_id', userId)
@@ -134,19 +134,19 @@ export async function GET(request: NextRequest) {
         const userLikedSet = new Set<string>()
         
         // Process comment counts
-        commentsData?.forEach(comment => {
+        commentsData?.forEach((comment: any) => {
           const count = commentCounts.get(comment.prayer_id) || 0
           commentCounts.set(comment.prayer_id, count + 1)
         })
         
         // Process like counts
-        likesData?.forEach(like => {
+        likesData?.forEach((like: any) => {
           const count = likeCounts.get(like.prayer_id) || 0
           likeCounts.set(like.prayer_id, count + 1)
         })
         
         // Process user likes
-        userLikesData?.forEach(userLike => {
+        userLikesData?.forEach((userLike: any) => {
           userLikedSet.add(userLike.prayer_id)
         })
         
@@ -156,7 +156,7 @@ export async function GET(request: NextRequest) {
           comment_count: commentCounts.get(prayer.id) || 0,
           like_count: likeCounts.get(prayer.id) || 0,
           liked_by_me: userLikedSet.has(prayer.id)
-        }))
+        })) as any
       }
     }
 

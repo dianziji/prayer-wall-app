@@ -40,7 +40,7 @@ export default function PrayerPage() {
             like_count
           `)
           .eq('id', prayerId)
-          .single()
+          .single() as { data: any | null, error: any }
 
         if (prayerError) {
           if (prayerError.code === 'PGRST116') {

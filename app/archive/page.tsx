@@ -63,14 +63,14 @@ export default async function ArchivePage() {
           .from('prayers')
           .select('user_id')
           .gte('created_at', startUtcISO)
-          .lt('created_at', endUtcISO)
+          .lt('created_at', endUtcISO) as { data: { user_id: string | null }[] | null, error: any }
         
         if (!weekPrayers || weekPrayers.length === 0) {
           return { ...week, prayer_count: 0 }
         }
         
         // Get unique author IDs and their privacy settings
-        const authorIds = [...new Set(weekPrayers.map(p => p.user_id).filter(Boolean))] as string[]
+        const authorIds = [...new Set(weekPrayers.map((p: { user_id: string | null }) => p.user_id).filter(Boolean))] as string[]
         if (authorIds.length === 0) {
           return { ...week, prayer_count: weekPrayers.length }
         }
@@ -78,14 +78,14 @@ export default async function ArchivePage() {
         const { data: authorProfiles } = await supabase
           .from('user_profiles')
           .select('user_id, prayers_visibility_weeks')
-          .in('user_id', authorIds)
+          .in('user_id', authorIds) as { data: { user_id: string, prayers_visibility_weeks: number | null }[] | null, error: any }
         
         const privacyMap = new Map(
-          (authorProfiles || []).map(p => [p.user_id, p.prayers_visibility_weeks])
+          (authorProfiles || []).map((p: { user_id: string, prayers_visibility_weeks: number | null }) => [p.user_id, p.prayers_visibility_weeks])
         )
         
         // Count visible prayers
-        const visibleCount = weekPrayers.filter(prayer => {
+        const visibleCount = weekPrayers.filter((prayer: { user_id: string | null }) => {
           // Skip prayers without user_id (guest prayers are always visible)
           if (!prayer.user_id) return true
           

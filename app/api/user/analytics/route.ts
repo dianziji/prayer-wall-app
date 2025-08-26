@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get all user prayers with enhanced data
-    const { data: prayers, error: prayersError } = await supabase
+    const { data: prayers, error: prayersError } = await (supabase as any)
       .from('prayers')
       .select(`
         id,
@@ -139,16 +139,16 @@ export async function GET(request: NextRequest) {
     }
 
     // Get prayer IDs for engagement data
-    const prayerIds = prayers.map(p => p.id)
+    const prayerIds = prayers.map((p: any) => p.id)
     
     // Get likes data
-    const { data: likesData } = await supabase
+    const { data: likesData } = await (supabase as any)
       .from('likes')
       .select('prayer_id')
       .in('prayer_id', prayerIds)
 
     // Get comments data  
-    const { data: commentsData } = await supabase
+    const { data: commentsData } = await (supabase as any)
       .from('comments')
       .select('prayer_id')
       .in('prayer_id', prayerIds)
@@ -170,11 +170,11 @@ export async function GET(request: NextRequest) {
     const likeCounts = new Map<string, number>()
     const commentCounts = new Map<string, number>()
 
-    likesData?.forEach(like => {
+    likesData?.forEach((like: any) => {
       likeCounts.set(like.prayer_id, (likeCounts.get(like.prayer_id) || 0) + 1)
     })
 
-    commentsData?.forEach(comment => {
+    commentsData?.forEach((comment: any) => {
       commentCounts.set(comment.prayer_id, (commentCounts.get(comment.prayer_id) || 0) + 1)
     })
 
@@ -187,7 +187,7 @@ export async function GET(request: NextRequest) {
     let maxLikes = 0
     let maxComments = 0
 
-    prayers.forEach(prayer => {
+    prayers.forEach((prayer: any) => {
       const likes = likeCounts.get(prayer.id) || 0
       const comments = commentCounts.get(prayer.id) || 0
 
@@ -221,13 +221,13 @@ export async function GET(request: NextRequest) {
 
     // Calculate prayer patterns
     const prayerDates = prayers
-      .map(p => new Date(p.created_at || 0))
-      .sort((a, b) => a.getTime() - b.getTime())
+      .map((p: any) => new Date(p.created_at || 0))
+      .sort((a: Date, b: Date) => a.getTime() - b.getTime())
 
     // Calculate streaks
     const uniqueDates = Array.from(new Set(
-      prayerDates.map(date => date.toDateString())
-    )).sort()
+      prayerDates.map((date: Date) => date.toDateString())
+    )).sort() as string[]
 
     let currentStreak = 0
     let longestStreak = 0
@@ -284,7 +284,7 @@ export async function GET(request: NextRequest) {
 
     // Calculate preferred time of day
     const timeSlots = { morning: 0, afternoon: 0, evening: 0, night: 0 }
-    prayerDates.forEach(date => {
+    prayerDates.forEach((date: Date) => {
       const hour = date.getHours()
       if (hour >= 5 && hour < 12) timeSlots.morning++
       else if (hour >= 12 && hour < 17) timeSlots.afternoon++
@@ -297,8 +297,8 @@ export async function GET(request: NextRequest) {
     )[0] as 'morning' | 'afternoon' | 'evening' | 'night'
 
     // Calculate word count statistics
-    const wordCounts = prayers.map(p => p.content.split(' ').length)
-    const averageWordCount = Math.round(wordCounts.reduce((sum, count) => sum + count, 0) / wordCounts.length)
+    const wordCounts = prayers.map((p: any) => p.content.split(' ').length)
+    const averageWordCount = Math.round(wordCounts.reduce((sum: number, count: number) => sum + count, 0) / wordCounts.length)
     const shortestWordCount = Math.min(...wordCounts)
     const longestWordCount = Math.max(...wordCounts)
 
@@ -317,7 +317,7 @@ export async function GET(request: NextRequest) {
     // Calculate monthly breakdown
     const monthlyMap = new Map<string, { count: number, likes: number, comments: number }>()
     
-    prayers.forEach(prayer => {
+    prayers.forEach((prayer: any) => {
       const date = new Date(prayer.created_at || 0)
       const monthKey = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' })
       
@@ -343,7 +343,7 @@ export async function GET(request: NextRequest) {
     const fellowshipCounts = new Map<string, number>()
     const prayerTypeCounts = { thanksgiving: 0, intercession: 0, mixed: 0 }
     
-    prayers.forEach(prayer => {
+    prayers.forEach((prayer: any) => {
       const fellowship = (prayer as any).fellowship || 'weekday'
       fellowshipCounts.set(fellowship, (fellowshipCounts.get(fellowship) || 0) + 1)
       

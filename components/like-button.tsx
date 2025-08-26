@@ -41,7 +41,7 @@ export function LikeButton({
       .then(({ data, error }) => {
         if (!error) setLiked(!!data)
       })
-  }, [session?.user.id, prayerId, initiallyLiked])
+  }, [session, supa, prayerId, initiallyLiked])
 
   async function toggleLike() {
     if (!session) return toast.error('请先登录')
@@ -53,12 +53,12 @@ export function LikeButton({
     setCount(c => c + (liked ? -1 : 1))
 
     const { error } = liked
-      ? await supa
+      ? await (supa as any)
           .from('likes')
           .delete()
           .eq('prayer_id', prayerId)
           .eq('user_id', session.user.id)
-      : await supa.from('likes').insert({
+      : await (supa as any).from('likes').insert({
           prayer_id: prayerId,
           user_id: session.user.id,
         })

@@ -3,6 +3,13 @@ import { NextResponse } from 'next/server'
 import { getWeekRangeUtc, getCurrentWeekStartET, isCurrentWeek, isPrayerWeekVisible } from '@/lib/utils'
 import { filterContent } from '@/lib/content-filter'
 import dayjs from 'dayjs'
+import type { PrayerInsert, PrayerUpdate, Prayer } from '@/types/models'
+
+// Helper type for ownership verification queries
+type PrayerOwnershipData = {
+  user_id: string | null
+  created_at: string | null
+}
 
 /**
  * GET /api/prayers?week_start=YYYY-MM-DD&fellowship=ypf
@@ -70,7 +77,7 @@ export async function GET(req: Request) {
           .in('user_id', authorIds)
         
         const privacyMap = new Map(
-          (authorProfiles || []).map(p => [p.user_id, p.prayers_visibility_weeks])
+          (authorProfiles || []).map((p: any) => [p.user_id, p.prayers_visibility_weeks])
         )
         
         // Filter prayers based on privacy settings
@@ -121,38 +128,38 @@ export async function GET(req: Request) {
         const commentCounts = new Map<string, number>()
         
         // Process like counts
-        likesData?.forEach(like => {
+        likesData?.forEach((like: any) => {
           const count = likeCounts.get(like.prayer_id) || 0
           likeCounts.set(like.prayer_id, count + 1)
         })
         
         // Process user likes
-        userLikesData.forEach(userLike => {
+        userLikesData.forEach((userLike: any) => {
           userLikedSet.add(userLike.prayer_id)
         })
         
         // Process comment counts
-        commentsData?.forEach(comment => {
+        commentsData?.forEach((comment: any) => {
           const count = commentCounts.get(comment.prayer_id) || 0
           commentCounts.set(comment.prayer_id, count + 1)
         })
         
         // Combine results with like and comment data
-        prayersWithLikes = filteredPrayers.map((prayer: any) => ({
+        prayersWithLikes = (filteredPrayers as any[]).map((prayer: any) => ({
           ...prayer,
           like_count: likeCounts.get(prayer.id) || 0,
           liked_by_me: userLikedSet.has(prayer.id),
           comment_count: commentCounts.get(prayer.id) || 0
-        }))
+        })) as any
       }
     } else {
       // Set default values for empty results
-      prayersWithLikes = filteredPrayers?.map((prayer: any) => ({
+      prayersWithLikes = (filteredPrayers as any[])?.map((prayer: any) => ({
         ...prayer,
         like_count: 0,
         liked_by_me: false,
         comment_count: 0
-      })) || []
+      })) as any || []
     }
 
     return NextResponse.json(prayersWithLikes)
@@ -255,10 +262,11 @@ export async function POST(req: Request) {
     }
 
     // Prepare insert data
-    const insertData: any = {
+    const insertData: PrayerInsert = {
       author_name,
       user_id: user?.id || null,
-      fellowship
+      fellowship,
+      content: '' // Will be set below based on content type
     }
 
     if (hasNewContent) {
@@ -288,7 +296,7 @@ export async function POST(req: Request) {
       insertData.content = content
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('prayers')
       .insert([insertData])
       .select()
@@ -333,7 +341,7 @@ export async function PATCH(req: Request) {
       .from('prayers')
       .select('user_id, created_at')
       .eq('id', prayerId)
-      .single()
+      .single() as { data: PrayerOwnershipData | null, error: any }
 
     if (fetchError || !existingPrayer) {
       return NextResponse.json({ error: 'Prayer not found' }, { status: 404 })
@@ -425,7 +433,7 @@ export async function PATCH(req: Request) {
     }
 
     // Prepare update data
-    const updateData: any = { author_name, fellowship }
+    const updateData: PrayerUpdate = { author_name, fellowship }
 
     if (hasNewContent) {
       // New format: merge with markers into content field
@@ -449,7 +457,7 @@ export async function PATCH(req: Request) {
       updateData.intercession_content = null
     }
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await (supabase as any)
       .from('prayers')
       .update(updateData)
       .eq('id', prayerId)
@@ -494,7 +502,7 @@ export async function DELETE(req: Request) {
       .from('prayers')
       .select('user_id, created_at')
       .eq('id', prayerId)
-      .single()
+      .single() as { data: PrayerOwnershipData | null, error: any }
 
     if (fetchError || !existingPrayer) {
       return NextResponse.json({ error: 'Prayer not found' }, { status: 404 })
