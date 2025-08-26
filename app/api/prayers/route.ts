@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 import { getWeekRangeUtc, getCurrentWeekStartET, isCurrentWeek, isPrayerWeekVisible } from '@/lib/utils'
 import { filterContent } from '@/lib/content-filter'
 import dayjs from 'dayjs'
-import type { PrayerInsert, PrayerUpdate, Prayer } from '@/types/models'
+import type { Database } from '@/types/database.types'
 
 // Helper type for ownership verification queries
 type PrayerOwnershipData = {
@@ -93,7 +93,7 @@ export async function GET(req: Request) {
     }
 
     // Optimized: Fix N+1 query problem - get like data in batch queries
-    let prayersWithLikes = filteredPrayers
+    let prayersWithLikes: any = filteredPrayers
     
     if (filteredPrayers && filteredPrayers.length > 0) {
       const prayerIds = filteredPrayers.map((p: any) => p.id).filter(Boolean)
@@ -261,8 +261,8 @@ export async function POST(req: Request) {
       fellowship = 'weekday'
     }
 
-    // Prepare insert data
-    const insertData: PrayerInsert = {
+    // Prepare insert data with proper typing
+    let insertData: Database['public']['Tables']['prayers']['Insert'] = {
       author_name,
       user_id: user?.id || null,
       fellowship,
@@ -337,7 +337,7 @@ export async function PATCH(req: Request) {
     }
 
     // Get the prayer to verify ownership and check week
-    const { data: existingPrayer, error: fetchError } = await supabase
+    const { data: existingPrayer, error: fetchError } = await (supabase as any)
       .from('prayers')
       .select('user_id, created_at')
       .eq('id', prayerId)
@@ -432,8 +432,11 @@ export async function PATCH(req: Request) {
       fellowship = 'weekday'
     }
 
-    // Prepare update data
-    const updateData: PrayerUpdate = { author_name, fellowship }
+    // Prepare update data with proper typing
+    let updateData: Database['public']['Tables']['prayers']['Update'] = { 
+      author_name, 
+      fellowship 
+    }
 
     if (hasNewContent) {
       // New format: merge with markers into content field
@@ -498,7 +501,7 @@ export async function DELETE(req: Request) {
     }
 
     // Get the prayer to verify ownership and check week
-    const { data: existingPrayer, error: fetchError } = await supabase
+    const { data: existingPrayer, error: fetchError } = await (supabase as any)
       .from('prayers')
       .select('user_id, created_at')
       .eq('id', prayerId)

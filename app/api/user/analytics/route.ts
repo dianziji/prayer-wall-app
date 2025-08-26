@@ -155,7 +155,7 @@ export async function GET(request: NextRequest) {
 
     // Calculate prayer frequency
     const now = new Date()
-    const firstPrayer = new Date(prayers[0].created_at || now)
+    const firstPrayer = new Date((prayers[0] as any).created_at || now)
     const daysSinceFirst = Math.max(1, Math.ceil((now.getTime() - firstPrayer.getTime()) / (1000 * 60 * 60 * 24)))
     const weeksSinceFirst = Math.max(1, daysSinceFirst / 7)
     const monthsSinceFirst = Math.max(1, daysSinceFirst / 30)
