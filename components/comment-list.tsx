@@ -38,13 +38,13 @@ export function CommentList({ prayerId }: { prayerId: string }) {
     }
 
     // 3) fetch profiles in bulk
-    const { data: profiles, error: pErr } = await supa
+    const { data: profiles, error: pErr } = await (supa as any)
       .from('user_profiles')
       .select('user_id, username')
       .in('user_id', ids)
     if (pErr) throw pErr
 
-    const nameMap = new Map((profiles ?? []).map(p => [p.user_id as string, (p as any).username as string]))
+    const nameMap = new Map((profiles ?? []).map((p: any) => [p.user_id as string, p.username as string]))
 
     // 4) enrich rows with author_name for UI
     return rows.map(r => ({
@@ -76,7 +76,7 @@ export function CommentList({ prayerId }: { prayerId: string }) {
   /** 更新评论内容（仅本人） */
   const handleEdit = useCallback(
     async (id: string, content: string) => {
-      const { error } = await supa
+      const { error } = await (supa as any)
         .from('comments')
         .update({ content })
         .eq('id', id)

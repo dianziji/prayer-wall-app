@@ -232,7 +232,7 @@ class AvatarProcessingQueue {
       .getPublicUrl(objectPath)
 
     // 9. 更新用户档案
-    const { error: profileError } = await supa
+    const { error: profileError } = await (supa as any)
       .from('user_profiles')
       .upsert(
         { 

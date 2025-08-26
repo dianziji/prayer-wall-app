@@ -47,14 +47,14 @@ export async function GET(request: NextRequest) {
       .from('prayers')
       .select('created_at')
       .eq('user_id', userId)
-      .order('created_at', { ascending: false })
+      .order('created_at', { ascending: false }) as { data: { created_at: string | null }[] | null, error: any }
 
     let mostActiveWeek = 'N/A'
     if (weeklyData && weeklyData.length > 0) {
       // Group prayers by week and find the week with most prayers
       const weekCounts = new Map<string, number>()
       
-      weeklyData.forEach(prayer => {
+      weeklyData.forEach((prayer: { created_at: string | null }) => {
         if (!prayer.created_at) return
         const date = new Date(prayer.created_at)
         // Get Sunday of the week (normalized to ET Sunday)
@@ -92,12 +92,12 @@ export async function GET(request: NextRequest) {
       .select('created_at')
       .eq('user_id', userId)
       .gte('created_at', fourWeeksAgo.toISOString())
-      .order('created_at', { ascending: false })
+      .order('created_at', { ascending: false }) as { data: { created_at: string | null }[] | null, error: any }
 
     // Group recent activity by week
     const recentActivity = [0, 0, 0, 0] // Last 4 weeks
     if (recentData) {
-      recentData.forEach(prayer => {
+      recentData.forEach((prayer: { created_at: string | null }) => {
         if (!prayer.created_at) return
         const prayerDate = new Date(prayer.created_at)
         const weeksAgo = Math.floor((Date.now() - prayerDate.getTime()) / (7 * 24 * 60 * 60 * 1000))

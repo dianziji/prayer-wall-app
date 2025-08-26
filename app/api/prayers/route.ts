@@ -5,6 +5,12 @@ import { filterContent } from '@/lib/content-filter'
 import dayjs from 'dayjs'
 import type { Database } from '@/types/database.types'
 
+// Helper type for ownership verification queries
+type PrayerOwnershipData = {
+  user_id: string | null
+  created_at: string | null
+}
+
 /**
  * GET /api/prayers?week_start=YYYY-MM-DD&fellowship=ypf
  * - 按"美东周日"为起点的当周范围（在服务端换算为 UTC ISO）过滤
@@ -139,21 +145,21 @@ export async function GET(req: Request) {
         })
         
         // Combine results with like and comment data
-        prayersWithLikes = filteredPrayers.map((prayer: any) => ({
+        prayersWithLikes = (filteredPrayers as any[]).map((prayer: any) => ({
           ...prayer,
           like_count: likeCounts.get(prayer.id) || 0,
           liked_by_me: userLikedSet.has(prayer.id),
           comment_count: commentCounts.get(prayer.id) || 0
-        }))
+        })) as any
       }
     } else {
       // Set default values for empty results
-      prayersWithLikes = filteredPrayers?.map((prayer: any) => ({
+      prayersWithLikes = (filteredPrayers as any[])?.map((prayer: any) => ({
         ...prayer,
         like_count: 0,
         liked_by_me: false,
         comment_count: 0
-      })) || []
+      })) as any || []
     }
 
     return NextResponse.json(prayersWithLikes)
@@ -260,7 +266,7 @@ export async function POST(req: Request) {
       author_name,
       user_id: user?.id || null,
       fellowship,
-      content: '' // Will be set below
+      content: '' // Will be set below based on content type
     }
 
     if (hasNewContent) {
@@ -335,7 +341,7 @@ export async function PATCH(req: Request) {
       .from('prayers')
       .select('user_id, created_at')
       .eq('id', prayerId)
-      .single()
+      .single() as { data: PrayerOwnershipData | null, error: any }
 
     if (fetchError || !existingPrayer) {
       return NextResponse.json({ error: 'Prayer not found' }, { status: 404 })
@@ -499,7 +505,7 @@ export async function DELETE(req: Request) {
       .from('prayers')
       .select('user_id, created_at')
       .eq('id', prayerId)
-      .single()
+      .single() as { data: PrayerOwnershipData | null, error: any }
 
     if (fetchError || !existingPrayer) {
       return NextResponse.json({ error: 'Prayer not found' }, { status: 404 })

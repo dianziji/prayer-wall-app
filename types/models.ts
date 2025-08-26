@@ -25,6 +25,8 @@ export function getFellowshipInfo(fellowship: Fellowship | string | null) {
 // 单行别名，之后全项目引用
 // 原始表行
 type PrayerRow = Database['public']['Tables']['prayers']['Row']
+export type PrayerInsert = Database['public']['Tables']['prayers']['Insert']
+export type PrayerUpdate = Database['public']['Tables']['prayers']['Update']
 
 // 在此基础上加视图返回的两个字段
 export type Prayer = PrayerRow & {

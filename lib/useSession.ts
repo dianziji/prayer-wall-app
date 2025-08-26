@@ -156,7 +156,7 @@ export function useSession() {
             .single()
 
           // 更新profile状态
-          const finalProfile = (upserted as UserProfile) ?? {
+          const finalProfile = (upserted as UserProfile | null) ?? {
             user_id: uid,
             username: desiredName,
             avatar_url: desiredAvatar ?? null,
@@ -222,7 +222,6 @@ export function useSession() {
 
     return () => subscription.unsubscribe()
   }, [loadProfile, supa.auth])
-
 
   return { session, profile }
 }
