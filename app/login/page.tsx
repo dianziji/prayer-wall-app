@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createBrowserSupabase } from '@/lib/supabase-browser'
 import { validate as isEmail } from 'email-validator'
@@ -9,6 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Mail, Heart } from 'lucide-react'
+import { isWeChatBrowser } from '@/lib/wechat-utils'
+import WeChatBrowserGuide from '@/components/wechat-browser-guide'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -16,6 +18,17 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [msg, setMsg] = useState<string | null>(null)
+  const [isWeChat, setIsWeChat] = useState(false)
+  const [showWeChatGuide, setShowWeChatGuide] = useState(false)
+
+  // Check if user is in WeChat browser on component mount
+  useEffect(() => {
+    const weChatDetected = isWeChatBrowser()
+    setIsWeChat(weChatDetected)
+    if (weChatDetected) {
+      setShowWeChatGuide(true)
+    }
+  }, [])
 
 async function isDomainDeliverable(addr: string) {
    const res = await fetch('/api/email-verify', {
@@ -61,6 +74,17 @@ async function isDomainDeliverable(addr: string) {
     setLoading(false)
     setMsg(error ? (error instanceof Error ? error.message : 'Login error') : 'Magic link 已发送，请查收邮件并返回本站')
     if (!error) setEmail('')
+  }
+
+  // Show WeChat guidance if detected
+  if (showWeChatGuide) {
+    return (
+      <WeChatBrowserGuide
+        targetPath="/login"
+        lang="zh"
+        onClose={() => setShowWeChatGuide(false)}
+      />
+    )
   }
 
   return (
@@ -122,6 +146,12 @@ async function isDomainDeliverable(addr: string) {
             type="button"
             variant="outline"
             onClick={() => {
+              // Double-check WeChat detection before proceeding with OAuth
+              if (isWeChatBrowser()) {
+                setShowWeChatGuide(true)
+                return
+              }
+              
               const callbackUrl = getOAuthCallbackUrl()
               console.log('🔍 OAuth Debug - Callback URL:', callbackUrl)
               console.log('🔍 Current origin:', typeof window !== 'undefined' ? window.location.origin : 'server-side')
