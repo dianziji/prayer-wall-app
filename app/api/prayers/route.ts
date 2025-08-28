@@ -28,40 +28,51 @@ export async function GET(req: Request) {
     const organizationId = searchParams.get('organizationId')
     const orgSlug = searchParams.get('orgSlug')
     
+    console.log('🔍 [API] GET prayers request:', { qsWeekStart, fellowship, organizationId, orgSlug })
+    
     // Get organization ID - support multiple ways to specify organization
     let orgId: string
     
     if (organizationId) {
       orgId = organizationId
+      console.log('✅ [API] Using provided organizationId:', orgId)
     } else if (orgSlug) {
+      console.log('🔍 [API] Looking up organization by slug:', orgSlug)
       // Look up organization by slug
-      const { data: org } = await supabase
+      const { data: org, error: orgError } = await supabase
         .from('organizations')
         .select('id')
         .eq('slug', orgSlug)
         .single()
       
-      if (!org) {
+      console.log('📊 [API] Organization lookup result:', { org, error: orgError })
+      if (!org || orgError) {
+        console.error('❌ [API] Organization not found for slug:', orgSlug, orgError)
         return NextResponse.json({ error: 'Organization not found' }, { status: 404 })
       }
       orgId = org.id
+      console.log('✅ [API] Resolved orgId from slug:', orgId)
     } else {
       // EMERGENCY HOTFIX: Use hardcoded MGC organization for backward compatibility  
       // This ensures production continues to work without database function dependency
       orgId = '15da0616-bd27-44a2-bf98-353c094d7581' // MGC organization ID
-      console.log('HOTFIX: Using hardcoded MGC organization for legacy API request')
+      console.log('🚨 [API] HOTFIX: Using hardcoded MGC organization for legacy API request:', orgId)
     }
     
     // Get current user
     const { data: { user } } = await supabase.auth.getUser()
+    console.log('👤 [API] Current user:', user ? `${user.id.substring(0, 8)}...` : 'anonymous')
     
     // Step 1: Get or create prayer_wall (KEY OPTIMIZATION!)
+    console.log('🏗️ [API] Getting/creating prayer wall for:', { qsWeekStart, orgId })
     const wallResult = await getOrCreatePrayerWall(qsWeekStart, orgId, user?.id)
     if ('error' in wallResult) {
+      console.error('❌ [API] Failed to get/create prayer wall:', wallResult.error)
       return NextResponse.json({ error: wallResult.error }, { status: 500 })
     }
     
     const { data: wall, isNew } = wallResult
+    console.log('✅ [API] Prayer wall ready:', { wallId: wall.id, isNew, weekStart: wall.week_start })
     
     // Step 2: Query prayers using wall_id, but fallback to time range for legacy data
     let query = supabase
@@ -85,12 +96,19 @@ export async function GET(req: Request) {
     // Add fellowship filter if specified
     if (fellowship) {
       query = query.eq('fellowship', fellowship)
+      console.log('🔍 [API] Added fellowship filter:', fellowship)
     }
 
+    console.log('📊 [API] Executing prayers query via wall_id...')
     let { data: prayers, error } = await query
+    console.log('📊 [API] Primary query result:', { 
+      count: prayers?.length || 0, 
+      error: error ? `${error.code}: ${error.message}` : null 
+    })
 
     // Fallback: If no prayers found via wall_id, try time range query for legacy data
     if (!error && (!prayers || prayers.length === 0) && !isNew) {
+      console.log('🔄 [API] No prayers via wall_id, trying time range fallback...')
       const { startUtcISO, endUtcISO } = getWeekRangeUtc(qsWeekStart)
       
       let fallbackQuery = supabase
@@ -200,7 +218,7 @@ export async function GET(req: Request) {
     }
 
     // Return enhanced response with prayer wall information
-    return NextResponse.json({
+    const responseData = {
       prayers: prayersWithComments,
       wall: {
         id: wall.id,
@@ -215,9 +233,19 @@ export async function GET(req: Request) {
         read_only: !isCurrentWeek(qsWeekStart),
         is_new_wall: isNew
       }
+    }
+    
+    console.log('✅ [API] Returning response:', { 
+      prayerCount: prayersWithComments.length,
+      wallId: wall.id,
+      orgId,
+      weekStart: qsWeekStart,
+      isNewWall: isNew
     })
+    
+    return NextResponse.json(responseData)
   } catch (e) {
-    console.error('Unhandled GET error:', e)
+    console.error('❌ [API] Unhandled GET error:', e)
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
   }
 }
