@@ -46,10 +46,10 @@ export async function GET(req: Request) {
       }
       orgId = org.id
     } else {
-      // BACKWARD COMPATIBILITY: Use database function for default MGC organization
-      const { data } = await supabase.rpc('get_default_organization_id')
-      orgId = data
-      console.log('SAFETY: Default to MGC organization for legacy API request')
+      // EMERGENCY HOTFIX: Use hardcoded MGC organization for backward compatibility  
+      // This ensures production continues to work without database function dependency
+      orgId = '15da0616-bd27-44a2-bf98-353c094d7581' // MGC organization ID
+      console.log('HOTFIX: Using hardcoded MGC organization for legacy API request')
     }
     
     // Get current user
@@ -336,11 +336,10 @@ export async function POST(req: Request) {
       }
       orgId = org.id
     } else {
-      // BACKWARD COMPATIBILITY: Use database function for default MGC organization
-      // This trigger will handle new prayers automatically
-      const { data } = await supabase.rpc('get_default_organization_id')
-      orgId = data
-      console.log('SAFETY: Using default MGC organization for legacy request')
+      // EMERGENCY HOTFIX: Use hardcoded MGC organization for backward compatibility
+      // This ensures production continues to work without database function dependency
+      orgId = '15da0616-bd27-44a2-bf98-353c094d7581' // MGC organization ID
+      console.log('HOTFIX: Using hardcoded MGC organization for legacy request')
     }
     
     const weekStart = getCurrentWeekStartET()
