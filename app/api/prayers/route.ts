@@ -103,7 +103,13 @@ export async function GET(req: Request) {
     let { data: prayers, error } = await query
     console.log('📊 [API] Primary query result:', { 
       count: prayers?.length || 0, 
-      error: error ? `${error.code}: ${error.message}` : null 
+      error: error ? `${error.code}: ${error.message}` : null,
+      sampleData: prayers?.slice(0, 2)?.map(p => ({
+        id: p.id?.substring(0, 8),
+        content: p.content?.substring(0, 50),
+        author: p.author_name,
+        created: p.created_at
+      }))
     })
 
     // Fallback: If no prayers found via wall_id, try time range query for legacy data
@@ -241,6 +247,11 @@ export async function GET(req: Request) {
       orgId,
       weekStart: qsWeekStart,
       isNewWall: isNew,
+      samplePrayers: prayersWithComments?.slice(0, 2)?.map((p: any) => ({
+        id: p.id?.substring(0, 8),
+        content: p.content?.substring(0, 30),
+        author: p.author_name
+      })),
       env: process.env.NODE_ENV,
       vercelEnv: process.env.VERCEL_ENV
     })
