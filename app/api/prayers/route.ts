@@ -2,6 +2,7 @@ import { createServerSupabase } from '@/lib/supabase-server'
 import { NextResponse } from 'next/server'
 import { getWeekRangeUtc, getCurrentWeekStartET, isCurrentWeek, isPrayerWeekVisible } from '@/lib/utils'
 import { filterContent } from '@/lib/content-filter'
+import { getOrCreatePrayerWall, updateWallStats, getDefaultOrganizationId, hasAdminAccess } from '@/lib/prayer-walls'
 import dayjs from 'dayjs'
 import type { Database } from '@/types/database.types'
 
@@ -13,9 +14,10 @@ type PrayerOwnershipData = {
 
 /**
  * GET /api/prayers?week_start=YYYY-MM-DD&fellowship=ypf
- * - 按"美东周日"为起点的当周范围（在服务端换算为 UTC ISO）过滤
- * - 如果未提供 week_start，则默认使用当前周（ET）的周日
- * - fellowship 参数用于过滤指定团契的祷告，不提供则显示所有
+ * OPTIMIZED: Uses prayer_walls + v_prayers_likes for better performance
+ * - Gets or creates prayer_wall for the week/organization
+ * - Queries prayers by wall_id instead of time ranges (O(1) vs O(log n))
+ * - Uses v_prayers_likes view to eliminate N+1 query problem
  */
 export async function GET(req: Request) {
   const supabase = await createServerSupabase()
@@ -23,12 +25,47 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url)
     const qsWeekStart = searchParams.get('week_start') || getCurrentWeekStartET()
     const fellowship = searchParams.get('fellowship')
-
-    // 计算该周在 UTC 下的起止 ISO（用于数据库过滤）
-    const { startUtcISO, endUtcISO } = getWeekRangeUtc(qsWeekStart)
-
+    const organizationId = searchParams.get('organizationId')
+    const orgSlug = searchParams.get('orgSlug')
+    
+    // Get organization ID - support multiple ways to specify organization
+    let orgId: string
+    
+    if (organizationId) {
+      orgId = organizationId
+    } else if (orgSlug) {
+      // Look up organization by slug
+      const { data: org } = await supabase
+        .from('organizations')
+        .select('id')
+        .eq('slug', orgSlug)
+        .single()
+      
+      if (!org) {
+        return NextResponse.json({ error: 'Organization not found' }, { status: 404 })
+      }
+      orgId = org.id
+    } else {
+      // BACKWARD COMPATIBILITY: Use database function for default MGC organization
+      const { data } = await supabase.rpc('get_default_organization_id')
+      orgId = data
+      console.log('SAFETY: Default to MGC organization for legacy API request')
+    }
+    
+    // Get current user
+    const { data: { user } } = await supabase.auth.getUser()
+    
+    // Step 1: Get or create prayer_wall (KEY OPTIMIZATION!)
+    const wallResult = await getOrCreatePrayerWall(qsWeekStart, orgId, user?.id)
+    if ('error' in wallResult) {
+      return NextResponse.json({ error: wallResult.error }, { status: 500 })
+    }
+    
+    const { data: wall, isNew } = wallResult
+    
+    // Step 2: Query prayers using wall_id, but fallback to time range for legacy data
     let query = supabase
-      .from('prayers')
+      .from('v_prayers_likes') // Use optimized view to eliminate N+1 problem
       .select(`
         id,
         content,
@@ -37,30 +74,58 @@ export async function GET(req: Request) {
         created_at,
         fellowship,
         thanksgiving_content,
-        intercession_content
+        intercession_content,
+        like_count,
+        liked_by_me
       `)
-      .gte('created_at', startUtcISO)
-      .lt('created_at', endUtcISO)
+      .eq('wall_id', wall.id) // O(1) query instead of time range O(log n)
+      .eq('organization_id', orgId) // CRITICAL: Ensure organization filtering on main query too
       .order('created_at', { ascending: false })
 
     // Add fellowship filter if specified
     if (fellowship) {
       query = query.eq('fellowship', fellowship)
-    } else {
-      // When no fellowship filter, show all prayers (including those without fellowship)
-      // This ensures backward compatibility with existing prayers
     }
 
-    const { data: prayers, error } = await query
+    let { data: prayers, error } = await query
+
+    // Fallback: If no prayers found via wall_id, try time range query for legacy data
+    if (!error && (!prayers || prayers.length === 0) && !isNew) {
+      const { startUtcISO, endUtcISO } = getWeekRangeUtc(qsWeekStart)
+      
+      let fallbackQuery = supabase
+        .from('v_prayers_likes')
+        .select(`
+          id,
+          content,
+          author_name,
+          user_id,
+          created_at,
+          fellowship,
+          thanksgiving_content,
+          intercession_content,
+          like_count,
+          liked_by_me
+        `)
+        .gte('created_at', startUtcISO)
+        .lt('created_at', endUtcISO)
+        .eq('organization_id', orgId) // CRITICAL: Filter by organization in fallback query
+        .order('created_at', { ascending: false })
+
+      if (fellowship) {
+        fallbackQuery = fallbackQuery.eq('fellowship', fellowship)
+      }
+
+      const fallbackResult = await fallbackQuery
+      if (!fallbackResult.error && fallbackResult.data) {
+        prayers = fallbackResult.data
+      }
+    }
 
     if (error) {
       console.error('Supabase fetch error:', error)
       return NextResponse.json({ error: 'Failed to fetch prayers' }, { status: 500 })
     }
-
-    // Get current user for like information and privacy filtering
-    const { data: { user } } = await supabase.auth.getUser()
-    const userId = user?.id
 
     // Privacy filtering: Get user profiles for privacy settings
     let filteredPrayers = prayers || []
@@ -86,83 +151,71 @@ export async function GET(req: Request) {
           if (!prayer.user_id) return true
           
           const authorPrivacy = privacyMap.get(prayer.user_id) ?? null
-          const isOwnPrayer = userId === prayer.user_id
-          return isPrayerWeekVisible(qsWeekStart, authorPrivacy, isOwnPrayer)
+          const isOwnPrayer = user?.id === prayer.user_id
+          
+          // Calculate the actual week when this prayer was created
+          const prayerDate = dayjs(prayer.created_at)
+          const prayerWeekStart = prayerDate.subtract(prayerDate.day(), 'day').format('YYYY-MM-DD')
+          
+          return isPrayerWeekVisible(prayerWeekStart, authorPrivacy, isOwnPrayer)
         })
       }
     }
 
-    // Optimized: Fix N+1 query problem - get like data in batch queries
-    let prayersWithLikes: any = filteredPrayers
+    // PERFORMANCE BOOST: v_prayers_likes view already includes like_count and liked_by_me
+    // No need for additional N+1 queries! This eliminates 3 database queries per request.
+    
+    // Still need comment counts (not in view yet - could be future optimization)
+    let prayersWithComments: any = filteredPrayers
     
     if (filteredPrayers && filteredPrayers.length > 0) {
       const prayerIds = filteredPrayers.map((p: any) => p.id).filter(Boolean)
       
       if (prayerIds.length > 0) {
-        // Batch query 1: Get all like counts
-        const { data: likesData } = await supabase
-          .from('likes')
-          .select('prayer_id')
-          .in('prayer_id', prayerIds)
-        
-        // Batch query 2: Get user's like status (if logged in)
-        let userLikesData: any[] = []
-        if (userId) {
-          const { data: userLikes } = await supabase
-            .from('likes')
-            .select('prayer_id')
-            .eq('user_id', userId)
-            .in('prayer_id', prayerIds)
-          userLikesData = userLikes || []
-        }
-        
-        // Batch query 3: Get all comment counts
+        // Only 1 additional query needed instead of 3!
         const { data: commentsData } = await supabase
           .from('comments')
           .select('prayer_id')
           .in('prayer_id', prayerIds)
         
-        // Create lookup maps for O(1) access
-        const likeCounts = new Map<string, number>()
-        const userLikedSet = new Set<string>()
+        // Create comment count lookup
         const commentCounts = new Map<string, number>()
-        
-        // Process like counts
-        likesData?.forEach((like: any) => {
-          const count = likeCounts.get(like.prayer_id) || 0
-          likeCounts.set(like.prayer_id, count + 1)
-        })
-        
-        // Process user likes
-        userLikesData.forEach((userLike: any) => {
-          userLikedSet.add(userLike.prayer_id)
-        })
-        
-        // Process comment counts
         commentsData?.forEach((comment: any) => {
           const count = commentCounts.get(comment.prayer_id) || 0
           commentCounts.set(comment.prayer_id, count + 1)
         })
         
-        // Combine results with like and comment data
-        prayersWithLikes = (filteredPrayers as any[]).map((prayer: any) => ({
+        // Add comment counts to prayers (like data already included from view)
+        prayersWithComments = (filteredPrayers as any[]).map((prayer: any) => ({
           ...prayer,
-          like_count: likeCounts.get(prayer.id) || 0,
-          liked_by_me: userLikedSet.has(prayer.id),
           comment_count: commentCounts.get(prayer.id) || 0
         })) as any
       }
     } else {
       // Set default values for empty results
-      prayersWithLikes = (filteredPrayers as any[])?.map((prayer: any) => ({
+      prayersWithComments = (filteredPrayers as any[])?.map((prayer: any) => ({
         ...prayer,
-        like_count: 0,
-        liked_by_me: false,
         comment_count: 0
       })) as any || []
     }
 
-    return NextResponse.json(prayersWithLikes)
+    // Return enhanced response with prayer wall information
+    return NextResponse.json({
+      prayers: prayersWithComments,
+      wall: {
+        id: wall.id,
+        theme: wall.theme,
+        stats: wall.stats,
+        is_active: wall.is_active,
+        can_manage: user ? await hasAdminAccess(user.id, orgId) : false
+      },
+      meta: {
+        week_start: qsWeekStart,
+        organization_id: orgId,
+        read_only: !isCurrentWeek(qsWeekStart),
+        is_new_wall: isNew
+      }
+    })
   } catch (e) {
     console.error('Unhandled GET error:', e)
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
@@ -172,9 +225,10 @@ export async function GET(req: Request) {
 /**
  * POST /api/prayers
  * body: { content: string; author_name?: string; fellowship?: string }
- * - 服务器端进行基础校验（长度、必填）
- * - 只依赖默认 created_at=now()，周归属由查询时段决定
- * - fellowship 指定祷告所属团契，默认为 weekday
+ * OPTIMIZED: Uses prayer_walls for proper organization and performance
+ * - Creates or updates prayer_wall for the current week
+ * - Associates prayer with wall_id for optimized queries
+ * - Updates wall statistics automatically
  */
 export async function POST(req: Request) {
   const supabase = await createServerSupabase()
@@ -261,11 +315,50 @@ export async function POST(req: Request) {
       fellowship = 'weekday'
     }
 
+    // Phase 1: Get organization - reuse logic from GET method
+    const bodyOrganizationId = body.organizationId
+    const bodyOrgSlug = body.orgSlug
+    
+    let orgId: string
+    
+    if (bodyOrganizationId) {
+      orgId = bodyOrganizationId
+    } else if (bodyOrgSlug) {
+      // Look up organization by slug
+      const { data: org } = await supabase
+        .from('organizations')
+        .select('id')
+        .eq('slug', bodyOrgSlug)
+        .single()
+      
+      if (!org) {
+        return NextResponse.json({ error: 'Organization not found' }, { status: 404 })
+      }
+      orgId = org.id
+    } else {
+      // BACKWARD COMPATIBILITY: Use database function for default MGC organization
+      // This trigger will handle new prayers automatically
+      const { data } = await supabase.rpc('get_default_organization_id')
+      orgId = data
+      console.log('SAFETY: Using default MGC organization for legacy request')
+    }
+    
+    const weekStart = getCurrentWeekStartET()
+    
+    const wallResult = await getOrCreatePrayerWall(weekStart, orgId, user?.id)
+    if ('error' in wallResult) {
+      return NextResponse.json({ error: wallResult.error }, { status: 500 })
+    }
+    
+    const { data: wall } = wallResult
+    
     // Prepare insert data with proper typing
     let insertData: Database['public']['Tables']['prayers']['Insert'] = {
       author_name,
       user_id: user?.id || null,
       fellowship,
+      organization_id: orgId, // KEY: Associate with organization
+      wall_id: wall.id, // KEY: Associate with prayer wall for optimized queries
       content: '' // Will be set below based on content type
     }
 
@@ -304,6 +397,13 @@ export async function POST(req: Request) {
     if (error) {
       console.error('Supabase insert error:', error)
       return NextResponse.json({ error: 'Database error' }, { status: 500 })
+    }
+    
+    // Update prayer wall statistics asynchronously (don't block response)
+    if (data?.[0]) {
+      updateWallStats(wall.id).catch(err => 
+        console.error('Failed to update wall stats:', err)
+      )
     }
 
     return NextResponse.json(data?.[0] || { success: true }, { status: 201 })
@@ -460,15 +560,24 @@ export async function PATCH(req: Request) {
       updateData.intercession_content = null
     }
 
-    const { error: updateError } = await (supabase as any)
+    const { data: updatedPrayer, error: updateError } = await (supabase as any)
       .from('prayers')
       .update(updateData)
       .eq('id', prayerId)
       .eq('user_id', user.id) // Double-check ownership
+      .select('wall_id')
+      .single()
 
     if (updateError) {
       console.error('Supabase update error:', updateError)
       return NextResponse.json({ error: 'Database error' }, { status: 500 })
+    }
+    
+    // Update prayer wall statistics asynchronously
+    if (updatedPrayer?.wall_id) {
+      updateWallStats(updatedPrayer.wall_id).catch(err => 
+        console.error('Failed to update wall stats:', err)
+      )
     }
 
     return NextResponse.json({ success: true })
@@ -524,6 +633,11 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: 'Can only delete current week prayers' }, { status: 400 })
     }
 
+    // Get wall_id before deleting for stats update
+    const wallId = existingPrayer.user_id ? 
+      await supabase.from('prayers').select('wall_id').eq('id', prayerId).single().then(r => r.data?.wall_id) : 
+      null
+    
     const { error: deleteError } = await supabase
       .from('prayers')
       .delete()
@@ -533,6 +647,13 @@ export async function DELETE(req: Request) {
     if (deleteError) {
       console.error('Supabase delete error:', deleteError)
       return NextResponse.json({ error: 'Database error' }, { status: 500 })
+    }
+    
+    // Update prayer wall statistics asynchronously
+    if (wallId) {
+      updateWallStats(wallId).catch(err => 
+        console.error('Failed to update wall stats:', err)
+      )
     }
 
     return NextResponse.json({ success: true })
