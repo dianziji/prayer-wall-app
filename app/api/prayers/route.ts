@@ -240,8 +240,15 @@ export async function GET(req: Request) {
       wallId: wall.id,
       orgId,
       weekStart: qsWeekStart,
-      isNewWall: isNew
+      isNewWall: isNew,
+      env: process.env.NODE_ENV,
+      vercelEnv: process.env.VERCEL_ENV
     })
+    
+    // SAFETY CHECK: Ensure we never return empty arrays without explanation
+    if (prayersWithComments.length === 0) {
+      console.warn('⚠️ [API] Returning empty prayers array - this might indicate a problem')
+    }
     
     return NextResponse.json(responseData)
   } catch (e) {

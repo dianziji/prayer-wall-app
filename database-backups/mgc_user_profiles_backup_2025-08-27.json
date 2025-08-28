@@ -1,0 +1,138 @@
+[
+  {
+    "user_id": "158a8a2e-6942-4082-a768-919eacdd6901",
+    "username": "Shuo Yang",
+    "avatar_url": "https://tyyurvugpkmjieoxlvny.supabase.co/storage/v1/object/public/avatars/158a8a2e-6942-4082-a768-919eacdd6901.png",
+    "default_fellowship": "weekday",
+    "created_at": "2025-08-02 01:45:26.376701+00",
+    "updated_at": "2025-08-23 04:45:59.579812+00"
+  },
+  {
+    "user_id": "efcb71be-60a7-4291-a798-18fedbebc9b7",
+    "username": "罗薇",
+    "avatar_url": "https://tyyurvugpkmjieoxlvny.supabase.co/storage/v1/object/public/avatars/efcb71be-60a7-4291-a798-18fedbebc9b7.jpg",
+    "default_fellowship": "weekday",
+    "created_at": "2025-08-09 17:04:20.947899+00",
+    "updated_at": "2025-08-09 17:04:37.198023+00"
+  },
+  {
+    "user_id": "30eae8cc-3222-4c76-bd04-ed23d3594aae",
+    "username": "Kevin Li",
+    "avatar_url": "https://tyyurvugpkmjieoxlvny.supabase.co/storage/v1/object/public/avatars/30eae8cc-3222-4c76-bd04-ed23d3594aae.jpg",
+    "default_fellowship": "weekday",
+    "created_at": "2025-08-10 17:39:36.535798+00",
+    "updated_at": "2025-08-17 19:06:59.143014+00"
+  },
+  {
+    "user_id": "5621ab07-0438-4ed1-89ec-8a7c2346399c",
+    "username": "Benedict Wong",
+    "avatar_url": "https://tyyurvugpkmjieoxlvny.supabase.co/storage/v1/object/public/avatars/5621ab07-0438-4ed1-89ec-8a7c2346399c.jpg",
+    "default_fellowship": "weekday",
+    "created_at": "2025-08-10 19:41:05.33474+00",
+    "updated_at": "2025-08-10 19:41:05.887489+00"
+  },
+  {
+    "user_id": "33492081-f9e9-47a0-a7c9-47eadfbd7dda",
+    "username": "Jerry Lin",
+    "avatar_url": "https://tyyurvugpkmjieoxlvny.supabase.co/storage/v1/object/public/avatars/33492081-f9e9-47a0-a7c9-47eadfbd7dda.png",
+    "default_fellowship": "weekday",
+    "created_at": "2025-08-10 19:41:19.338996+00",
+    "updated_at": "2025-08-24 19:52:37.875307+00"
+  },
+  {
+    "user_id": "6bf8ca13-9475-473a-8469-ae61db6d1518",
+    "username": "Bella Shen",
+    "avatar_url": "https://tyyurvugpkmjieoxlvny.supabase.co/storage/v1/object/public/avatars/6bf8ca13-9475-473a-8469-ae61db6d1518.jpg",
+    "default_fellowship": "weekday",
+    "created_at": "2025-08-10 19:41:19.937226+00",
+    "updated_at": "2025-08-10 19:41:20.187691+00"
+  },
+  {
+    "user_id": "a876c078-3e24-4726-96f8-8fab972a2321",
+    "username": "邱燕惠 Olive Chiu",
+    "avatar_url": "https://tyyurvugpkmjieoxlvny.supabase.co/storage/v1/object/public/avatars/a876c078-3e24-4726-96f8-8fab972a2321.jpg",
+    "default_fellowship": "weekday",
+    "created_at": "2025-08-10 19:42:25.152825+00",
+    "updated_at": "2025-08-17 16:40:08.837101+00"
+  },
+  {
+    "user_id": "d0c8163d-a818-47e3-b43e-b095a04f7c5d",
+    "username": "狮子",
+    "avatar_url": "https://tyyurvugpkmjieoxlvny.supabase.co/storage/v1/object/public/avatars/d0c8163d-a818-47e3-b43e-b095a04f7c5d.jpg",
+    "default_fellowship": "weekday",
+    "created_at": "2025-08-17 16:36:03.509672+00",
+    "updated_at": "2025-08-23 02:34:39.616356+00"
+  },
+  {
+    "user_id": "8a668c58-8007-4b54-8e74-47e316a11902",
+    "username": "Jay Wen",
+    "avatar_url": "https://tyyurvugpkmjieoxlvny.supabase.co/storage/v1/object/public/avatars/8a668c58-8007-4b54-8e74-47e316a11902.jpg",
+    "default_fellowship": "weekday",
+    "created_at": "2025-08-17 16:36:08.738649+00",
+    "updated_at": "2025-08-17 16:36:08.992728+00"
+  },
+  {
+    "user_id": "0610e206-2867-44a0-925b-6d586bcaf0fd",
+    "username": "刘家程",
+    "avatar_url": "https://tyyurvugpkmjieoxlvny.supabase.co/storage/v1/object/public/avatars/0610e206-2867-44a0-925b-6d586bcaf0fd.jpg",
+    "default_fellowship": "weekday",
+    "created_at": "2025-08-17 16:36:15.174826+00",
+    "updated_at": "2025-08-17 18:45:35.029901+00"
+  },
+  {
+    "user_id": "fc834097-334e-4b73-9e99-5321bcfb5049",
+    "username": "Morris Hsieh",
+    "avatar_url": "https://tyyurvugpkmjieoxlvny.supabase.co/storage/v1/object/public/avatars/fc834097-334e-4b73-9e99-5321bcfb5049.png",
+    "default_fellowship": "weekday",
+    "created_at": "2025-08-17 16:36:19.022949+00",
+    "updated_at": "2025-08-23 01:56:55.785588+00"
+  },
+  {
+    "user_id": "b3289bc2-1583-4eb1-9df9-3738655cbea2",
+    "username": "Julia Qi",
+    "avatar_url": "https://tyyurvugpkmjieoxlvny.supabase.co/storage/v1/object/public/avatars/b3289bc2-1583-4eb1-9df9-3738655cbea2.png",
+    "default_fellowship": "weekday",
+    "created_at": "2025-08-17 16:36:21.183245+00",
+    "updated_at": "2025-08-17 16:39:54.636967+00"
+  },
+  {
+    "user_id": "4c04fd85-0c07-4858-95a8-be358740d060",
+    "username": "Tony S 孙梧越",
+    "avatar_url": "https://tyyurvugpkmjieoxlvny.supabase.co/storage/v1/object/public/avatars/4c04fd85-0c07-4858-95a8-be358740d060.jpg",
+    "default_fellowship": "weekday",
+    "created_at": "2025-08-17 16:36:47.841324+00",
+    "updated_at": "2025-08-17 16:37:46.881494+00"
+  },
+  {
+    "user_id": "8d6eef8b-a072-456c-b09a-8f6872cc1739",
+    "username": "琪琪",
+    "avatar_url": "https://tyyurvugpkmjieoxlvny.supabase.co/storage/v1/object/public/avatars/8d6eef8b-a072-456c-b09a-8f6872cc1739.jpg",
+    "default_fellowship": "weekday",
+    "created_at": "2025-08-17 16:37:02.984367+00",
+    "updated_at": "2025-08-24 16:35:27.368672+00"
+  },
+  {
+    "user_id": "1dfcf67f-3078-460c-b23d-a61eb02ffa8e",
+    "username": "Jiaqi Zhu",
+    "avatar_url": "https://tyyurvugpkmjieoxlvny.supabase.co/storage/v1/object/public/avatars/1dfcf67f-3078-460c-b23d-a61eb02ffa8e.png",
+    "default_fellowship": "weekday",
+    "created_at": "2025-08-17 16:37:21.174816+00",
+    "updated_at": "2025-08-17 16:37:21.490741+00"
+  },
+  {
+    "user_id": "2d47fbd0-6198-4014-abc1-67b847cfcc98",
+    "username": "Euphie",
+    "avatar_url": "https://tyyurvugpkmjieoxlvny.supabase.co/storage/v1/object/public/avatars/2d47fbd0-6198-4014-abc1-67b847cfcc98.jpg",
+    "default_fellowship": "weekday",
+    "created_at": "2025-08-21 14:59:27.300423+00",
+    "updated_at": "2025-08-21 14:59:29.106062+00"
+  },
+  {
+    "user_id": "6c4fab99-29f1-439a-b0d3-8ebdc26a4a26",
+    "username": "Nikita",
+    "avatar_url": "https://tyyurvugpkmjieoxlvny.supabase.co/storage/v1/object/public/avatars/6c4fab99-29f1-439a-b0d3-8ebdc26a4a26.jpg",
+    "default_fellowship": "weekday",
+    "created_at": "2025-08-25 00:45:48.904405+00",
+    "updated_at": "2025-08-25 02:24:50.439494+00"
+  }
+]
