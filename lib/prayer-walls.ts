@@ -141,18 +141,11 @@ export async function updateWallStats(wallId: string): Promise<void> {
 
 /**
  * Get default organization ID for backward compatibility
- * Phase 1: Default to MGC organization
+ * EMERGENCY HOTFIX: Use hardcoded ID to avoid database dependency issues
  */
 export async function getDefaultOrganizationId(): Promise<string> {
-  const supabase = await createServerSupabase()
-  
-  const { data: org } = await supabase
-    .from('organizations')
-    .select('id')
-    .eq('slug', 'mgc')
-    .single()
-  
-  return org?.id || 'default-mgc' // Fallback ID
+  // HOTFIX: Return hardcoded MGC organization ID for immediate production fix
+  return '15da0616-bd27-44a2-bf98-353c094d7581'
 }
 
 /**
