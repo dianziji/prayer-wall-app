@@ -47,7 +47,9 @@ export function PrayerWall({
       })
       .then((data) => {
         if (!isMounted) return
-        setPrayers(Array.isArray(data) ? data : [])
+        // Handle both old array format and new object format
+        const prayerArray = Array.isArray(data) ? data : (data?.prayers || [])
+        setPrayers(prayerArray)
       })
       .catch(() => {
         if (!isMounted) return

@@ -1,0 +1,44 @@
+'use client'
+import HomeQR from "@/components/home-qr"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { QrCode } from 'lucide-react'
+import { useLocale } from '@/lib/locale-context'
+
+export default function QRClient() {
+  const { t } = useLocale()
+
+  return (
+    <main className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: '#F8F6F0' }}>
+      <div className="max-w-md w-full">
+        <section 
+          className="rounded-lg sm:rounded-xl border-0 sm:border sm:border-white/20 shadow-none sm:shadow-sm p-6"
+          style={{ 
+            background: 'radial-gradient(circle at top left, rgba(255, 215, 111, 0.5) 0%, rgba(255, 185, 108, 0.5) 20%, rgba(253, 226, 195, 0.5) 40%, rgba(168, 199, 255, 0.35) 65%, rgba(221, 238, 225, 0.8) 100%)'
+          }}
+        >
+          <div className="text-center">
+            <div className="flex justify-center mb-4">
+              <div className="p-3 bg-white/80 rounded-full">
+                <QrCode className="w-8 h-8 text-gray-600" />
+              </div>
+            </div>
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">{t('qr_code_title')}</h1>
+            <p className="text-sm text-gray-600">
+              {t('qr_code_description')}
+            </p>
+          </div>
+          
+          <div className="text-center mt-6">
+            <HomeQR />
+            
+            <div className="mt-6 p-4 bg-white/60 rounded-lg border border-white/40">
+              <p className="text-xs text-gray-700">
+                {t('qr_code_note')}
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  )
+}

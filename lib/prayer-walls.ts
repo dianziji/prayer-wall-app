@@ -13,6 +13,8 @@ export async function getOrCreatePrayerWall(
   const supabase = await createServerSupabase()
 
   try {
+    console.log('🏗️ [PrayerWalls] Getting prayer wall:', { weekStart, organizationId, userId: userId ? `${userId.substring(0, 8)}...` : 'none' })
+    
     // First, try to get existing prayer wall
     let { data: wall, error } = await supabase
       .from('prayer_walls')
@@ -21,17 +23,24 @@ export async function getOrCreatePrayerWall(
       .eq('week_start', weekStart)
       .single()
 
+    console.log('📊 [PrayerWalls] Fetch existing wall result:', { 
+      found: !!wall, 
+      error: error ? `${error.code}: ${error.message}` : null 
+    })
+
     if (error && error.code !== 'PGRST116') {
       // PGRST116 is "no rows returned" - that's expected for new weeks
-      console.error('Error fetching prayer wall:', error)
+      console.error('❌ [PrayerWalls] Error fetching prayer wall:', error)
       return { error: 'Failed to fetch prayer wall' }
     }
 
     if (wall) {
+      console.log('✅ [PrayerWalls] Using existing wall:', { id: wall.id, weekStart: wall.week_start })
       return { data: wall as PrayerWallRow, isNew: false }
     }
 
     // Create new prayer wall for this week
+    console.log('🔨 [PrayerWalls] Creating new prayer wall...')
     const newWallData: PrayerWallInsert = {
       organization_id: organizationId,
       week_start: weekStart,
@@ -45,17 +54,25 @@ export async function getOrCreatePrayerWall(
       created_by: userId || null
     }
 
+    console.log('📝 [PrayerWalls] Wall data to insert:', newWallData)
     const { data: newWall, error: createError } = await supabase
       .from('prayer_walls')
       .insert(newWallData as any)
       .select()
       .single()
 
+    console.log('📊 [PrayerWalls] Create wall result:', { 
+      success: !!newWall, 
+      wallId: newWall?.id,
+      error: createError ? `${createError.code}: ${createError.message}` : null 
+    })
+
     if (createError) {
-      console.error('Error creating prayer wall:', createError)
+      console.error('❌ [PrayerWalls] Error creating prayer wall:', createError)
       return { error: 'Failed to create prayer wall' }
     }
 
+    console.log('✅ [PrayerWalls] Created new wall:', { id: newWall.id, weekStart: newWall.week_start })
     return { data: newWall as PrayerWallRow, isNew: true }
   } catch (err) {
     console.error('Unexpected error in getOrCreatePrayerWall:', err)
